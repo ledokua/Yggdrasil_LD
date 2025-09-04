@@ -13,9 +13,9 @@ public class Items {
             new Item(new Item.Settings ()),
             "icon"
     );
-    public static final Item item2 = ItemInit.register(
-            new SkillResetItem(new Item.Settings().maxCount(1)),
-            "item2"
+    public static final Item RESET_SCROLL = ItemInit.register(
+            new SkillResetItem(new Item.Settings().maxCount(16)),
+            "reset_scroll"
     );
 
     public static void initialize() {

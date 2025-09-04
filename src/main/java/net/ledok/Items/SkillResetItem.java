@@ -1,8 +1,11 @@
 package net.ledok.Items;
 
+import com.mojang.brigadier.ParseResults;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -16,26 +19,29 @@ public class SkillResetItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        // Код виконується тільки на сервері, щоб уникнути помилок
         if (!world.isClient) {
-            // Отримуємо "джерело" команди від гравця
-            ServerCommandSource source = user.getCommandSource();
-            // Ваша команда
-            String command = "puffish_skills skills reset @s puffish_skills:minestar";
+            MinecraftServer server = world.getServer();
+            if (server == null) {
+                return TypedActionResult.fail(user.getStackInHand(hand));
+            }
 
-            // Виконуємо команду
-            world.getServer().getCommandManager().execute(source.withSilent(), command);
+            ServerCommandSource source = server.getCommandSource();
 
-            // Забираємо 1 предмет, якщо гравець не в креативі
+            String playerName = user.getName().getString();
+            String command = String.format("puffish_skills skills reset %s puffish_skills:minestar", playerName);
+
+            // ---------------------
+
+            CommandManager commandManager = server.getCommandManager();
+            ParseResults<ServerCommandSource> parseResults = commandManager.getDispatcher().parse(command, source.withSilent());
+            commandManager.execute(parseResults, command);
+
             if (!user.getAbilities().creativeMode) {
                 user.getStackInHand(hand).decrement(1);
             }
 
-            // Повертаємо успішний результат
             return TypedActionResult.success(user.getStackInHand(hand));
         }
-
-        // Якщо це клієнт, нічого не робимо
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
 }
