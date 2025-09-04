@@ -1,0 +1,61 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 8,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_armors",
+          "expand": true,
+          "weight": 25,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_relics",
+          "expand": true,
+          "weight": 25,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_weapons",
+          "expand": true,
+          "weight": 25,
+          "functions": []
+        },{
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_5_armors",
+          "expand": true,
+          "weight": 10,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_4_relics",
+          "expand": true,
+          "weight": 5,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_5_weapons",
+          "expand": true,
+          "weight": 10,
+          "functions": []
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "enchant_limiter:limit": {
+              "count": 5
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

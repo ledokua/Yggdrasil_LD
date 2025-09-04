@@ -1,0 +1,98 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 10,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_1_armors",
+          "expand": true,
+          "weight": 30,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_1_relics",
+          "expand": true,
+          "weight": 30,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_1_weapons",
+          "expand": true,
+          "weight": 30,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_armors",
+          "expand": true,
+          "weight": 4,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_relics",
+          "expand": true,
+          "weight": 2,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_weapons",
+          "expand": true,
+          "weight": 4,
+          "functions": []
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "enchant_limiter:limit": {
+              "count": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_armors",
+          "expand": true,
+          "weight": 3,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_relics",
+          "expand": true,
+          "weight": 2,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_weapons",
+          "expand": true,
+          "weight": 5,
+          "functions": []
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "enchant_limiter:limit": {
+              "count": 5
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

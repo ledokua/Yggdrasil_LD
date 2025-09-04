@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:wither_ribcage"
+    },
+    {
+      "item": "quest_items:molten_tablet"
+    }
+  ],
+  "result": {
+    "id": "endrem:nether_eye"
+  }
+}

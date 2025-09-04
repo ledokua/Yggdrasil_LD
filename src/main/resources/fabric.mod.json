@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "yggdrasil_ld",
+  "version": "${version}",
+
+  "name": "Yggdrasil_LD",
+  "description": "For Minestar and Yggdrasil",
+  "authors": [],
+  "contact": {},
+
+  "license": "All-Rights-Reserved",
+  "icon": "assets/yggdrasil_ld/textures/skilltree/icons/minestar_logo.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": ["net.ledok.client.yggdrasil_ldDataGenerator"],
+    "client": ["net.ledok.client.yggdrasil_ldClient"],
+    "main": [
+      "net.ledok.Yggdrasil_ld"
+    ]
+  },
+
+  "mixins": [
+    "yggdrasil_ld.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

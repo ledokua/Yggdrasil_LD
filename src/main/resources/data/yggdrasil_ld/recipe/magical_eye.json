@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:sack_of_magic_dust"
+    },
+    {
+      "item": "quest_items:warden_ears"
+    }
+  ],
+  "result": {
+    "id": "endrem:magical_eye"
+  }
+}

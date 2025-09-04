@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:rotten_heart"
+    },
+    {
+      "item": "quest_items:cursed_crown"
+    }
+  ],
+  "result": {
+    "id": "endrem:cursed_eye"
+  }
+}

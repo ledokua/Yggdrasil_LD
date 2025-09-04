@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:molten_tablet"
+    },
+    {
+      "item": "quest_items:red_urn"
+    }
+  ],
+  "result": {
+    "id": "endrem:lost_eye"
+  }
+}

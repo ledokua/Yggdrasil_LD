@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:corrupted_grail"
+    },
+    {
+      "item": "quest_items:ancient_king_scepter"
+    }
+  ],
+  "result": {
+    "id": "endrem:corrupted_eye"
+  }
+}

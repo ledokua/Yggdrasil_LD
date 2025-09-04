@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:mossy_tablet"
+    },
+    {
+      "item": "quest_items:tribal_totem"
+    }
+  ],
+  "result": {
+    "id": "endrem:rogue_eye"
+  }
+}

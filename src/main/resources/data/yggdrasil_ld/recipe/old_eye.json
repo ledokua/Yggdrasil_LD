@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quest_items:pharaohs_mask"
+    },
+    {
+      "item": "quest_items:toxic_vial"
+    }
+  ],
+  "result": {
+    "id": "endrem:old_eye"
+  }
+}
