@@ -38,7 +38,7 @@
   "attribute.yggdrasil_ld.spell_crit_chance_percent_lesser.title": "§6+2% Крит шансу заклинань",
   "attribute.yggdrasil_ld.stamina_percent_lesser.title": "§6+10% §7Витривалості",
 
-  "classes.yggdrasil_ld.warrior.class": "§cКоролівський воїн",
+  "classes.yggdrasil_ld.warrior.class": "§cМайстер меча",
   "classes.yggdrasil_ld.bowmaster.class": "§bМайстер рейнджер",
   "classes.yggdrasil_ld.trickster.class": "§bМайстер пройдисвіт",
   "classes.yggdrasil_ld.paladin.class": "Вищий паладин",
@@ -47,7 +47,7 @@
   "classes.yggdrasil_ld.arcaneking.class": "§dАрхімаг аркани",
   "classes.yggdrasil_ld.healer.class": "§6Вищий жрець",
 
-  "classes.yggdrasil_ld.warrior.description": "§7Королівський воїн — це збалансований боєць, що майстерно володіє дворучною зброєю. Його сила, захист і швидкість однаково високі.",
+  "classes.yggdrasil_ld.warrior.description": "§7Майстер меча — це збалансований боєць, що майстерно володіє дворучною зброєю. Його сила, захист і швидкість однаково високі.",
   "classes.yggdrasil_ld.bowmaster.description": "§7Майстер рейнджер — це вправний лучник, який спеціалізується на веденні бою на середній та дальній дистанції. За рахунок своєї низької броні та вразливості він компенсує швидкістю та неперевершеною точністю.",
   "classes.yggdrasil_ld.trickster.description": "§7Майстер пройдисвіт — це спритний боєць, який використовує легкі кинджали. Він має високу швидкість пересування і маневреність, але компенсує це низьким захистом. Його рухи невловимі, і він може з легкістю ухилитися від ворожих атак.",
   "classes.yggdrasil_ld.paladin.description": "§7Вищий паладин — це стійкий захисник, що володіє високим рівнем броні та здоров'я. Він не тільки може витримати сильні удари, але й зцілювати себе та своїх союзників, щоб залишитися у бою.",
@@ -92,6 +92,7 @@
 
 
   "item.yggdrasil_ld.icon": "Лого Minestar",
+  "item.yggdrasil_ld.reset_scroll": "Сувій забуття",
 
 
   "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
