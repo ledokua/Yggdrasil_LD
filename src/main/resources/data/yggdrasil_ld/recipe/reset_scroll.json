@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bbb",
+    "cde",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:paper"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    },
+    "c": {
+      "item": "minecraft:ink_sac"
+    },
+    "d": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "e": {
+      "item": "minecraft:red_dye"
+    }
+  },
+  "result": {
+    "id": "yggdrasil_ld:reset_scroll"
+  }
+}
