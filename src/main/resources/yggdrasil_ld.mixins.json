@@ -3,10 +3,14 @@
   "package": "net.ledok.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ServerPlayerEntityMixin",
-    "PlayerEntityMixin"
+    "PlayerEntityMixin",
+    "ServerPlayerEntityMixin"
+  ],
+  "client": [
+    "PlayerListHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   }
 }
+

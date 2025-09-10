@@ -1,12 +1,12 @@
 package net.ledok.mixin;
 
-import dev.emi.trinkets.api.TrinketsApi;
-import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.Yggdrasil_ld;
-import net.ledok.util.DeathItemStackManager;
+import net.ledok.reputation.ReputationManager;
+import net.ledok.util.PvPContextManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,75 +14,146 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
 
     @Shadow public abstract PlayerInventory getInventory();
 
-    private static final boolean isTrinketsLoaded = FabricLoader.getInstance().isModLoaded("trinkets");
-
-    @Inject(method = "dropInventory", at = @At("HEAD"))
+    @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
     private void yggdrasil_partialKeepInventory(CallbackInfo ci) {
-        PlayerEntity player = (PlayerEntity) (Object) this;
-        PlayerInventory inventory = this.getInventory();
-
-        if (player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage >= 100.0) {
+        PlayerEntity victim = (PlayerEntity) (Object) this;
+        if (!victim.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             return;
         }
 
-        Map<Integer, ItemStack> vanillaItemsToKeep = new HashMap<>();
-        List<Integer> mainInventorySlots = new ArrayList<>();
-        List<DeathItemStackManager.TrinketInfo> trinketsToKeep = new ArrayList<>();
-
-        // Розрахунок для основного інвентарю (без змін)
-        for (int i = 9; i < 36; i++) {
-            if (!inventory.getStack(i).isEmpty()) { mainInventorySlots.add(i); }
-        }
-        double keepPercentage = 1.0 - (Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage / 100.0);
-        int itemsToKeepFromMainCount = (int) Math.floor(mainInventorySlots.size() * keepPercentage);
-        Collections.shuffle(mainInventorySlots);
-        List<Integer> slotsToKeepFromMain = new ArrayList<>();
-        if (itemsToKeepFromMainCount > 0) {
-            slotsToKeepFromMain.addAll(mainInventorySlots.subList(0, itemsToKeepFromMainCount));
-        }
-
-        // Наповнення Map ванільними предметами (без змін)
-        for (int i = 0; i < 9; i++) vanillaItemsToKeep.put(i, inventory.getStack(i).copy());
-        for (int i = 0; i < inventory.armor.size(); i++) vanillaItemsToKeep.put(36 + i, inventory.armor.get(i).copy());
-        vanillaItemsToKeep.put(PlayerInventory.OFF_HAND_SLOT, inventory.offHand.get(0).copy());
-        for (int slot : slotsToKeepFromMain) vanillaItemsToKeep.put(slot, inventory.getStack(slot).copy());
-
-        // Обробка Trinkets
-        if (isTrinketsLoaded) {
-            TrinketsApi.getTrinketComponent(player).ifPresent(component -> {
-                component.getAllEquipped().forEach(pair -> {
-                    var slotReference = pair.getLeft();
-                    var itemStack = pair.getRight();
-                    if (!itemStack.isEmpty()) {
-                        var slotType = slotReference.inventory().getSlotType();
-                        // Створюємо та зберігаємо повну інформацію про Trinket
-                        trinketsToKeep.add(new DeathItemStackManager.TrinketInfo(
-                                slotType.getGroup(),
-                                slotType.getName(),
-                                slotReference.index(),
-                                itemStack.copy()
-                        ));
-                        // Очищуємо слот
-                        slotReference.inventory().setStack(slotReference.index(), ItemStack.EMPTY);
+        UUID attackerUuid = PvPContextManager.getAttacker();
+        try {
+            boolean isPredatoryKill = false;
+            if (attackerUuid != null && Yggdrasil_ld.CONFIG.predatory_kill_enabled) {
+                ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
+                if (attacker != null) {
+                    int attackerRep = ReputationManager.getReputation(attacker);
+                    int victimRep = ReputationManager.getReputation(victim);
+                    if (attackerRep < 0 && victimRep >= Yggdrasil_ld.CONFIG.predatory_kill_victim_positive_rep_threshold) {
+                        isPredatoryKill = true;
                     }
-                });
-            });
-        }
+                }
+            }
 
-        // Зберігаємо обидва типи предметів
-        DeathItemStackManager.keepItems(player.getUuid(), vanillaItemsToKeep, trinketsToKeep);
+            if (isPredatoryKill) {
+                // --- ЛОГІКА ТІЛЬКИ ДЛЯ "ХИЖАЦЬКОГО" ВБИВСТВА ---
+                ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
+                int attackerRep = ReputationManager.getReputation(attacker);
+                List<Integer> slotsToDrop = new ArrayList<>();
 
-        // Очищуємо збережені ванільні слоти
-        for (Integer slotIndex : vanillaItemsToKeep.keySet()) {
-            inventory.setStack(slotIndex, ItemStack.EMPTY);
+                // 1. Розрахунок випадіння з екіпірування (працював коректно)
+                int equipItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_rep_step;
+                equipItemsToDrop = Math.min(equipItemsToDrop, Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_max);
+                addRandomSlotsToList(slotsToDrop, getEquipmentSlots(), equipItemsToDrop);
+
+                // 2. Розрахунок випадіння з основного інвентарю
+                int invItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_inventory_drop_rep_step;
+                addRandomSlotsToList(slotsToDrop, getMainInventorySlots(slotsToDrop), invItemsToDrop);
+
+                // Викидаємо предмети і завершуємо
+                dropItemsFromSlots(victim, slotsToDrop);
+
+            } else {
+                // --- СТАНДАРТНА ЛОГІКА ДЛЯ ВСІХ ІНШИХ ВИПАДКІВ СМЕРТІ ---
+                List<Integer> slotsToDrop = new ArrayList<>();
+                int reputation = ReputationManager.getReputation(victim);
+
+                // 1. Штраф за низьку репутацію
+                if (reputation <= Yggdrasil_ld.CONFIG.reputation_penalty_threshold) {
+                    addRandomSlotsToList(slotsToDrop, getEquipmentSlots(), Yggdrasil_ld.CONFIG.reputation_penalty_item_count);
+                }
+
+                // 2. Випадіння з інвентарю на основі репутації жертви
+                double baseDropPercentage = Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage;
+                double finalDropPercentage = baseDropPercentage;
+                if (Yggdrasil_ld.CONFIG.reputation_affects_drops) {
+                    // Повертаємо оригінальну формулу: кожні 20 очок репутації = 1%
+                    finalDropPercentage -= (double)reputation / 20.0;
+                }
+                finalDropPercentage = Math.max(0, Math.min(100, finalDropPercentage));
+
+                if (finalDropPercentage > 0) {
+                    List<Integer> mainInvSlots = getMainInventorySlots(slotsToDrop);
+                    int itemsToDropCount = (int) Math.floor(mainInvSlots.size() * (finalDropPercentage / 100.0));
+                    addRandomSlotsToList(slotsToDrop, mainInvSlots, itemsToDropCount);
+                }
+
+                // Викидаємо предмети і завершуємо
+                dropItemsFromSlots(victim, slotsToDrop);
+            }
+
+            // Скасовуємо ванільну логіку в будь-якому випадку, оскільки ми обробили все самі
+            ci.cancel();
+
+        } finally {
+            PvPContextManager.clear();
         }
+    }
+
+    // --- Допоміжні методи (без змін) ---
+
+    private List<Integer> getEquipmentSlots() {
+        List<Integer> slots = new ArrayList<>();
+        slots.addAll(getSlots(0, 8)); // Хотбар
+        slots.addAll(getSlots(36, 39)); // Броня
+        return slots;
+    }
+
+    private List<Integer> getMainInventorySlots(List<Integer> exclude) {
+        List<Integer> slots = new ArrayList<>();
+        for (int i = 9; i <= 35; i++) {
+            if (!getInventory().getStack(i).isEmpty() && !exclude.contains(i)) {
+                slots.add(i);
+            }
+        }
+        return slots;
+    }
+
+    private void addRandomSlotsToList(List<Integer> targetList, List<Integer> sourceSlots, int count) {
+        Collections.shuffle(sourceSlots);
+        int added = 0;
+        for (int slot : sourceSlots) {
+            if (added >= count) break;
+            if (!targetList.contains(slot)) {
+                targetList.add(slot);
+                added++;
+            }
+        }
+    }
+
+    private void dropItemsFromSlots(PlayerEntity player, List<Integer> slots) {
+        for (int slotIndex : slots) {
+            ItemStack stack = getInventory().getStack(slotIndex);
+            if (!stack.isEmpty()) {
+                player.dropStack(stack);
+                getInventory().setStack(slotIndex, ItemStack.EMPTY);
+            }
+        }
+    }
+
+    private List<Integer> getSlots(int start, int end) {
+        List<Integer> slots = new ArrayList<>();
+        PlayerInventory inventory = this.getInventory();
+        if (start >= 36 && end <= 39) {
+            for (int i = 0; i < inventory.armor.size(); i++) {
+                if (!inventory.armor.get(i).isEmpty()) slots.add(36 + i);
+            }
+        } else {
+            for (int i = start; i <= end; i++) {
+                if (!getInventory().getStack(i).isEmpty()) slots.add(i);
+            }
+        }
+        return slots;
     }
 }
 
