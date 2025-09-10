@@ -19,11 +19,8 @@ public class ModConfigs {
     public List<String> elytra_boost_disabled_dimensions = new ArrayList<>(Arrays.asList("minecraft:the_end", "minecraft:the_nether"));
     public double keep_inventory_drop_percentage = 50.0;
     public boolean reputation_affects_drops = true;
-
-    // --- ОНОВЛЕНІ НАЛАШТУВАННЯ ВТРАТИ РЕПУТАЦІЇ ---
     public double reputation_death_penalty_negative_percentage = 5.0;
     public double reputation_death_penalty_positive_percentage = 2.0;
-
     public int reputation_pvp_kill_penalty = 100;
     public int reputation_pvp_kill_victim_bonus_threshold = -500;
     public int reputation_pvp_kill_victim_bonus = 20;
@@ -45,10 +42,16 @@ public class ModConfigs {
     public int bounty_hunter_bonus_rep_per_step = 20;
     public int bounty_hunter_bonus_rep_step = 1000;
 
+    // --- НОВІ НАЛАШТУВАННЯ ДЛЯ "АНТИ-АБ'ЮЗ" СИСТЕМИ ---
+    public boolean anti_abuse_kill_enabled = true;
+    public int anti_abuse_attacker_threshold = -1000;
+    public double anti_abuse_penalty_percentage = 40.0;
+
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), Yggdrasil_ld.MOD_ID + ".json");
 
+    // ... решта файлу без змін ...
     public static ModConfigs load() {
         ModConfigs config;
         if (CONFIG_FILE.exists()) {
