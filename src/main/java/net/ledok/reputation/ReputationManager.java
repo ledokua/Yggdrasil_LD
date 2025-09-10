@@ -35,7 +35,6 @@ public class ReputationManager {
         setReputation(player, getReputation(player) - amount);
     }
 
-    // Оновлений метод для синхронізації
     public static void syncReputation(MinecraftServer server, ServerPlayerEntity playerToSync) {
         ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
                 playerToSync.getUuid(),

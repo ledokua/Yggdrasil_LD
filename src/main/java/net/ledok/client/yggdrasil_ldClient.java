@@ -4,7 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.ledok.networking.ModPacketsClient;
 
-public class Yggdrasil_ldClient implements ClientModInitializer {
+public class yggdrasil_ldClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Реєструємо наші клієнтські обробники пакетів
@@ -16,4 +16,3 @@ public class Yggdrasil_ldClient implements ClientModInitializer {
         });
     }
 }
-
