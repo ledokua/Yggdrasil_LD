@@ -34,13 +34,16 @@ public class Yggdrasil_ld implements ModInitializer {
             ReputationCommand.register(dispatcher);
         });
 
-        // --- НОВА, НАДІЙНА СИСТЕМА СИНХРОНІЗАЦІЇ ---
+        // --- ВИПРАВЛЕНА ЛОГІКА СИНХРОНІЗАЦІЇ ---
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            // Коли гравець приєднується, ми надсилаємо репутацію ВСІХ гравців ВСІМ гравцям.
-            // Це гарантує, що всі клієнти, включно з новим, мають актуальні дані.
-            for (ServerPlayerEntity onlinePlayer : server.getPlayerManager().getPlayerList()) {
-                ReputationManager.syncReputation(server, onlinePlayer);
-            }
+            // Відкладаємо синхронізацію на один тік, щоб клієнт встиг ініціалізуватися
+            server.execute(() -> {
+                // Коли гравець приєднується, ми повністю оновлюємо дані для всіх.
+                // Це найнадійніший спосіб уникнути проблем синхронізації.
+                for (ServerPlayerEntity onlinePlayer : server.getPlayerManager().getPlayerList()) {
+                    ReputationManager.syncReputationWithAll(server, onlinePlayer);
+                }
+            });
         });
     }
 }

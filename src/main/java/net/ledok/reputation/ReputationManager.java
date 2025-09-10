@@ -24,7 +24,7 @@ public class ReputationManager {
         if (player.getServer() == null) return;
         ReputationState serverState = getState(player.getServer());
         serverState.setReputation(player.getUuid(), amount);
-        syncReputation(player.getServer(), (ServerPlayerEntity) player);
+        syncReputationWithAll(player.getServer(), (ServerPlayerEntity) player);
     }
 
     public static void addReputation(PlayerEntity player, int amount) {
@@ -35,16 +35,24 @@ public class ReputationManager {
         setReputation(player, getReputation(player) - amount);
     }
 
-    public static void syncReputation(MinecraftServer server, ServerPlayerEntity playerToSync) {
+    // Надсилає репутацію ОДНОГО гравця ВСІМ гравцям
+    public static void syncReputationWithAll(MinecraftServer server, ServerPlayerEntity playerToSync) {
         ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
                 playerToSync.getUuid(),
                 getReputation(playerToSync)
         );
-
-        // Надсилаємо пакет кожному гравцю на сервері, використовуючи ServerPlayNetworking
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             ServerPlayNetworking.send(player, payload);
         }
+    }
+
+    // НОВИЙ МЕТОД: Надсилає репутацію ОДНОГО гравця ОДНОМУ отримувачу
+    public static void syncReputationWithPlayer(ServerPlayerEntity playerToSync, ServerPlayerEntity recipient) {
+        ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
+                playerToSync.getUuid(),
+                getReputation(playerToSync)
+        );
+        ServerPlayNetworking.send(recipient, payload);
     }
 }
 
