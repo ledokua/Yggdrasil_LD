@@ -3,11 +3,14 @@ package net.ledok;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.ledok.Items.Items;
 import net.ledok.command.ReputationCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
 import net.ledok.networking.ModPackets;
+import net.ledok.reputation.ReputationManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +19,6 @@ public class Yggdrasil_ld implements ModInitializer {
     public static final String MOD_ID = "yggdrasil_ld";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    // Виправлено: використовуємо Identifier.of()
     public static final Identifier REPUTATION_SYNC_ID = Identifier.of(MOD_ID, "reputation_sync");
 
     public static ModConfigs CONFIG;
@@ -30,6 +32,15 @@ public class Yggdrasil_ld implements ModInitializer {
         UseItemCallback.EVENT.register(new ElytraBoostDisabler());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ReputationCommand.register(dispatcher);
+        });
+
+        // --- НОВА, НАДІЙНА СИСТЕМА СИНХРОНІЗАЦІЇ ---
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            // Коли гравець приєднується, ми надсилаємо репутацію ВСІХ гравців ВСІМ гравцям.
+            // Це гарантує, що всі клієнти, включно з новим, мають актуальні дані.
+            for (ServerPlayerEntity onlinePlayer : server.getPlayerManager().getPlayerList()) {
+                ReputationManager.syncReputation(server, onlinePlayer);
+            }
         });
     }
 }

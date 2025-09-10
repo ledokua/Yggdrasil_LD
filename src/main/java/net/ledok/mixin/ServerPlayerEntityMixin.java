@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin {
 
+    // Mixin для onSpawn був видалений, оскільки його функціонал перенесено
+
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void yggdrasil_handleDeathReputation(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayerEntity victim = (ServerPlayerEntity) (Object) this;
@@ -38,11 +40,11 @@ public class ServerPlayerEntityMixin {
             int victimRep = ReputationManager.getReputation(victim);
             int attackerRep = ReputationManager.getReputation(attacker);
 
+            // ... (решта PvP логіки залишається без змін) ...
             boolean bountyEnabled = Yggdrasil_ld.CONFIG.bounty_hunter_kill_enabled;
             boolean stealingEnabled = Yggdrasil_ld.CONFIG.reputation_stealing_enabled;
             boolean antiAbuseEnabled = Yggdrasil_ld.CONFIG.anti_abuse_kill_enabled;
 
-            // 1. "Полювання за головами" (найвищий пріоритет)
             if (bountyEnabled && attackerRep >= Yggdrasil_ld.CONFIG.bounty_hunter_attacker_positive_rep_threshold && victimRep <= Yggdrasil_ld.CONFIG.bounty_hunter_victim_negative_rep_threshold) {
                 double lossPercent = Yggdrasil_ld.CONFIG.bounty_hunter_victim_rep_loss_percentage / 100.0;
                 int repLostByVictim = (int) Math.floor(Math.abs(victimRep * lossPercent));
@@ -53,7 +55,6 @@ public class ServerPlayerEntityMixin {
                 repGainedByAttacker += bonusSteps * Yggdrasil_ld.CONFIG.bounty_hunter_bonus_rep_per_step;
                 ReputationManager.addReputation(attacker, repGainedByAttacker);
 
-                // 2. "Крадіжка репутації" (другий пріоритет)
             } else if (stealingEnabled && victimRep <= Yggdrasil_ld.CONFIG.reputation_stealing_threshold && attackerRep <= Yggdrasil_ld.CONFIG.reputation_stealing_threshold) {
                 double transferPercent = Yggdrasil_ld.CONFIG.reputation_stealing_transfer_percentage / 100.0;
                 double vanishPercent = Yggdrasil_ld.CONFIG.reputation_stealing_vanish_percentage / 100.0;
@@ -62,13 +63,11 @@ public class ServerPlayerEntityMixin {
                 ReputationManager.addReputation(attacker, repToTransfer);
                 ReputationManager.removeReputation(victim, repToTransfer + repToVanish);
 
-                // 3. НОВА "АНТИ-АБ'ЮЗ" ЛОГІКА (третій пріоритет)
             } else if (antiAbuseEnabled && attackerRep <= Yggdrasil_ld.CONFIG.anti_abuse_attacker_threshold && victimRep < 0) {
                 double penaltyPercent = Yggdrasil_ld.CONFIG.anti_abuse_penalty_percentage / 100.0;
                 int repChange = (int) Math.floor(victimRep * penaltyPercent); // Від'ємне число
                 ReputationManager.addReputation(attacker, repChange); // Робимо репутацію вбивці ще гіршою
 
-                // 4. Стандартна логіка (найнижчий пріоритет)
             } else {
                 if (victimRep <= Yggdrasil_ld.CONFIG.reputation_pvp_kill_victim_bonus_threshold) {
                     ReputationManager.addReputation(attacker, Yggdrasil_ld.CONFIG.reputation_pvp_kill_victim_bonus);
