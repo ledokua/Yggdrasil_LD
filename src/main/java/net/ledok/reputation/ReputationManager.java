@@ -1,11 +1,14 @@
 package net.ledok.reputation;
 
+import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.ledok.networking.ModPackets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+
+import java.util.*;
 
 public class ReputationManager {
 
@@ -35,7 +38,6 @@ public class ReputationManager {
         setReputation(player, getReputation(player) - amount);
     }
 
-    // Надсилає репутацію ОДНОГО гравця ВСІМ гравцям
     public static void syncReputationWithAll(MinecraftServer server, ServerPlayerEntity playerToSync) {
         ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
                 playerToSync.getUuid(),
@@ -46,13 +48,35 @@ public class ReputationManager {
         }
     }
 
-    // НОВИЙ МЕТОД: Надсилає репутацію ОДНОГО гравця ОДНОМУ отримувачу
-    public static void syncReputationWithPlayer(ServerPlayerEntity playerToSync, ServerPlayerEntity recipient) {
-        ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
-                playerToSync.getUuid(),
-                getReputation(playerToSync)
-        );
-        ServerPlayNetworking.send(recipient, payload);
+    // ВИПРАВЛЕНО: Внутрішній клас зроблено `public static`, щоб він був видимий ззовні
+    public static class ReputationEntry {
+        public final String name;
+        public final int reputation;
+
+        public ReputationEntry(String name, int reputation) {
+            this.name = name;
+            this.reputation = reputation;
+        }
+    }
+
+    // ВИПРАВЛЕНО: Метод `getRankings` тепер існує і є `public static`
+    public static List<ReputationEntry> getRankings(MinecraftServer server, boolean ascending) {
+        ReputationState state = getState(server);
+        Map<UUID, Integer> allReputations = state.getAllReputations();
+        List<ReputationEntry> entries = new ArrayList<>();
+
+        allReputations.forEach((uuid, reputation) -> {
+            Optional<GameProfile> profile = server.getUserCache().getByUuid(uuid);
+            String name = profile.map(GameProfile::getName).orElse("Unknown");
+            entries.add(new ReputationEntry(name, reputation));
+        });
+
+        if (ascending) {
+            entries.sort(Comparator.comparingInt(entry -> entry.reputation)); // Сортування за зростанням (для негативних)
+        } else {
+            entries.sort((a, b) -> Integer.compare(b.reputation, a.reputation)); // Сортування за спаданням (для позитивних)
+        }
+        return entries;
     }
 }
 
