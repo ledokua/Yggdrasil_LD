@@ -39,11 +39,11 @@ public class ServerPlayerEntityMixin {
                 attacker.sendMessage(Text.translatable("message.yggdrasil_ld.pvp_cooldown"), true);
                 return; // Exit without applying any PvP reputation changes
             }
-            // Record the kill to start the cooldown
+            // Start the cooldown
             ReputationManager.recordKill(attacker.getServer(), attacker.getUuid(), victim.getUuid());
 
 
-            // --- REPUTATION CALCULATION LOGIC (Unchanged) ---
+            // --- REPUTATION CALCULATION LOGIC  ---
             int victimRep = ReputationManager.getReputation(victim);
             int attackerRep = ReputationManager.getReputation(attacker);
 

@@ -1,11 +1,7 @@
 package net.ledok.Items;
 
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.ledok.Init.ItemInit;
-
-import java.util.Collections;
-import java.util.Optional;
 
 public class Items {
 

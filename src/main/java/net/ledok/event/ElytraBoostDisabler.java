@@ -14,27 +14,26 @@ import net.minecraft.world.World;
 public class ElytraBoostDisabler implements UseItemCallback {
     @Override
     public TypedActionResult<ItemStack> interact(PlayerEntity player, World world, Hand hand) {
-        // Виконуємо логіку тільки на сервері
+        // ONLY SERVER LOGIC!!!!
         if (!world.isClient) {
             ItemStack itemStack = player.getStackInHand(hand);
 
-            // Перевіряємо умови:
-            // 1. Гравець летить на елітрах
-            // 2. Предмет в руці - феєрверк
+            // CONDITIONS
+            // Using elytra
+            // Has firework in hand
             if (player.isFallFlying() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
-                // Отримуємо ID поточного виміру
+                // Check dimension ID
                 String currentDimension = world.getRegistryKey().getValue().toString();
 
-                // Перевіряємо, чи є цей вимір у списку заборонених
+                // Is blacklisted?
                 if (Yggdrasil_ld.CONFIG.elytra_boost_disabled_dimensions.contains(currentDimension)) {
-                    // Надсилаємо гравцю повідомлення
+                    // Send player message if no boos allowed and cancel event
                     player.sendMessage(Text.translatable("message.yggdrasil_ld.elytra_boost_disabled").formatted(Formatting.RED), true);
-                    // Скасовуємо подію, щоб феєрверк не використався
                     return TypedActionResult.fail(itemStack);
                 }
             }
         }
-        // Якщо умови не виконані, дозволяємо стандартну поведінку
+        // If all ok allow boost
         return TypedActionResult.pass(player.getStackInHand(hand));
     }
 }

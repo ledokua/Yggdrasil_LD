@@ -16,15 +16,14 @@ public class PlayerListHudMixin {
 
     @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
     private void addReputationToPlayerName(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
-        // Отримуємо існуюче ім'я гравця
+        // Get pl name
         Text originalName = cir.getReturnValue();
-        // Отримуємо репутацію з нашого клієнтського кешу
+        // Get pl reputation
         int reputation = ClientReputationData.getReputation(entry.getProfile().getId());
 
-        // Створюємо текст з репутацією
         MutableText reputationText = Text.literal(" [" + reputation + "]");
 
-        // Забарвлюємо текст залежно від значення репутації
+        // Color
         if (reputation > 0) {
             reputationText.formatted(Formatting.GREEN);
         } else if (reputation < 0) {
@@ -33,7 +32,7 @@ public class PlayerListHudMixin {
             reputationText.formatted(Formatting.GRAY);
         }
 
-        // Додаємо текст репутації до імені гравця
+        // Add text to back
         cir.setReturnValue(originalName.copy().append(reputationText));
     }
 }

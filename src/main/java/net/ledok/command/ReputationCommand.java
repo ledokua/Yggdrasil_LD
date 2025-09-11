@@ -20,7 +20,7 @@ public class ReputationCommand {
                         )
                 )
                 .then(CommandManager.literal("add")
-                        .requires(source -> source.hasPermissionLevel(2)) // Тільки для операторів
+                        .requires(source -> source.hasPermissionLevel(2)) // OP only
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(CommandManager.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(context -> addReputation(
@@ -32,10 +32,22 @@ public class ReputationCommand {
                         )
                 )
                 .then(CommandManager.literal("remove")
-                        .requires(source -> source.hasPermissionLevel(2)) // Тільки для операторів
+                        .requires(source -> source.hasPermissionLevel(2)) // OP only
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(CommandManager.argument("amount", IntegerArgumentType.integer(1))
                                         .executes(context -> removeReputation(
+                                                context.getSource(),
+                                                EntityArgumentType.getPlayer(context, "player"),
+                                                IntegerArgumentType.getInteger(context, "amount")
+                                        ))
+                                )
+                        )
+                )
+                .then(CommandManager.literal("set")
+                        .requires(source -> source.hasPermissionLevel(2)) // OP only
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.argument("amount", IntegerArgumentType.integer(-100000))
+                                        .executes(context -> setReputation(
                                                 context.getSource(),
                                                 EntityArgumentType.getPlayer(context, "player"),
                                                 IntegerArgumentType.getInteger(context, "amount")
@@ -63,6 +75,13 @@ public class ReputationCommand {
         ReputationManager.removeReputation(player, amount);
         int newReputation = ReputationManager.getReputation(player);
         source.sendFeedback(() -> Text.literal("Removed " + amount + " reputation from " + player.getName().getString() + ". New reputation: " + newReputation), true);
+        return 1;
+    }
+
+    private static int setReputation(ServerCommandSource source, ServerPlayerEntity player, int amount) {
+        ReputationManager.setReputation(player, amount);
+        int newReputation = ReputationManager.getReputation(player);
+        source.sendFeedback(() -> Text.literal("Reputation set " + amount + " for " + player.getName().getString() + ". New reputation: " + newReputation), true);
         return 1;
     }
 }

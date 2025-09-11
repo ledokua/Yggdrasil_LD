@@ -8,15 +8,15 @@ import net.ledok.networking.ModPackets;
 public class Yggdrasil_ldClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        // Реєструємо обробник для нашого пакету
+        // Packet handler
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.ReputationSyncPayload.ID, (payload, context) -> {
-            // Виконуємо оновлення в головному потоці клієнта, щоб уникнути помилок
+            // Update on client side
             context.client().execute(() -> {
                 ClientReputationData.setReputation(payload.playerUuid(), payload.reputation());
             });
         });
 
-        // Використовуємо новий, правильний спосіб для обробки виходу з серверу
+        // On disconnect
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             client.execute(ClientReputationData::clear);
         });

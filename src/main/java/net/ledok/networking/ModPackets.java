@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class ModPackets {
 
-    // Клас, що представляє наш пакет даних
+    // DATA PACKET CLASS
     public record ReputationSyncPayload(UUID playerUuid, int reputation) implements CustomPayload {
         public static final CustomPayload.Id<ReputationSyncPayload> ID = new CustomPayload.Id<>(Yggdrasil_ld.REPUTATION_SYNC_ID);
         public static final PacketCodec<PacketByteBuf, ReputationSyncPayload> CODEC = PacketCodec.of(ReputationSyncPayload::write, ReputationSyncPayload::new);
@@ -30,7 +30,7 @@ public class ModPackets {
         }
     }
 
-    // Метод для реєстрації пакетів, що йдуть з сервера на клієнт (S2C)
+    // Server to client (S2C)
     public static void registerS2CPackets() {
         PayloadTypeRegistry.playS2C().register(ReputationSyncPayload.ID, ReputationSyncPayload.CODEC);
     }

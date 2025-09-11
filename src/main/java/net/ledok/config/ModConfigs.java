@@ -15,11 +15,13 @@ import java.util.List;
 
 public class ModConfigs {
 
-    // --- NEW ANTI-ABUSE SETTING ---
-    public int pvp_cooldown_ticks = 1200; // Time in ticks before rep can be changed between the same two players (1200 ticks = 60 seconds)
+    // --- ANTI-ABUSE SETTING ---
+    public int pvp_cooldown_ticks = 1200; // Time in ticks
 
-    // ... existing settings ...
-    public List<String> elytra_boost_disabled_dimensions = new ArrayList<>(Arrays.asList("minecraft:the_end", "minecraft:the_nether"));
+    // --- ELYTRA BOOST BLACKLISTED DIMENSIONS
+    public List<String> elytra_boost_disabled_dimensions = new ArrayList<>(Arrays.asList("minecraft:overworld", "minecraft:the_nether"));
+
+    // --- REPUTATION AND PARTIAL INVENTORY SAVE
     public double keep_inventory_drop_percentage = 50.0;
     public boolean reputation_affects_drops = true;
     public double reputation_death_penalty_negative_percentage = 5.0;

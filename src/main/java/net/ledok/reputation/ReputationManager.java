@@ -49,7 +49,7 @@ public class ReputationManager {
     }
 
 
-    // --- Networking Methods (Unchanged) ---
+    // --- Networking Methods ---
     public static void syncReputationWithAll(MinecraftServer server, ServerPlayerEntity playerToSync) {
         ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
                 playerToSync.getUuid(),

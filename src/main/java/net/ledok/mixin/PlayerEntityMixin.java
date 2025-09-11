@@ -46,38 +46,38 @@ public abstract class PlayerEntityMixin {
             }
 
             if (isPredatoryKill) {
-                // --- ЛОГІКА ТІЛЬКИ ДЛЯ "ХИЖАЦЬКОГО" ВБИВСТВА ---
+                // --- Predatory kill logic ---
                 ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
                 int attackerRep = ReputationManager.getReputation(attacker);
                 List<Integer> slotsToDrop = new ArrayList<>();
 
-                // 1. Розрахунок випадіння з екіпірування (працював коректно)
+                // 1. How much should drop calculation
                 int equipItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_rep_step;
                 equipItemsToDrop = Math.min(equipItemsToDrop, Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_max);
                 addRandomSlotsToList(slotsToDrop, getEquipmentSlots(), equipItemsToDrop);
 
-                // 2. Розрахунок випадіння з основного інвентарю
+                // 2. How much should drop from main inv
                 int invItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_inventory_drop_rep_step;
                 addRandomSlotsToList(slotsToDrop, getMainInventorySlots(slotsToDrop), invItemsToDrop);
 
-                // Викидаємо предмети і завершуємо
+                // END
                 dropItemsFromSlots(victim, slotsToDrop);
 
             } else {
-                // --- СТАНДАРТНА ЛОГІКА ДЛЯ ВСІХ ІНШИХ ВИПАДКІВ СМЕРТІ ---
+                // --- Normal logic for all deaths ---
                 List<Integer> slotsToDrop = new ArrayList<>();
                 int reputation = ReputationManager.getReputation(victim);
 
-                // 1. Штраф за низьку репутацію
+                // 1. Penalty for lov reputation
                 if (reputation <= Yggdrasil_ld.CONFIG.reputation_penalty_threshold) {
                     addRandomSlotsToList(slotsToDrop, getEquipmentSlots(), Yggdrasil_ld.CONFIG.reputation_penalty_item_count);
                 }
 
-                // 2. Випадіння з інвентарю на основі репутації жертви
+                // 2. Additional % calculation
                 double baseDropPercentage = Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage;
                 double finalDropPercentage = baseDropPercentage;
                 if (Yggdrasil_ld.CONFIG.reputation_affects_drops) {
-                    // Повертаємо оригінальну формулу: кожні 20 очок репутації = 1%
+                    // Every 20p of rep = 1%
                     finalDropPercentage -= (double)reputation / 20.0;
                 }
                 finalDropPercentage = Math.max(0, Math.min(100, finalDropPercentage));
@@ -88,11 +88,11 @@ public abstract class PlayerEntityMixin {
                     addRandomSlotsToList(slotsToDrop, mainInvSlots, itemsToDropCount);
                 }
 
-                // Викидаємо предмети і завершуємо
+                // END
                 dropItemsFromSlots(victim, slotsToDrop);
             }
 
-            // Скасовуємо ванільну логіку в будь-якому випадку, оскільки ми обробили все самі
+            // NO VANILLA!!!!
             ci.cancel();
 
         } finally {
@@ -100,18 +100,18 @@ public abstract class PlayerEntityMixin {
         }
     }
 
-    // --- Допоміжні методи (без змін) ---
+    // --- Helping methods ---
 
     private List<Integer> getEquipmentSlots() {
         List<Integer> slots = new ArrayList<>();
-        slots.addAll(getSlots(0, 8)); // Хотбар
-        slots.addAll(getSlots(36, 39)); // Броня
+        slots.addAll(getSlots(0, 8)); // Hotbar
+        slots.addAll(getSlots(36, 39)); // Armor
         return slots;
     }
 
     private List<Integer> getMainInventorySlots(List<Integer> exclude) {
         List<Integer> slots = new ArrayList<>();
-        for (int i = 9; i <= 35; i++) {
+        for (int i = 9; i <= 35; i++) { // Inventory
             if (!getInventory().getStack(i).isEmpty() && !exclude.contains(i)) {
                 slots.add(i);
             }
