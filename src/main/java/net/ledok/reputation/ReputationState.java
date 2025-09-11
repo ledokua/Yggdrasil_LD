@@ -1,5 +1,6 @@
 package net.ledok.reputation;
 
+import net.ledok.Yggdrasil_ld;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
@@ -12,70 +13,89 @@ import java.util.UUID;
 
 public class ReputationState extends PersistentState {
 
-    // Структура для зберігання репутації: UUID гравця -> його репутація
     private final Map<UUID, Integer> playerReputations = new HashMap<>();
+    // Structure: Attacker UUID -> (Victim UUID -> Timestamp of Kill)
+    private final Map<UUID, Map<UUID, Long>> recentKills = new HashMap<>();
 
-    /**
-     * Цей метод записує всі дані з нашої Map у NBT-тег,
-     * який потім Minecraft збереже у файл.
-     */
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        // Save reputations
         NbtCompound reputationsNbt = new NbtCompound();
-        playerReputations.forEach((uuid, reputation) -> {
-            reputationsNbt.putInt(uuid.toString(), reputation);
-        });
+        playerReputations.forEach((uuid, reputation) -> reputationsNbt.putInt(uuid.toString(), reputation));
         nbt.put("reputations", reputationsNbt);
+
+        // Save recent kills
+        NbtCompound recentKillsNbt = new NbtCompound();
+        recentKills.forEach((attackerUuid, victimMap) -> {
+            NbtCompound victimNbt = new NbtCompound();
+            victimMap.forEach((victimUuid, timestamp) -> victimNbt.putLong(victimUuid.toString(), timestamp));
+            recentKillsNbt.put(attackerUuid.toString(), victimNbt);
+        });
+        nbt.put("recent_kills", recentKillsNbt);
+
         return nbt;
     }
 
-    /**
-     * Цей статичний метод читає дані з NBT-тегу, коли світ завантажується,
-     * і створює новий екземпляр нашого класу, наповнений цими даними.
-     * -- ЗМІНЕНО: Додано другий параметр для сумісності з новим API --
-     */
     public static ReputationState createFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         ReputationState state = new ReputationState();
+
+        // Load reputations
         NbtCompound reputationsNbt = tag.getCompound("reputations");
         for (String key : reputationsNbt.getKeys()) {
             state.playerReputations.put(UUID.fromString(key), reputationsNbt.getInt(key));
         }
+
+        // Load recent kills
+        NbtCompound recentKillsNbt = tag.getCompound("recent_kills");
+        for (String attackerKey : recentKillsNbt.getKeys()) {
+            UUID attackerUuid = UUID.fromString(attackerKey);
+            NbtCompound victimMapNbt = recentKillsNbt.getCompound(attackerKey);
+            Map<UUID, Long> victimMap = new HashMap<>();
+            for (String victimKey : victimMapNbt.getKeys()) {
+                victimMap.put(UUID.fromString(victimKey), victimMapNbt.getLong(victimKey));
+            }
+            state.recentKills.put(attackerUuid, victimMap);
+        }
+
         return state;
     }
 
-    /**
-     * Спеціальний об'єкт, який реєструє наш клас у системі збереження Minecraft.
-     * Він вказує, як створювати новий стан і як завантажувати існуючий.
-     */
     public static final Type<ReputationState> Type = new Type<>(
-            ReputationState::new,         // Функція для створення нового, порожнього стану
-            ReputationState::createFromNbt, // Функція для завантаження стану з NBT (тепер працює)
-            null                          // DataFixer, для модів зазвичай не потрібен
+            ReputationState::new,
+            ReputationState::createFromNbt,
+            null
     );
 
-    /**
-     * Зручний метод для отримання нашого стану зі світу.
-     * Він або завантажить існуючий стан, або створить новий, якщо його ще немає.
-     */
     public static ReputationState getServerState(ServerWorld world) {
-        PersistentStateManager persistentStateManager = world.getPersistentStateManager();
-        // "yggdrasil_reputation" - це унікальне ім'я нашого файлу збереження
-        return persistentStateManager.getOrCreate(Type, "yggdrasil_reputation");
+        return world.getPersistentStateManager().getOrCreate(Type, Yggdrasil_ld.MOD_ID + "_reputation");
     }
 
-    // --- Публічні методи для керування репутацією ---
-
+    // --- Reputation Methods ---
     public int getReputation(UUID playerUuid) {
         return playerReputations.getOrDefault(playerUuid, 0);
     }
 
     public void setReputation(UUID playerUuid, int amount) {
-        // Обмежуємо репутацію в межах від -100000 до 100000
         int cappedAmount = Math.max(-100000, Math.min(1000000, amount));
         playerReputations.put(playerUuid, cappedAmount);
+        markDirty();
+    }
 
-        // ВАЖЛИВО: Повідомляємо Minecraft, що дані змінилися і їх потрібно зберегти на диск.
+    // --- Cooldown Methods ---
+    public boolean wasRecentlyKilledBy(UUID attackerUuid, UUID victimUuid, long currentTime, int cooldownTicks) {
+        if (!recentKills.containsKey(attackerUuid)) {
+            return false;
+        }
+        Map<UUID, Long> victimMap = recentKills.get(attackerUuid);
+        if (!victimMap.containsKey(victimUuid)) {
+            return false;
+        }
+        long lastKillTime = victimMap.get(victimUuid);
+        return (currentTime - lastKillTime) < cooldownTicks;
+    }
+
+    public void recordKill(UUID attackerUuid, UUID victimUuid, long timestamp) {
+        recentKills.computeIfAbsent(attackerUuid, k -> new HashMap<>()).put(victimUuid, timestamp);
         markDirty();
     }
 }
-

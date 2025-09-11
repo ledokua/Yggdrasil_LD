@@ -1,11 +1,14 @@
 package net.ledok.reputation;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.ledok.Yggdrasil_ld;
 import net.ledok.networking.ModPackets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+
+import java.util.UUID;
 
 public class ReputationManager {
 
@@ -16,14 +19,12 @@ public class ReputationManager {
 
     public static int getReputation(PlayerEntity player) {
         if (player.getServer() == null) return 0;
-        ReputationState serverState = getState(player.getServer());
-        return serverState.getReputation(player.getUuid());
+        return getState(player.getServer()).getReputation(player.getUuid());
     }
 
     public static void setReputation(PlayerEntity player, int amount) {
         if (player.getServer() == null) return;
-        ReputationState serverState = getState(player.getServer());
-        serverState.setReputation(player.getUuid(), amount);
+        getState(player.getServer()).setReputation(player.getUuid(), amount);
         syncReputationWithAll(player.getServer(), (ServerPlayerEntity) player);
     }
 
@@ -35,7 +36,20 @@ public class ReputationManager {
         setReputation(player, getReputation(player) - amount);
     }
 
-    // Надсилає репутацію ОДНОГО гравця ВСІМ гравцям
+    // --- NEW COOLDOWN METHODS ---
+    public static boolean wasRecentlyKilledBy(MinecraftServer server, UUID attacker, UUID victim) {
+        long currentTime = server.getOverworld().getTime();
+        int cooldown = Yggdrasil_ld.CONFIG.pvp_cooldown_ticks;
+        return getState(server).wasRecentlyKilledBy(attacker, victim, currentTime, cooldown);
+    }
+
+    public static void recordKill(MinecraftServer server, UUID attacker, UUID victim) {
+        long timestamp = server.getOverworld().getTime();
+        getState(server).recordKill(attacker, victim, timestamp);
+    }
+
+
+    // --- Networking Methods (Unchanged) ---
     public static void syncReputationWithAll(MinecraftServer server, ServerPlayerEntity playerToSync) {
         ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
                 playerToSync.getUuid(),
@@ -46,7 +60,6 @@ public class ReputationManager {
         }
     }
 
-    // НОВИЙ МЕТОД: Надсилає репутацію ОДНОГО гравця ОДНОМУ отримувачу
     public static void syncReputationWithPlayer(ServerPlayerEntity playerToSync, ServerPlayerEntity recipient) {
         ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
                 playerToSync.getUuid(),
@@ -55,4 +68,3 @@ public class ReputationManager {
         ServerPlayNetworking.send(recipient, payload);
     }
 }
-

@@ -15,15 +15,15 @@ import java.util.List;
 
 public class ModConfigs {
 
-    // ... існуючі налаштування ...
+    // --- NEW ANTI-ABUSE SETTING ---
+    public int pvp_cooldown_ticks = 1200; // Time in ticks before rep can be changed between the same two players (1200 ticks = 60 seconds)
+
+    // ... existing settings ...
     public List<String> elytra_boost_disabled_dimensions = new ArrayList<>(Arrays.asList("minecraft:the_end", "minecraft:the_nether"));
     public double keep_inventory_drop_percentage = 50.0;
     public boolean reputation_affects_drops = true;
     public double reputation_death_penalty_negative_percentage = 5.0;
     public double reputation_death_penalty_positive_percentage = 2.0;
-    public int reputation_pvp_kill_penalty = 100;
-    public int reputation_pvp_kill_victim_bonus_threshold = -500;
-    public int reputation_pvp_kill_victim_bonus = 20;
     public int reputation_penalty_threshold = -750;
     public int reputation_penalty_item_count = 3;
     public boolean predatory_kill_enabled = true;
@@ -31,27 +31,12 @@ public class ModConfigs {
     public int predatory_kill_inventory_drop_rep_step = 1500;
     public int predatory_kill_equipment_drop_rep_step = 10000;
     public int predatory_kill_equipment_drop_max = 5;
-    public boolean reputation_stealing_enabled = true;
-    public int reputation_stealing_threshold = -1000;
-    public double reputation_stealing_transfer_percentage = 40.0;
-    public double reputation_stealing_vanish_percentage = 10.0;
-    public boolean bounty_hunter_kill_enabled = true;
-    public int bounty_hunter_attacker_positive_rep_threshold = 100;
-    public int bounty_hunter_victim_negative_rep_threshold = -1000;
-    public double bounty_hunter_victim_rep_loss_percentage = 50.0;
-    public int bounty_hunter_bonus_rep_per_step = 20;
-    public int bounty_hunter_bonus_rep_step = 1000;
-
-    // --- НОВІ НАЛАШТУВАННЯ ДЛЯ "АНТИ-АБ'ЮЗ" СИСТЕМИ ---
-    public boolean anti_abuse_kill_enabled = true;
-    public int anti_abuse_attacker_threshold = -1000;
-    public double anti_abuse_penalty_percentage = 40.0;
 
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), Yggdrasil_ld.MOD_ID + ".json");
 
-    // ... решта файлу без змін ...
+    // ... load() and save() methods remain unchanged ...
     public static ModConfigs load() {
         ModConfigs config;
         if (CONFIG_FILE.exists()) {
@@ -77,4 +62,3 @@ public class ModConfigs {
         }
     }
 }
-

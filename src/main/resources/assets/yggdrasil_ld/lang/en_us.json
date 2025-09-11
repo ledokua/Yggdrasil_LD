@@ -98,5 +98,7 @@
   "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
   "dungeon.dark_dungeon_yggdrasil": "Темне підземемелля",
 
-  "message.yggdrasil_ld.elytra_boost_disabled": "У цьому вимірі використання феєрверків для польоту заборонено!!"
+  "message.yggdrasil_ld.elytra_boost_disabled": "У цьому вимірі використання феєрверків для польоту заборонено!!",
+
+  "message.yggdrasil_ld.pvp_cooldown": "You cannot gain or lose reputation by killing this player again so soon."
 }
