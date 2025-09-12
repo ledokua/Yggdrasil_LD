@@ -133,6 +133,7 @@
     },
     "respawn":true,
     "elytra": false,
+    "positive_effects": true,
     "max_group_size": 5,
     "min_group_size": 2,
     "cooldown": 72000,

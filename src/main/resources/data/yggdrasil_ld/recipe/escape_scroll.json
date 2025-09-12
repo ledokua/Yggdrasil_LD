@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bbb",
+    "cde",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:paper"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    },
+    "c": {
+      "item": "minecraft:green_dye"
+    },
+    "d": {
+      "tag": "minecraft:doors"
+    },
+    "e": {
+      "item": "minecraft:lime_dye"
+    }
+  },
+  "result": {
+    "id": "yggdrasil_ld:escape_scroll"
+  }
+}

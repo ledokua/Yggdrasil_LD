@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModConfigs {
+    // --- LEADERBOARD SIZE ---
+    public int leaderboard_size= 10;
 
     // --- ANTI-ABUSE SETTING ---
     public int pvp_cooldown_ticks = 1200; // Time in ticks

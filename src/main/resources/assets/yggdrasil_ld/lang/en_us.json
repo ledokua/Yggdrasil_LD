@@ -91,14 +91,20 @@
   "classes.yggdrasil_ld.healer.extra_description": "§a+5 сили зцілення\n§c-60% фізичної шкоди\n§a+10 здоров'я",
 
 
-  "item.yggdrasil_ld.icon": "Лого Minestar",
-  "item.yggdrasil_ld.reset_scroll": "Сувій забуття",
+  "item.yggdrasil_ld.icon": "Minestar Logo",
+  "item.yggdrasil_ld.reset_scroll": "Reset Scroll",
+  "item.yggdrasil_ld.escape_scroll": "Escape Scroll",
 
 
   "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
   "dungeon.dark_dungeon_yggdrasil": "Темне підземемелля",
 
-  "message.yggdrasil_ld.elytra_boost_disabled": "У цьому вимірі використання феєрверків для польоту заборонено!!",
+  "message.yggdrasil_ld.elytra_boost_disabled": "Невідома сила не дає використовувати феєрверки у цьому вимірі!!",
 
-  "message.yggdrasil_ld.pvp_cooldown": "You cannot gain or lose reputation by killing this player again so soon."
+  "message.yggdrasil_ld.pvp_cooldown": "You cannot gain or lose reputation by killing this player again so soon.",
+  "command.yggdrasil_ld.leaderboard.top_title": "--- Top Heroes ---",
+  "command.yggdrasil_ld.leaderboard.bottom_title": "--- Most Wanted ---",
+  "command.yggdrasil_ld.leaderboard.empty": "No players found for this leaderboard.",
+  "command.yggdrasil_ld.tozero.success": "Moved %s's reputation %d%% closer to zero. New reputation: %d",
+  "command.yggdrasil_ld.tozero.already_zero": "%s's reputation is already 0."
 }

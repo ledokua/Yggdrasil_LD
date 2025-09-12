@@ -76,7 +76,7 @@ public class ReputationState extends PersistentState {
     }
 
     public void setReputation(UUID playerUuid, int amount) {
-        int cappedAmount = Math.max(-100000, Math.min(1000000, amount));
+        int cappedAmount = Math.max(-1000000, Math.min(1000000, amount));
         playerReputations.put(playerUuid, cappedAmount);
         markDirty();
     }
@@ -97,5 +97,9 @@ public class ReputationState extends PersistentState {
     public void recordKill(UUID attackerUuid, UUID victimUuid, long timestamp) {
         recentKills.computeIfAbsent(attackerUuid, k -> new HashMap<>()).put(victimUuid, timestamp);
         markDirty();
+    }
+
+    public Map<UUID, Integer> getAllReputations() {
+        return new HashMap<>(playerReputations); // Return a copy
     }
 }

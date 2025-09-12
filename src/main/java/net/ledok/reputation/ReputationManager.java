@@ -8,6 +8,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
+import java.util.Map;
+import java.util.UUID;
+
 import java.util.UUID;
 
 public class ReputationManager {
@@ -15,6 +18,11 @@ public class ReputationManager {
     private static ReputationState getState(MinecraftServer server) {
         ServerWorld overworld = server.getOverworld();
         return ReputationState.getServerState(overworld);
+    }
+
+    //For leaderboard
+    public static Map<UUID, Integer> getAllReputations(MinecraftServer server) {
+        return getState(server).getAllReputations();
     }
 
     public static int getReputation(PlayerEntity player) {

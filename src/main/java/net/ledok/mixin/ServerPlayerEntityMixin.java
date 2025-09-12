@@ -64,8 +64,8 @@ public class ServerPlayerEntityMixin {
                 int repPenaltyForKiller = (int) (repStolenFromVictim * 0.80);
                 ReputationManager.addReputation(attacker, -repPenaltyForKiller);
             } else if (isAttackerDeeplyNegative && isVictimPositiveOrNeutral) {
-                int repToNeutralize = (int) (Math.abs(attackerRep) * 0.08);
-                ReputationManager.addReputation(attacker, -100 + repToNeutralize);
+                int repToNeutralize = (int) (Math.abs(victimRep) * 0.08);
+                ReputationManager.removeReputation(attacker, 20 + repToNeutralize);
             } else if (isAttackerNeutralOrNegative && isVictimNegative) {
                 ReputationManager.addReputation(attacker, 20);
             } else {

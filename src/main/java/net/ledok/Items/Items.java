@@ -13,6 +13,10 @@ public class Items {
             new SkillResetItem(new Item.Settings().maxCount(16)),
             "reset_scroll"
     );
+    public static final Item ESCAPE_SCROLL = ItemInit.register(
+            new DungeonLeaveItem(new Item.Settings().maxCount(1)),
+            "escape_scroll"
+    );
 
     public static void initialize() {
     }
