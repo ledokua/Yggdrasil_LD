@@ -66,7 +66,7 @@ public class ReputationCommand {
                 .then(CommandManager.literal("top")
                         .executes(context -> showTopReputation(context.getSource()))
                 )
-                .then(CommandManager.literal("bottom")
+                .then(CommandManager.literal("get")
                         .executes(context -> showBottomReputation(context.getSource()))
                 )
                 .then(CommandManager.literal("tozero")
