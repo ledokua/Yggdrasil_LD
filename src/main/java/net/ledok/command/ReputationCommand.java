@@ -21,7 +21,7 @@ public class ReputationCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("reputation")
-                .then(CommandManager.literal("check")
+                .then(CommandManager.literal("get")
                         .executes(context -> checkReputation(context.getSource(), context.getSource().getPlayer()))
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> checkReputation(context.getSource(), EntityArgumentType.getPlayer(context, "player")))
@@ -66,7 +66,7 @@ public class ReputationCommand {
                 .then(CommandManager.literal("top")
                         .executes(context -> showTopReputation(context.getSource()))
                 )
-                .then(CommandManager.literal("get")
+                .then(CommandManager.literal("bottom")
                         .executes(context -> showBottomReputation(context.getSource()))
                 )
                 .then(CommandManager.literal("tozero")

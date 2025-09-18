@@ -1,7 +1,10 @@
 package net.ledok.mixin;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.Yggdrasil_ld;
+import net.ledok.compat.BackpackedCompat;
 import net.ledok.reputation.ReputationManager;
+import net.ledok.util.DroppableSlot;
 import net.ledok.util.PvPContextManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+// REMOVED: import java.util.Random;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
@@ -46,53 +50,11 @@ public abstract class PlayerEntityMixin {
             }
 
             if (isPredatoryKill) {
-                // --- Predatory kill logic ---
-                ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
-                int attackerRep = ReputationManager.getReputation(attacker);
-                List<Integer> slotsToDrop = new ArrayList<>();
-
-                // 1. How much should drop calculation
-                int equipItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_rep_step;
-                equipItemsToDrop = Math.min(equipItemsToDrop, Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_max);
-                addRandomSlotsToList(slotsToDrop, getEquipmentSlots(), equipItemsToDrop);
-
-                // 2. How much should drop from main inv
-                int invItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_inventory_drop_rep_step;
-                addRandomSlotsToList(slotsToDrop, getMainInventorySlots(slotsToDrop), invItemsToDrop);
-
-                // END
-                dropItemsFromSlots(victim, slotsToDrop);
-
+                handlePredatoryKillDrops(victim, attackerUuid);
             } else {
-                // --- Normal logic for all deaths ---
-                List<Integer> slotsToDrop = new ArrayList<>();
-                int reputation = ReputationManager.getReputation(victim);
-
-                // 1. Penalty for lov reputation
-                if (reputation <= Yggdrasil_ld.CONFIG.reputation_penalty_threshold) {
-                    addRandomSlotsToList(slotsToDrop, getEquipmentSlots(), Yggdrasil_ld.CONFIG.reputation_penalty_item_count);
-                }
-
-                // 2. Additional % calculation
-                double baseDropPercentage = Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage;
-                double finalDropPercentage = baseDropPercentage;
-                if (Yggdrasil_ld.CONFIG.reputation_affects_drops) {
-                    // Every 20p of rep = 1%
-                    finalDropPercentage -= (double)reputation / 20.0;
-                }
-                finalDropPercentage = Math.max(0, Math.min(100, finalDropPercentage));
-
-                if (finalDropPercentage > 0) {
-                    List<Integer> mainInvSlots = getMainInventorySlots(slotsToDrop);
-                    int itemsToDropCount = (int) Math.floor(mainInvSlots.size() * (finalDropPercentage / 100.0));
-                    addRandomSlotsToList(slotsToDrop, mainInvSlots, itemsToDropCount);
-                }
-
-                // END
-                dropItemsFromSlots(victim, slotsToDrop);
+                handleStandardDeathDrops(victim);
             }
 
-            // NO VANILLA!!!!
             ci.cancel();
 
         } finally {
@@ -100,60 +62,157 @@ public abstract class PlayerEntityMixin {
         }
     }
 
-    // --- Helping methods ---
+    private void handlePredatoryKillDrops(PlayerEntity victim, UUID attackerUuid) {
+        ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
+        if (attacker == null) return;
 
-    private List<Integer> getEquipmentSlots() {
-        List<Integer> slots = new ArrayList<>();
-        slots.addAll(getSlots(0, 8)); // Hotbar
-        slots.addAll(getSlots(36, 39)); // Armor
+        int attackerRep = ReputationManager.getReputation(attacker);
+        List<DroppableSlot> finalSlotsToDrop = new ArrayList<>();
+
+        // --- Standard Equipment & Inventory Drops ---
+        List<DroppableSlot> equipmentPool = getEquipmentSlots(victim);
+        int equipItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_rep_step;
+        equipItemsToDrop = Math.min(equipItemsToDrop, Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_max);
+        addRandomSlotsToList(finalSlotsToDrop, equipmentPool, equipItemsToDrop);
+
+        List<DroppableSlot> mainInvPool = getMainInventorySlots(victim);
+        int invItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_inventory_drop_rep_step;
+        addRandomSlotsToList(finalSlotsToDrop, mainInvPool, invItemsToDrop);
+
+        // --- NEW: Additional Backpack Drops for Predatory Kills ---
+        int additionalBackpacks = Math.abs(attackerRep) / 5000;
+        additionalBackpacks = Math.min(additionalBackpacks, 2); // Max 2
+        calculateAndAddBackpackDrops(finalSlotsToDrop, victim, additionalBackpacks);
+
+
+        dropItemsFromSlots(victim, finalSlotsToDrop);
+    }
+
+    private void handleStandardDeathDrops(PlayerEntity victim) {
+        List<DroppableSlot> finalSlotsToDrop = new ArrayList<>();
+        int reputation = ReputationManager.getReputation(victim);
+
+        // --- STANDARD PERCENTAGE LOGIC (runs for everyone) ---
+        double baseDropPercentage = Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage;
+        double finalDropPercentage = baseDropPercentage;
+        if (Yggdrasil_ld.CONFIG.reputation_affects_drops) {
+            finalDropPercentage -= (double)reputation / 20.0;
+        }
+        finalDropPercentage = Math.max(0, Math.min(100, finalDropPercentage));
+
+        if (finalDropPercentage > 0) {
+            List<DroppableSlot> mainInvPool = getMainInventorySlots(victim);
+            int itemsToDropCount = (int) Math.floor(mainInvPool.size() * (finalDropPercentage / 100.0));
+            addRandomSlotsToList(finalSlotsToDrop, mainInvPool, itemsToDropCount);
+        }
+
+        // --- ADDITIONAL EQUIPMENT PENALTY LOGIC for very low reputation ---
+        if (reputation <= Yggdrasil_ld.CONFIG.reputation_penalty_threshold) {
+            List<DroppableSlot> equipmentPool = getEquipmentSlots(victim);
+            // NOTE: Backpack is no longer part of this pool
+            addRandomSlotsToList(finalSlotsToDrop, equipmentPool, Yggdrasil_ld.CONFIG.reputation_penalty_item_count);
+        }
+
+        // --- NEW: Dedicated Backpack Drop Logic ---
+        calculateAndAddBackpackDrops(finalSlotsToDrop, victim, 0); // 0 additional predatory drops
+
+        dropItemsFromSlots(victim, finalSlotsToDrop);
+    }
+
+    private void calculateAndAddBackpackDrops(List<DroppableSlot> finalSlotsToDrop, PlayerEntity victim, int additionalPredatoryDrops) {
+        int victimRep = ReputationManager.getReputation(victim);
+        int backpacksToDrop = 0;
+        // FIX: Use Minecraft's Random class
+        net.minecraft.util.math.random.Random random = victim.getWorld().getRandom();
+
+        // --- Standard Backpack Drop Logic ---
+        if (victimRep >= 1000) {
+            backpacksToDrop = 0; // 0% chance
+        } else if (victimRep >= 100) {
+            // Chance decreases linearly from 50% at 100 rep to 0% at 1000 rep
+            double chance = 0.50 - ((victimRep - 100.0) / 900.0) * 0.50;
+            if (random.nextDouble() < chance) {
+                backpacksToDrop = 1;
+            }
+        } else if (victimRep >= 0) {
+            backpacksToDrop = 1; // Drop 1 backpack from 0 to 99 rep
+        } else { // Negative reputation tiers
+            if (victimRep >= -499)      backpacksToDrop = 1;
+            else if (victimRep >= -999) backpacksToDrop = 2;
+            else if (victimRep >= -1499)backpacksToDrop = 3;
+            else if (victimRep >= -1999)backpacksToDrop = 4;
+            else                        backpacksToDrop = 5;
+        }
+
+        // Add predatory bonus on top
+        backpacksToDrop += additionalPredatoryDrops;
+
+        if (backpacksToDrop > 0) {
+            List<DroppableSlot> backpackPool = getAllEquippedBackpacks(victim);
+            addRandomSlotsToList(finalSlotsToDrop, backpackPool, backpacksToDrop);
+        }
+    }
+
+    private List<DroppableSlot> getEquipmentSlots(PlayerEntity player) {
+        List<DroppableSlot> slots = new ArrayList<>();
+        PlayerInventory inventory = player.getInventory();
+        // Armor
+        for (int i = 0; i < inventory.armor.size(); i++) {
+            final int slotIndex = i;
+            addSlotIfNotEmpty(slots, inventory.armor.get(slotIndex), () -> inventory.armor.set(slotIndex, ItemStack.EMPTY));
+        }
+        // Hotbar
+        for (int i = 0; i <= 8; i++) {
+            final int slotIndex = i;
+            addSlotIfNotEmpty(slots, inventory.main.get(slotIndex), () -> inventory.main.set(slotIndex, ItemStack.EMPTY));
+        }
+        // Offhand
+        addSlotIfNotEmpty(slots, inventory.offHand.get(0), () -> inventory.offHand.set(0, ItemStack.EMPTY));
         return slots;
     }
 
-    private List<Integer> getMainInventorySlots(List<Integer> exclude) {
-        List<Integer> slots = new ArrayList<>();
-        for (int i = 9; i <= 35; i++) { // Inventory
-            if (!getInventory().getStack(i).isEmpty() && !exclude.contains(i)) {
-                slots.add(i);
-            }
+    private List<DroppableSlot> getMainInventorySlots(PlayerEntity player) {
+        List<DroppableSlot> slots = new ArrayList<>();
+        PlayerInventory inventory = player.getInventory();
+        for (int i = 9; i <= 35; i++) {
+            final int slotIndex = i;
+            addSlotIfNotEmpty(slots, inventory.main.get(slotIndex), () -> inventory.main.set(slotIndex, ItemStack.EMPTY));
         }
         return slots;
     }
 
-    private void addRandomSlotsToList(List<Integer> targetList, List<Integer> sourceSlots, int count) {
+    private List<DroppableSlot> getAllEquippedBackpacks(PlayerEntity player) {
+        if (FabricLoader.getInstance().isModLoaded("backpacked")) {
+            return BackpackedCompat.getAllEquippedBackpacks(player);
+        }
+        return new ArrayList<>();
+    }
+
+    private void addSlotIfNotEmpty(List<DroppableSlot> list, ItemStack stack, Runnable clearAction) {
+        if (!stack.isEmpty()) {
+            list.add(new DroppableSlot(stack.copy(), clearAction));
+        }
+    }
+
+    private void addRandomSlotsToList(List<DroppableSlot> targetList, List<DroppableSlot> sourceSlots, int count) {
+        // --- BUG FIX ---
+        // This new implementation is simpler and more reliable.
+        // It shuffles the source list and adds a specific number of items from it to the target.
+        if (count <= 0 || sourceSlots.isEmpty()) {
+            return;
+        }
         Collections.shuffle(sourceSlots);
-        int added = 0;
-        for (int slot : sourceSlots) {
-            if (added >= count) break;
-            if (!targetList.contains(slot)) {
-                targetList.add(slot);
-                added++;
-            }
+        int amountToAdd = Math.min(sourceSlots.size(), count);
+        for(int i = 0; i < amountToAdd; i++) {
+            targetList.add(sourceSlots.get(i));
         }
     }
 
-    private void dropItemsFromSlots(PlayerEntity player, List<Integer> slots) {
-        for (int slotIndex : slots) {
-            ItemStack stack = getInventory().getStack(slotIndex);
-            if (!stack.isEmpty()) {
-                player.dropStack(stack);
-                getInventory().setStack(slotIndex, ItemStack.EMPTY);
-            }
+    private void dropItemsFromSlots(PlayerEntity player, List<DroppableSlot> slots) {
+        for (DroppableSlot slot : slots) {
+            player.dropStack(slot.stack());
+            slot.clearSlotAction().run();
         }
-    }
-
-    private List<Integer> getSlots(int start, int end) {
-        List<Integer> slots = new ArrayList<>();
-        PlayerInventory inventory = this.getInventory();
-        if (start >= 36 && end <= 39) {
-            for (int i = 0; i < inventory.armor.size(); i++) {
-                if (!inventory.armor.get(i).isEmpty()) slots.add(36 + i);
-            }
-        } else {
-            for (int i = start; i <= end; i++) {
-                if (!getInventory().getStack(i).isEmpty()) slots.add(i);
-            }
-        }
-        return slots;
     }
 }
 
