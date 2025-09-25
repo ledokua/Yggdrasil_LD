@@ -36,9 +36,12 @@ public class Yggdrasil_ld implements ModInitializer {
             ReputationCommand.register(dispatcher);
         });
 
-        // --- FIX: Moved PrimeRoleHandler registration to the final server startup event ---
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            PrimeRoleHandler.register();
+            // --- FIX: Only initialize the Prime feature on a dedicated server ---
+            // This prevents crashes in single-player worlds.
+            if (server.isDedicated()) {
+                PrimeRoleHandler.register();
+            }
         });
 
         // --- Sync logic ---

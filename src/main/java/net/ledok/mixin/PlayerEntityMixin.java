@@ -3,6 +3,7 @@ package net.ledok.mixin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.Yggdrasil_ld;
 import net.ledok.compat.BackpackedCompat;
+import net.ledok.compat.TrinketsCompat; // Import the new compatibility class
 import net.ledok.reputation.ReputationManager;
 import net.ledok.util.DroppableSlot;
 import net.ledok.util.PvPContextManager;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-// REMOVED: import java.util.Random;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
@@ -71,6 +71,7 @@ public abstract class PlayerEntityMixin {
 
         // --- Standard Equipment & Inventory Drops ---
         List<DroppableSlot> equipmentPool = getEquipmentSlots(victim);
+        equipmentPool.addAll(getTrinketSlots(victim)); // Add Trinkets to the equipment pool
         int equipItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_rep_step;
         equipItemsToDrop = Math.min(equipItemsToDrop, Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_max);
         addRandomSlotsToList(finalSlotsToDrop, equipmentPool, equipItemsToDrop);
@@ -79,11 +80,10 @@ public abstract class PlayerEntityMixin {
         int invItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_inventory_drop_rep_step;
         addRandomSlotsToList(finalSlotsToDrop, mainInvPool, invItemsToDrop);
 
-        // --- NEW: Additional Backpack Drops for Predatory Kills ---
+        // --- Backpack Drops for Predatory Kills ---
         int additionalBackpacks = Math.abs(attackerRep) / 5000;
-        additionalBackpacks = Math.min(additionalBackpacks, 2); // Max 2
+        additionalBackpacks = Math.min(additionalBackpacks, 2);
         calculateAndAddBackpackDrops(finalSlotsToDrop, victim, additionalBackpacks);
-
 
         dropItemsFromSlots(victim, finalSlotsToDrop);
     }
@@ -92,7 +92,7 @@ public abstract class PlayerEntityMixin {
         List<DroppableSlot> finalSlotsToDrop = new ArrayList<>();
         int reputation = ReputationManager.getReputation(victim);
 
-        // --- STANDARD PERCENTAGE LOGIC (runs for everyone) ---
+        // --- Standard Percentage Drops ---
         double baseDropPercentage = Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage;
         double finalDropPercentage = baseDropPercentage;
         if (Yggdrasil_ld.CONFIG.reputation_affects_drops) {
@@ -106,15 +106,15 @@ public abstract class PlayerEntityMixin {
             addRandomSlotsToList(finalSlotsToDrop, mainInvPool, itemsToDropCount);
         }
 
-        // --- ADDITIONAL EQUIPMENT PENALTY LOGIC for very low reputation ---
+        // --- Additional Equipment Penalty ---
         if (reputation <= Yggdrasil_ld.CONFIG.reputation_penalty_threshold) {
             List<DroppableSlot> equipmentPool = getEquipmentSlots(victim);
-            // NOTE: Backpack is no longer part of this pool
+            equipmentPool.addAll(getTrinketSlots(victim)); // Add Trinkets to the equipment pool
             addRandomSlotsToList(finalSlotsToDrop, equipmentPool, Yggdrasil_ld.CONFIG.reputation_penalty_item_count);
         }
 
-        // --- NEW: Dedicated Backpack Drop Logic ---
-        calculateAndAddBackpackDrops(finalSlotsToDrop, victim, 0); // 0 additional predatory drops
+        // --- Dedicated Backpack Drop Logic ---
+        calculateAndAddBackpackDrops(finalSlotsToDrop, victim, 0);
 
         dropItemsFromSlots(victim, finalSlotsToDrop);
     }
@@ -122,21 +122,18 @@ public abstract class PlayerEntityMixin {
     private void calculateAndAddBackpackDrops(List<DroppableSlot> finalSlotsToDrop, PlayerEntity victim, int additionalPredatoryDrops) {
         int victimRep = ReputationManager.getReputation(victim);
         int backpacksToDrop = 0;
-        // FIX: Use Minecraft's Random class
         net.minecraft.util.math.random.Random random = victim.getWorld().getRandom();
 
-        // --- Standard Backpack Drop Logic ---
         if (victimRep >= 1000) {
-            backpacksToDrop = 0; // 0% chance
+            backpacksToDrop = 0;
         } else if (victimRep >= 100) {
-            // Chance decreases linearly from 50% at 100 rep to 0% at 1000 rep
             double chance = 0.50 - ((victimRep - 100.0) / 900.0) * 0.50;
             if (random.nextDouble() < chance) {
                 backpacksToDrop = 1;
             }
         } else if (victimRep >= 0) {
-            backpacksToDrop = 1; // Drop 1 backpack from 0 to 99 rep
-        } else { // Negative reputation tiers
+            backpacksToDrop = 1;
+        } else {
             if (victimRep >= -499)      backpacksToDrop = 1;
             else if (victimRep >= -999) backpacksToDrop = 2;
             else if (victimRep >= -1499)backpacksToDrop = 3;
@@ -144,7 +141,6 @@ public abstract class PlayerEntityMixin {
             else                        backpacksToDrop = 5;
         }
 
-        // Add predatory bonus on top
         backpacksToDrop += additionalPredatoryDrops;
 
         if (backpacksToDrop > 0) {
@@ -188,6 +184,14 @@ public abstract class PlayerEntityMixin {
         return new ArrayList<>();
     }
 
+    // --- NEW HELPER FOR TRINKETS ---
+    private List<DroppableSlot> getTrinketSlots(PlayerEntity player) {
+        if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+            return TrinketsCompat.getTrinketSlots(player);
+        }
+        return new ArrayList<>();
+    }
+
     private void addSlotIfNotEmpty(List<DroppableSlot> list, ItemStack stack, Runnable clearAction) {
         if (!stack.isEmpty()) {
             list.add(new DroppableSlot(stack.copy(), clearAction));
@@ -195,9 +199,6 @@ public abstract class PlayerEntityMixin {
     }
 
     private void addRandomSlotsToList(List<DroppableSlot> targetList, List<DroppableSlot> sourceSlots, int count) {
-        // --- BUG FIX ---
-        // This new implementation is simpler and more reliable.
-        // It shuffles the source list and adds a specific number of items from it to the target.
         if (count <= 0 || sourceSlots.isEmpty()) {
             return;
         }
@@ -215,4 +216,3 @@ public abstract class PlayerEntityMixin {
         }
     }
 }
-

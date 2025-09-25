@@ -18,6 +18,12 @@ fabricApi {
 }
 
 repositories {
+    mavenCentral()
+    // --- FIX: Use the official repository for Cardinal Components API ---
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://maven.ladysnake.org/releases'
+    }
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -46,6 +52,12 @@ dependencies {
     modCompileOnly "curse.maven:backpacked-352835:6918852"
     modCompileOnly "curse.maven:framework-549225:6531437"
 
+    // Trinkets
+    modCompileOnly "curse.maven:trinkets-341284:5534317"
+    modCompileOnly "curse.maven:cardinal-components-api-318449:5845879"
+    modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-base:6.1.2"
+    modCompileOnly "org.ladysnake.cardinal-components-api:cardinal-components-entity:6.1.2"
+
     // LuckPerms
     modApi "net.luckperms:api:5.4"
 
@@ -53,7 +65,6 @@ dependencies {
     modImplementation include("com.squareup.retrofit2:retrofit:2.9.0")
     modImplementation include("com.squareup.retrofit2:converter-gson:2.9.0")
     modImplementation include("com.squareup.okhttp3:okhttp:4.9.1")
-    // FIX: Add the missing okio dependency required by OkHttp
     modImplementation include("com.squareup.okio:okio:2.8.0")
 }
 
