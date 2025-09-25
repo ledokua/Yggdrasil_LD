@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModConfigs {
+    // --- PRIME ---
+    public boolean prime_role_sync_enabled= true;
     // --- LEADERBOARD SIZE ---
     public int leaderboard_size= 10;
 

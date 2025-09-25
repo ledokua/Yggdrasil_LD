@@ -45,6 +45,16 @@ dependencies {
     //backpacked
     modCompileOnly "curse.maven:backpacked-352835:6918852"
     modCompileOnly "curse.maven:framework-549225:6531437"
+
+    // LuckPerms
+    modApi "net.luckperms:api:5.4"
+
+    // Retrofit (Web API) and its dependencies
+    modImplementation include("com.squareup.retrofit2:retrofit:2.9.0")
+    modImplementation include("com.squareup.retrofit2:converter-gson:2.9.0")
+    modImplementation include("com.squareup.okhttp3:okhttp:4.9.1")
+    // FIX: Add the missing okio dependency required by OkHttp
+    modImplementation include("com.squareup.okio:okio:2.8.0")
 }
 
 processResources {

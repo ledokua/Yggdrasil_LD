@@ -2,6 +2,7 @@ package net.ledok;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.ledok.Items.Items;
@@ -9,6 +10,7 @@ import net.ledok.command.ReputationCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
 import net.ledok.networking.ModPackets;
+import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.reputation.ReputationManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -32,6 +34,11 @@ public class Yggdrasil_ld implements ModInitializer {
         UseItemCallback.EVENT.register(new ElytraBoostDisabler());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ReputationCommand.register(dispatcher);
+        });
+
+        // --- FIX: Moved PrimeRoleHandler registration to the final server startup event ---
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            PrimeRoleHandler.register();
         });
 
         // --- Sync logic ---

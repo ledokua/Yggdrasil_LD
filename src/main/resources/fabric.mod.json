@@ -29,7 +29,8 @@
     "fabricloader": ">=0.15.11",
     "minecraft": "~1.21.1",
     "java": ">=17",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "luckperms": ">=5.4"
   },
   "suggests": {
     "another-mod": "*"
