@@ -14,6 +14,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModConfigs {
+
+    // --- Runtime toggle for the partial inventory save feature ---
+    public transient boolean partial_inventory_save_enabled = true;
+    // --- Master switch for all reputation changes ---
+    public transient boolean reputation_change_enabled = true;
+
+    // --- Passive Reputation Gain Settings ---
+    public boolean passive_reputation_enabled = true;
+    public int passive_reputation_interval_minutes = 10;
+    public int passive_reputation_amount = 1;
+
     // --- PRIME ---
     public boolean prime_role_sync_enabled= true;
     // --- LEADERBOARD SIZE ---
@@ -56,6 +67,8 @@ public class ModConfigs {
         } else {
             config = new ModConfigs();
         }
+        config.reputation_change_enabled = true;
+        config.partial_inventory_save_enabled = true;
         config.save();
         return config;
     }

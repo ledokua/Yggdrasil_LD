@@ -6,9 +6,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.ledok.Items.Items;
+import net.ledok.command.AdminCommand;
 import net.ledok.command.ReputationCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
+import net.ledok.event.ReputationTicker;
 import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.reputation.ReputationManager;
@@ -34,11 +36,17 @@ public class Yggdrasil_ld implements ModInitializer {
         UseItemCallback.EVENT.register(new ElytraBoostDisabler());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ReputationCommand.register(dispatcher);
+            AdminCommand.register(dispatcher);
         });
 
-        // --- FIX: Moved PrimeRoleHandler registration to the final server startup event ---
+        ReputationTicker.register();
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            PrimeRoleHandler.register();
+            // --- FIX: Only initialize the Prime feature on a dedicated server ---
+            // This prevents crashes in single-player worlds.
+            if (server.isDedicated()) {
+                PrimeRoleHandler.register();
+            }
         });
 
         // --- Sync logic ---

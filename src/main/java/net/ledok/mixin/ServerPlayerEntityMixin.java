@@ -16,6 +16,11 @@ public class ServerPlayerEntityMixin {
 
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void yggdrasil_handleDeathReputation(DamageSource damageSource, CallbackInfo ci) {
+
+        if (!Yggdrasil_ld.CONFIG.reputation_change_enabled) {
+            return; // If disabled, skip all reputation logic in this method.
+        }
+
         ServerPlayerEntity victim = (ServerPlayerEntity) (Object) this;
 
         // --- GENERAL DEATH PENALTY LOGIC ---
