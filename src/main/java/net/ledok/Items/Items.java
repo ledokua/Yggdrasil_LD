@@ -17,6 +17,10 @@ public class Items {
             new DungeonLeaveItem(new Item.Settings().maxCount(1)),
             "escape_scroll"
     );
+    public static final Item DRIPSTONE_SCROLL = ItemInit.register(
+            new RandomDripstoneItem(new Item.Settings().maxCount(1)),
+            "dripstone_scroll"
+    );
 
     public static void initialize() {
     }
