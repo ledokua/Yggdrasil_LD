@@ -39,6 +39,10 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    // Puffish
+    maven {
+        url = uri("https://maven.puffish.net")
+    }
 }
 
 dependencies {
@@ -66,6 +70,9 @@ dependencies {
     modImplementation include("com.squareup.retrofit2:converter-gson:2.9.0")
     modImplementation include("com.squareup.okhttp3:okhttp:4.9.1")
     modImplementation include("com.squareup.okio:okio:2.8.0")
+
+    // Puffish
+    modImplementation("net.puffish:skillsmod:0.16.5+1.21:fabric")
 }
 
 processResources {

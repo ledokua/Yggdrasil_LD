@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.ledok.Items.Items;
+import net.ledok.block.ModBlocks;
+import net.ledok.block.entity.ModBlockEntities;
 import net.ledok.command.AdminCommand;
 import net.ledok.command.ReputationCommand;
 import net.ledok.config.ModConfigs;
@@ -14,6 +16,7 @@ import net.ledok.event.ReputationTicker;
 import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.reputation.ReputationManager;
+import net.ledok.screen.ModScreenHandlers;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -32,6 +35,13 @@ public class Yggdrasil_ld implements ModInitializer {
         LOGGER.info("Yggdrasil LD has been initialized!");
         Items.initialize();
         CONFIG = ModConfigs.load();
+
+        // --- FIX: Initialize all components for the Boss Spawner feature ---
+        ModBlocks.initialize();
+        ModBlockEntities.initialize();
+        ModScreenHandlers.initialize();
+        ModPackets.registerC2SPackets();
+
         ModPackets.registerS2CPackets();
         UseItemCallback.EVENT.register(new ElytraBoostDisabler());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -42,8 +52,6 @@ public class Yggdrasil_ld implements ModInitializer {
         ReputationTicker.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            // --- FIX: Only initialize the Prime feature on a dedicated server ---
-            // This prevents crashes in single-player worlds.
             if (server.isDedicated()) {
                 PrimeRoleHandler.register();
             }
@@ -51,9 +59,7 @@ public class Yggdrasil_ld implements ModInitializer {
 
         // --- Sync logic ---
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            // 1 tick pause because client slow
             server.execute(() -> {
-                // When player joined update everything for all
                 for (ServerPlayerEntity onlinePlayer : server.getPlayerManager().getPlayerList()) {
                     ReputationManager.syncReputationWithAll(server, onlinePlayer);
                 }

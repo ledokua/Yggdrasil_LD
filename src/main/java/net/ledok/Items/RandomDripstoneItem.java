@@ -31,7 +31,7 @@ public class RandomDripstoneItem extends Item {
                 MinecraftServer server = world.getServer();
                 if (server != null) {
                     ServerCommandSource source = server.getCommandSource();
-                    String command = "execute at @r run setblock ~ ~4 ~ minecraft:pointed_dripstone[thickness=tip,vertical_direction=down]";
+                    String command = "execute at @r if block ~ ~4 ~ air if block ~ ~5 ~ air run setblock ~ ~4 ~ minecraft:pointed_dripstone[vertical_direction=down ]";
 
                     // Execute the command
                     CommandManager commandManager = server.getCommandManager();

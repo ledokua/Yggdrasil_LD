@@ -42,11 +42,11 @@ public class ModConfigs {
     public double reputation_death_penalty_negative_percentage = 5.0;
     public double reputation_death_penalty_positive_percentage = 2.0;
     public int reputation_penalty_threshold = -750;
-    public int reputation_penalty_item_count = 3;
+    public int reputation_penalty_item_count = 4;
     public boolean predatory_kill_enabled = true;
     public int predatory_kill_victim_positive_rep_threshold = 100;
     public int predatory_kill_inventory_drop_rep_step = 1500;
-    public int predatory_kill_equipment_drop_rep_step = 10000;
+    public int predatory_kill_equipment_drop_rep_step = 6000;
     public int predatory_kill_equipment_drop_max = 5;
 
 
