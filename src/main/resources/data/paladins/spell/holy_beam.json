@@ -94,7 +94,7 @@
       "action": {
         "type": "HEAL",
         "heal": {
-          "spell_power_coefficient": 0.5
+          "spell_power_coefficient": 0.4
         }
       },
       "particles": [
@@ -137,7 +137,7 @@
       "action": {
         "type": "DAMAGE",
         "damage": {
-          "spell_power_coefficient": 0.8,
+          "spell_power_coefficient": 0.2,
           "knockback": 0.5
         }
       },

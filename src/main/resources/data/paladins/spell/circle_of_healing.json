@@ -83,7 +83,7 @@
       "action": {
         "type": "HEAL",
         "heal": {
-          "spell_power_coefficient": 0.4
+          "spell_power_coefficient": 0.2
         }
       },
       "particles": [
@@ -116,7 +116,7 @@
         "status_effect": {
           "effect_id": "paladins:priest_absorption",
           "duration": 6.0,
-          "amplifier_power_multiplier": 0.25
+          "amplifier_power_multiplier": 0.3
         }
       }
     }
@@ -124,7 +124,7 @@
   "cost": {
     "exhaust": 0.3,
     "cooldown": {
-      "duration": 10.0
+      "duration": 15.0
     },
     "item": {
       "id": "runes:healing_stone"

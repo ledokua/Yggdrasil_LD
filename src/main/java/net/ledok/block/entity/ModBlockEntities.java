@@ -15,6 +15,12 @@ public class ModBlockEntities {
                     Identifier.of(Yggdrasil_ld.MOD_ID, "boss_spawner_be"),
                     BlockEntityType.Builder.create(BossSpawnerBlockEntity::new, ModBlocks.BOSS_SPAWNER_BLOCK).build());
 
+    public static final BlockEntityType<ExitPortalBlockEntity> EXIT_PORTAL_BLOCK_ENTITY =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE,
+                    Identifier.of(Yggdrasil_ld.MOD_ID, "exit_portal_be"),
+                    BlockEntityType.Builder.create(ExitPortalBlockEntity::new, ModBlocks.EXIT_PORTAL_BLOCK).build());
+
+
     public static void initialize() {
         // This method is called to ensure the block entities are registered.
     }

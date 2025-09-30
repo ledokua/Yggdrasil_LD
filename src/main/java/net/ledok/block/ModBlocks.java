@@ -1,20 +1,26 @@
 package net.ledok.block;
 
 import net.ledok.Yggdrasil_ld;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.block.AbstractBlock;
 
 public class ModBlocks {
 
-    // --- FIX: Added .strength(-1.0f) to make the block indestructible ---
     public static final Block BOSS_SPAWNER_BLOCK = registerBlock("boss_spawner",
-            new BossSpawnerBlock(AbstractBlock.Settings.copy(Blocks.SPAWNER).strength(-1.0f)));
+            new BossSpawnerBlock(AbstractBlock.Settings.copy(Blocks.SPAWNER)
+                    .strength(-1.0f, 3600000.0f)));
+
+    // --- FIX: This was missing from the previous version ---
+    public static final Block EXIT_PORTAL_BLOCK = registerBlock("exit_portal",
+            new ExitPortalBlock(AbstractBlock.Settings.copy(Blocks.NETHER_PORTAL).sounds(BlockSoundGroup.GLASS).noCollision()));
+
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
@@ -26,8 +32,6 @@ public class ModBlocks {
                 new BlockItem(block, new Item.Settings()));
     }
 
-    public static void initialize() {
-        // This method is called to ensure the blocks are registered.
-    }
+    public static void initialize() { }
 }
 

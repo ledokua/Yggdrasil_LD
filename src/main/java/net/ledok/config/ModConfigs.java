@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModConfigs {
+    // --- Puffish Skills Main skill tree ---
+    public String puffish_skills_tree_id = "puffish_skills:minestar";
 
     // --- Runtime toggle for the partial inventory save feature ---
     public transient boolean partial_inventory_save_enabled = true;

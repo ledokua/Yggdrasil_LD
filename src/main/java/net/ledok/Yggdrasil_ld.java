@@ -17,6 +17,7 @@ import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.reputation.ReputationManager;
 import net.ledok.screen.ModScreenHandlers;
+import net.ledok.util.BossDataComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -41,8 +42,9 @@ public class Yggdrasil_ld implements ModInitializer {
         ModBlockEntities.initialize();
         ModScreenHandlers.initialize();
         ModPackets.registerC2SPackets();
-
         ModPackets.registerS2CPackets();
+        BossDataComponent.initialize();
+
         UseItemCallback.EVENT.register(new ElytraBoostDisabler());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ReputationCommand.register(dispatcher);
