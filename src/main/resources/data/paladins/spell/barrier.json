@@ -5,7 +5,7 @@
   "learn": {},
   "active": {
     "cast": {
-      "duration": 5,
+      "duration": 3.5,
       "animation": "spell_engine:one_handed_area_charge",
       "sound": {
         "id": "spell_engine:generic_healing_casting",
@@ -64,7 +64,7 @@
   "cost": {
     "exhaust": 0.4,
     "cooldown": {
-      "duration": 40.0,
+      "duration": 30.0,
       "haste_affected": false
     },
     "item": {

@@ -1,0 +1,11 @@
+{
+  "type": "yggdrasil_ld:towerdim",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "yggdrasil_ld:towerdim",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:the_void"
+    }
+  }
+}
