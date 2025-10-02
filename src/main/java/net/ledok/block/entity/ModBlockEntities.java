@@ -20,6 +20,11 @@ public class ModBlockEntities {
                     Identifier.of(Yggdrasil_ld.MOD_ID, "exit_portal_be"),
                     BlockEntityType.Builder.create(ExitPortalBlockEntity::new, ModBlocks.EXIT_PORTAL_BLOCK).build());
 
+    public static final BlockEntityType<EnterPortalBlockEntity> ENTER_PORTAL_BLOCK_ENTITY =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE,
+                    Identifier.of(Yggdrasil_ld.MOD_ID, "enter_portal_be"),
+                    BlockEntityType.Builder.create(EnterPortalBlockEntity::new, ModBlocks.ENTER_PORTAL_BLOCK).build());
+
 
     public static void initialize() {
         // This method is called to ensure the block entities are registered.

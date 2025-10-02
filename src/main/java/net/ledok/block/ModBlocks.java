@@ -21,6 +21,9 @@ public class ModBlocks {
     public static final Block EXIT_PORTAL_BLOCK = registerBlock("exit_portal",
             new ExitPortalBlock(AbstractBlock.Settings.copy(Blocks.NETHER_PORTAL).sounds(BlockSoundGroup.GLASS).noCollision()));
 
+    public static final Block ENTER_PORTAL_BLOCK = registerBlock("enter_portal",
+            new EnterPortalBlock(AbstractBlock.Settings.copy(Blocks.NETHER_PORTAL).sounds(BlockSoundGroup.GLASS).noCollision()));
+
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);

@@ -6,6 +6,7 @@ import net.ledok.block.ModBlocks;
 import net.ledok.screen.BossSpawnerData;
 import net.ledok.screen.BossSpawnerScreenHandler;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -34,249 +35,239 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BossSpawnerData> {
+
+    // --- Configuration Fields ---
     public String mobId = "minecraft:zombie";
     public int respawnTime = 6000;
     public int portalActiveTime = 600;
     public String lootTableId = "minecraft:chests/simple_dungeon";
-    public BlockPos exitPortalCoords = BlockPos.ORIGIN;
-    public int triggerRadius = 10;
-    public int battleRadius = 30;
+    public BlockPos exitPortalCoords = new BlockPos(0, 0, 0);
+    public BlockPos enterPortalSpawnCoords = new BlockPos(0, 0, 0);
+    public BlockPos enterPortalDestCoords = new BlockPos(0, 0, 0);
+    public int triggerRadius = 16;
+    public int battleRadius = 64;
     public int regeneration = 0;
 
+    // --- State Machine Fields ---
     private boolean isBattleActive = false;
     private int respawnCooldown = 0;
-    @Nullable private UUID activeBossUuid = null;
-    @Nullable private RegistryKey<World> bossDimension = null;
+    private UUID activeBossUuid = null;
+    private RegistryKey<World> bossDimension = null;
     private int regenerationTickTimer = 0;
+    // --- NEW: Timer for removing the enter portal after the battle starts ---
+    private int enterPortalRemovalTimer = -1;
+
 
     public BossSpawnerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BOSS_SPAWNER_BLOCK_ENTITY, pos, state);
     }
 
-    @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        nbt.putString("mobId", mobId);
-        nbt.putInt("respawnTime", respawnTime);
-        nbt.putInt("portalActiveTime", portalActiveTime);
-        nbt.putString("lootTableId", lootTableId);
-        nbt.putLong("exitPortalCoords", exitPortalCoords.asLong());
-        nbt.putInt("triggerRadius", triggerRadius);
-        nbt.putInt("battleRadius", battleRadius);
-        nbt.putInt("regeneration", regeneration);
-        nbt.putBoolean("isBattleActive", isBattleActive);
-        nbt.putInt("respawnCooldown", respawnCooldown);
-        if (activeBossUuid != null) {
-            nbt.putUuid("activeBossUuid", activeBossUuid);
-        }
-        if (bossDimension != null) {
-            nbt.putString("bossDimension", bossDimension.getValue().toString());
-        }
-    }
-
-    @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        mobId = nbt.getString("mobId");
-        respawnTime = nbt.getInt("respawnTime");
-        portalActiveTime = nbt.getInt("portalActiveTime");
-        lootTableId = nbt.getString("lootTableId");
-        exitPortalCoords = BlockPos.fromLong(nbt.getLong("exitPortalCoords"));
-        triggerRadius = nbt.getInt("triggerRadius");
-        battleRadius = nbt.getInt("battleRadius");
-        regeneration = nbt.getInt("regeneration");
-        isBattleActive = nbt.getBoolean("isBattleActive");
-        respawnCooldown = nbt.getInt("respawnCooldown");
-        if (nbt.containsUuid("activeBossUuid")) {
-            activeBossUuid = nbt.getUuid("activeBossUuid");
-        } else {
-            activeBossUuid = null;
-        }
-        if (nbt.contains("bossDimension")) {
-            bossDimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.tryParse(nbt.getString("bossDimension")));
-        } else {
-            bossDimension = null;
-        }
-    }
-
+    // --- TICK LOGIC ---
     public static void tick(World world, BlockPos pos, BlockState state, BossSpawnerBlockEntity be) {
-        if (world.isClient()) return;
-        ServerWorld serverWorld = (ServerWorld) world;
-
-        if (be.isBattleActive && be.activeBossUuid != null) {
-            MinecraftServer server = serverWorld.getServer();
-            if (server != null && be.bossDimension != null) {
-                ServerWorld bossWorld = server.getWorld(be.bossDimension);
-                if (bossWorld == null || bossWorld.getEntity(be.activeBossUuid) == null) {
-                    Yggdrasil_ld.LOGGER.warn("Boss spawner at {} found an invalid battle state on tick (boss missing). Resetting.", pos);
-                    be.resetSpawner(serverWorld, state);
-                    return;
-                }
-            }
-        }
+        if (world.isClient() || !(world instanceof ServerWorld serverWorld)) return;
 
         if (be.isBattleActive) {
-            be.monitorBattle(serverWorld, state);
+            be.handleActiveBattle(serverWorld);
         } else {
-            if (be.respawnCooldown > 0) {
-                be.respawnCooldown--;
-            } else {
-                be.checkForPlayers(serverWorld, state);
+            be.handleIdleState(serverWorld, pos);
+        }
+    }
+
+    private void handleIdleState(ServerWorld world, BlockPos pos) {
+        if (respawnCooldown > 0) {
+            respawnCooldown--;
+            if(respawnCooldown == 0) {
+                spawnEnterPortal(world);
+            }
+            return;
+        }
+
+        Box triggerBox = new Box(pos).expand(triggerRadius);
+        List<ServerPlayerEntity> playersInTriggerZone = world.getEntitiesByClass(ServerPlayerEntity.class, triggerBox, p -> !p.isSpectator());
+
+        if (!playersInTriggerZone.isEmpty()) {
+            startBattle(world, pos);
+        }
+    }
+
+    private void handleActiveBattle(ServerWorld world) {
+        // --- NEW: Handle enter portal timeout ---
+        if (this.enterPortalRemovalTimer > 0) {
+            this.enterPortalRemovalTimer--;
+            if (this.enterPortalRemovalTimer == 0) {
+                removeEnterPortal(world);
+                Yggdrasil_ld.LOGGER.info("Enter portal at {} has timed out and was removed.", enterPortalSpawnCoords);
+            }
+        }
+
+        if (activeBossUuid == null) {
+            handleBattleLoss(world, "Boss UUID was null.");
+            return;
+        }
+        MinecraftServer server = world.getServer();
+        if (server == null) return;
+        ServerWorld bossWorld = server.getWorld(bossDimension);
+        if (bossWorld == null) {
+            handleBattleLoss(world, "Boss world was null.");
+            return;
+        }
+        Entity bossEntity = bossWorld.getEntity(activeBossUuid);
+        if (bossEntity == null) {
+            handleBattleLoss(world, "Boss entity disappeared.");
+            return;
+        }
+        if (!bossEntity.isAlive()) {
+            handleBattleWin(world, bossEntity);
+            return;
+        }
+        Box battleBox = new Box(pos).expand(battleRadius);
+        List<ServerPlayerEntity> playersInBattle = world.getEntitiesByClass(ServerPlayerEntity.class, battleBox, p -> !p.isSpectator());
+        if (playersInBattle.isEmpty()) {
+            bossEntity.discard();
+            handleBattleLoss(world, "All players left the battle area.");
+            return;
+        }
+        if (regeneration > 0 && bossEntity instanceof LivingEntity livingBoss) {
+            regenerationTickTimer++;
+            if (regenerationTickTimer >= 20) {
+                livingBoss.heal((float) regeneration);
+                regenerationTickTimer = 0;
             }
         }
     }
 
-    private void checkForPlayers(ServerWorld world, BlockState state) {
-        Box triggerBox = new Box(pos).expand(triggerRadius);
-        if (!world.getNonSpectatingEntities(PlayerEntity.class, triggerBox).isEmpty()) {
-            startBattle(world, state);
-        }
-    }
+    private void startBattle(ServerWorld world, BlockPos spawnPos) {
+        // --- NEW: Start the 1-minute timer for portal removal ---
+        // The portal is not removed immediately to give players a moment to enter.
+        this.enterPortalRemovalTimer = 1200; // 60 seconds * 20 ticks/second
 
-    private void startBattle(ServerWorld world, BlockState state) {
-        Yggdrasil_ld.LOGGER.info("Starting battle at spawner {}", pos);
-        Optional<EntityType<?>> entityTypeOpt = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(this.mobId));
-        if (entityTypeOpt.isEmpty()) {
-            Yggdrasil_ld.LOGGER.warn("Invalid mob ID '{}' in spawner at {}.", this.mobId, pos);
+        Optional<EntityType<?>> entityType = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(this.mobId));
+        if (entityType.isEmpty()) {
+            Yggdrasil_ld.LOGGER.error("Invalid mob ID in spawner at {}: {}", this.pos, this.mobId);
+            this.respawnCooldown = this.respawnTime;
             return;
         }
-
-        Entity entity = entityTypeOpt.get().create(world);
-        if (!(entity instanceof LivingEntity boss)) {
-            Yggdrasil_ld.LOGGER.warn("Mob ID '{}' is not a LivingEntity.", this.mobId);
+        Entity boss = entityType.get().create(world);
+        if (boss == null) {
+            Yggdrasil_ld.LOGGER.error("Failed to create entity from ID: {}", this.mobId);
             return;
         }
-
-        boss.setPos(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
-
-        MinecraftServer server = world.getServer();
-        if (server != null) {
-            String bossUuidString = entity.getUuidAsString();
-            server.getCommandManager().executeWithPrefix(server.getCommandSource(), "tag " + bossUuidString + " add yggdrasil_boss");
-        }
-
-
-        boss.setHealth(boss.getMaxHealth());
-
+        boss.refreshPositionAndAngles(spawnPos.getX() + 0.5, spawnPos.getY() + 1, spawnPos.getZ() + 0.5, 0, 0);
         world.spawnEntity(boss);
+        this.isBattleActive = true;
         this.activeBossUuid = boss.getUuid();
         this.bossDimension = world.getRegistryKey();
-        this.isBattleActive = true;
-        this.regenerationTickTimer = 0;
         this.markDirty();
-        world.updateListeners(pos, state, state, 3);
-        Yggdrasil_ld.LOGGER.info("Spawned boss {} with UUID {}.", this.mobId, this.activeBossUuid);
+        Yggdrasil_ld.LOGGER.info("Battle started at spawner {} with boss {}", this.pos, this.mobId);
     }
 
-    private void monitorBattle(ServerWorld world, BlockState state) {
-        if (activeBossUuid == null) {
-            handleBattleLoss(world, state, "Boss UUID was null.");
-            return;
-        }
+    private void handleBattleWin(ServerWorld world, Entity defeatedBoss) {
+        Yggdrasil_ld.LOGGER.info("Battle won at spawner {}", pos);
+        Identifier lootTableIdentifier = Identifier.tryParse(this.lootTableId);
+        if (lootTableIdentifier != null) {
+            RegistryKey<LootTable> lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTableIdentifier);
+            LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(lootTableKey);
 
-        MinecraftServer server = world.getServer();
-        if (server == null || this.bossDimension == null) {
-            handleBattleLoss(world, state, "Server or boss dimension was null, cannot monitor battle.");
-            return;
-        }
+            LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+                    .add(LootContextParameters.ORIGIN, pos.toCenterPos())
+                    .add(LootContextParameters.THIS_ENTITY, defeatedBoss);
 
-        ServerWorld bossWorld = server.getWorld(this.bossDimension);
-        if (bossWorld == null) {
-            handleBattleLoss(world, state, "Boss world could not be found, battle lost.");
-            return;
-        }
-
-        Entity boss = bossWorld.getEntity(activeBossUuid);
-        if (boss == null || !boss.isAlive()) {
-            handleBattleWin(world, state, boss);
-            return;
-        }
-
-        if (this.regeneration > 0 && boss instanceof LivingEntity livingBoss) {
-            this.regenerationTickTimer++;
-            if (this.regenerationTickTimer >= 20) {
-                livingBoss.heal((float) this.regeneration);
-                this.regenerationTickTimer = 0;
+            List<ItemStack> loot = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
+            for (ItemStack stack : loot) {
+                world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, stack));
             }
         }
-
-        Box battleBox = new Box(pos).expand(battleRadius);
-        if (world.getNonSpectatingEntities(PlayerEntity.class, battleBox).isEmpty()) {
-            handleBattleLoss(world, state, "All players left the battle area.");
-            boss.discard();
-        }
-    }
-
-    private void handleBattleWin(ServerWorld world, BlockState state, @Nullable Entity defeatedBoss) {
-        Yggdrasil_ld.LOGGER.info("Battle won at spawner {}. Spawning loot and portal.", pos);
-
-        RegistryKey<LootTable> lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.tryParse(this.lootTableId));
-        MinecraftServer server = world.getServer();
-        if (server != null) {
-            Optional<LootTable> lootTableOpt = Optional.ofNullable(server.getReloadableRegistries().getLootTable(lootTableKey));
-
-            if (lootTableOpt.isPresent()) {
-                LootTable lootTable = lootTableOpt.get();
-
-                LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
-                        .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos));
-
-                if (defeatedBoss != null) {
-                    builder.add(LootContextParameters.THIS_ENTITY, defeatedBoss);
-                }
-
-                PlayerEntity killer = world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), battleRadius, false);
-                if (killer != null) {
-                    builder.add(LootContextParameters.ATTACKING_ENTITY, killer);
-                    builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, killer);
-                    builder.add(LootContextParameters.DAMAGE_SOURCE, world.getDamageSources().playerAttack(killer));
-                }
-
-                List<ItemStack> lootItems = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
-
-                for(ItemStack stack : lootItems) {
-                    ItemEntity itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, stack);
-                    itemEntity.setToDefaultPickupDelay();
-                    world.spawnEntity(itemEntity);
-                }
-            } else {
-                Yggdrasil_ld.LOGGER.warn("Could not find loot table with ID '{}'", this.lootTableId);
-            }
-        }
-
-
         BlockPos portalPos = pos.up();
-        world.setBlockState(portalPos, ModBlocks.EXIT_PORTAL_BLOCK.getDefaultState(), 3);
+        world.setBlockState(portalPos, ModBlocks.EXIT_PORTAL_BLOCK.getDefaultState());
         if (world.getBlockEntity(portalPos) instanceof ExitPortalBlockEntity portal) {
             portal.setDetails(this.portalActiveTime, this.exitPortalCoords);
             Yggdrasil_ld.LOGGER.info("Spawned exit portal at {} for {} ticks.", portalPos, this.portalActiveTime);
         }
-
-        resetSpawner(world, state);
+        resetSpawner(world);
     }
 
-    private void handleBattleLoss(ServerWorld world, BlockState state, String reason) {
+    private void handleBattleLoss(ServerWorld world, String reason) {
         Yggdrasil_ld.LOGGER.info("Battle lost at spawner {}: {}", pos, reason);
-        resetSpawner(world, state);
+        // Ensure portal is gone if the battle ends before the timer
+        removeEnterPortal(world);
+        resetSpawner(world);
     }
 
-    private void resetSpawner(ServerWorld world, BlockState state) {
+    private void resetSpawner(ServerWorld world) {
         this.isBattleActive = false;
         this.activeBossUuid = null;
         this.bossDimension = null;
         this.respawnCooldown = this.respawnTime;
         this.regenerationTickTimer = 0;
+        // --- NEW: Reset the portal removal timer ---
+        this.enterPortalRemovalTimer = -1;
         this.markDirty();
-        world.updateListeners(pos, state, state, 3);
+        world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+
+        if (this.respawnCooldown <= 0) {
+            spawnEnterPortal(world);
+        }
+    }
+
+    private void spawnEnterPortal(ServerWorld world) {
+        if (enterPortalSpawnCoords == null || enterPortalDestCoords == null || enterPortalSpawnCoords.equals(new BlockPos(0,0,0))) {
+            return;
+        }
+        world.setBlockState(enterPortalSpawnCoords, ModBlocks.ENTER_PORTAL_BLOCK.getDefaultState());
+        if(world.getBlockEntity(enterPortalSpawnCoords) instanceof EnterPortalBlockEntity be) {
+            be.setDestination(enterPortalDestCoords);
+        }
+    }
+
+    private void removeEnterPortal(ServerWorld world) {
+        if(enterPortalSpawnCoords != null && world.getBlockState(enterPortalSpawnCoords).isOf(ModBlocks.ENTER_PORTAL_BLOCK)) {
+            world.setBlockState(enterPortalSpawnCoords, Blocks.AIR.getDefaultState());
+        }
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        nbt.putString("MobId", mobId);
+        nbt.putInt("RespawnTime", respawnTime);
+        nbt.putInt("PortalActiveTime", portalActiveTime);
+        nbt.putString("LootTableId", lootTableId);
+        nbt.putLong("ExitPortalCoords", exitPortalCoords.asLong());
+        if (enterPortalSpawnCoords != null) nbt.putLong("EnterPortalSpawn", enterPortalSpawnCoords.asLong());
+        if (enterPortalDestCoords != null) nbt.putLong("EnterPortalDest", enterPortalDestCoords.asLong());
+        nbt.putInt("TriggerRadius", triggerRadius);
+        nbt.putInt("BattleRadius", battleRadius);
+        nbt.putInt("Regeneration", regeneration);
+        nbt.putBoolean("IsBattleActive", isBattleActive);
+        nbt.putInt("RespawnCooldown", respawnCooldown);
+        if (activeBossUuid != null) nbt.putUuid("ActiveBossUuid", activeBossUuid);
+        if (bossDimension != null) nbt.putString("BossDimension", bossDimension.getValue().toString());
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        mobId = nbt.getString("MobId");
+        respawnTime = nbt.getInt("RespawnTime");
+        portalActiveTime = nbt.getInt("PortalActiveTime");
+        lootTableId = nbt.getString("LootTableId");
+        exitPortalCoords = BlockPos.fromLong(nbt.getLong("ExitPortalCoords"));
+        if (nbt.contains("EnterPortalSpawn")) enterPortalSpawnCoords = BlockPos.fromLong(nbt.getLong("EnterPortalSpawn"));
+        if (nbt.contains("EnterPortalDest")) enterPortalDestCoords = BlockPos.fromLong(nbt.getLong("EnterPortalDest"));
+        triggerRadius = nbt.getInt("TriggerRadius");
+        battleRadius = nbt.getInt("BattleRadius");
+        regeneration = nbt.getInt("Regeneration");
+        isBattleActive = nbt.getBoolean("IsBattleActive");
+        respawnCooldown = nbt.getInt("RespawnCooldown");
+        if (nbt.containsUuid("ActiveBossUuid")) activeBossUuid = nbt.getUuid("ActiveBossUuid");
+        if (nbt.contains("BossDimension")) bossDimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(nbt.getString("BossDimension")));
     }
 
     @Nullable @Override public Packet<ClientPlayPacketListener> toUpdatePacket() { return BlockEntityUpdateS2CPacket.create(this); }
