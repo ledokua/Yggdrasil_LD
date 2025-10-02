@@ -3,7 +3,7 @@ package net.ledok.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 
 import java.io.File;
 import java.io.FileReader;
@@ -53,7 +53,7 @@ public class ModConfigs {
 
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), Yggdrasil_ld.MOD_ID + ".json");
+    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), YggdrasilLdMod.MOD_ID + ".json");
 
     public static ModConfigs load() {
         ModConfigs config;
@@ -62,7 +62,7 @@ public class ModConfigs {
                 config = GSON.fromJson(reader, ModConfigs.class);
                 if (config == null) { config = new ModConfigs(); }
             } catch (IOException e) {
-                Yggdrasil_ld.LOGGER.error("Failed to load config, using defaults.", e);
+                YggdrasilLdMod.LOGGER.error("Failed to load config, using defaults.", e);
                 config = new ModConfigs();
             }
         } else {
@@ -78,7 +78,7 @@ public class ModConfigs {
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             GSON.toJson(this, writer);
         } catch (IOException e) {
-            Yggdrasil_ld.LOGGER.error("Failed to save config.", e);
+            YggdrasilLdMod.LOGGER.error("Failed to save config.", e);
         }
     }
 }

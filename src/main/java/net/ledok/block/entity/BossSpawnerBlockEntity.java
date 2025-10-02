@@ -1,7 +1,7 @@
 package net.ledok.block.entity;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.block.ModBlocks;
 import net.ledok.screen.BossSpawnerData;
 import net.ledok.screen.BossSpawnerScreenHandler;
@@ -103,7 +103,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
             this.enterPortalRemovalTimer--;
             if (this.enterPortalRemovalTimer == 0) {
                 removeEnterPortal(world);
-                Yggdrasil_ld.LOGGER.info("Enter portal at {} has timed out and was removed.", enterPortalSpawnCoords);
+                YggdrasilLdMod.LOGGER.info("Enter portal at {} has timed out and was removed.", enterPortalSpawnCoords);
             }
         }
 
@@ -149,13 +149,13 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
 
         Optional<EntityType<?>> entityType = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(this.mobId));
         if (entityType.isEmpty()) {
-            Yggdrasil_ld.LOGGER.error("Invalid mob ID in spawner at {}: {}", this.pos, this.mobId);
+            YggdrasilLdMod.LOGGER.error("Invalid mob ID in spawner at {}: {}", this.pos, this.mobId);
             this.respawnCooldown = this.respawnTime;
             return;
         }
         Entity boss = entityType.get().create(world);
         if (boss == null) {
-            Yggdrasil_ld.LOGGER.error("Failed to create entity from ID: {}", this.mobId);
+            YggdrasilLdMod.LOGGER.error("Failed to create entity from ID: {}", this.mobId);
             return;
         }
         boss.refreshPositionAndAngles(spawnPos.getX() + 0.5, spawnPos.getY() + 1, spawnPos.getZ() + 0.5, 0, 0);
@@ -164,11 +164,11 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         this.activeBossUuid = boss.getUuid();
         this.bossDimension = world.getRegistryKey();
         this.markDirty();
-        Yggdrasil_ld.LOGGER.info("Battle started at spawner {} with boss {}", this.pos, this.mobId);
+        YggdrasilLdMod.LOGGER.info("Battle started at spawner {} with boss {}", this.pos, this.mobId);
     }
 
     private void handleBattleWin(ServerWorld world, Entity defeatedBoss) {
-        Yggdrasil_ld.LOGGER.info("Battle won at spawner {}", pos);
+        YggdrasilLdMod.LOGGER.info("Battle won at spawner {}", pos);
         Identifier lootTableIdentifier = Identifier.tryParse(this.lootTableId);
         if (lootTableIdentifier != null) {
             RegistryKey<LootTable> lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTableIdentifier);
@@ -187,13 +187,13 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         world.setBlockState(portalPos, ModBlocks.EXIT_PORTAL_BLOCK.getDefaultState());
         if (world.getBlockEntity(portalPos) instanceof ExitPortalBlockEntity portal) {
             portal.setDetails(this.portalActiveTime, this.exitPortalCoords);
-            Yggdrasil_ld.LOGGER.info("Spawned exit portal at {} for {} ticks.", portalPos, this.portalActiveTime);
+            YggdrasilLdMod.LOGGER.info("Spawned exit portal at {} for {} ticks.", portalPos, this.portalActiveTime);
         }
         resetSpawner(world);
     }
 
     private void handleBattleLoss(ServerWorld world, String reason) {
-        Yggdrasil_ld.LOGGER.info("Battle lost at spawner {}: {}", pos, reason);
+        YggdrasilLdMod.LOGGER.info("Battle lost at spawner {}: {}", pos, reason);
         // Ensure portal is gone if the battle ends before the timer
         removeEnterPortal(world);
         resetSpawner(world);

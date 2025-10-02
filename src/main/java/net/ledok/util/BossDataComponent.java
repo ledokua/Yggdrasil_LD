@@ -1,7 +1,7 @@
 package net.ledok.util;
 
 import com.mojang.serialization.Codec;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
@@ -14,7 +14,7 @@ public record BossDataComponent(int bossLevel) {
     // --- NOT USED FOR NOW ---
     public static final ComponentType<BossDataComponent> BOSS_DATA = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(Yggdrasil_ld.MOD_ID, "boss_data"),
+            Identifier.of(YggdrasilLdMod.MOD_ID, "boss_data"),
             ComponentType.<BossDataComponent>builder().codec(CODEC).packetCodec(PacketCodecs.codec(CODEC)).build()
     );
 

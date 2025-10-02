@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Yggdrasil_ld implements ModInitializer {
+public class YggdrasilLdMod implements ModInitializer {
     public static final String MOD_ID = "yggdrasil_ld";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 

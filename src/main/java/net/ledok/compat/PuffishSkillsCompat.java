@@ -1,6 +1,6 @@
 package net.ledok.compat;
 
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -21,7 +21,7 @@ public class PuffishSkillsCompat {
             return 0;
         }
         // Use the skill tree ID from the config file.
-        Optional<Category> skillTree = SkillsAPI.getCategory(Identifier.tryParse(Yggdrasil_ld.CONFIG.puffish_skills_tree_id));
+        Optional<Category> skillTree = SkillsAPI.getCategory(Identifier.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
         return skillTree.map(tree -> tree.getPointsTotal(serverPlayer)).orElse(0);
     }
 }

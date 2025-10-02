@@ -83,7 +83,7 @@
   "path.yggdrasil_ld.path_priest.extra_description": "§a+1 сили зцілення\n§a+4 здоров'я",
   "classes.yggdrasil_ld.warrior.extra_description": "§a+25% до фізичної шкоди\n§a+5% швидкості пересування\n§a+10% броні\n§a+35 здоров'я",
   "classes.yggdrasil_ld.bowmaster.extra_description": "§c-1 опір відкиданню\n§a+30% дальньобійної шкоди\n§a+7% швидкості стрільби\n§c-25% броні\n§a+20 здоров'я",
-  "classes.yggdrasil_ld.trickster.extra_description": "§a+3 фізичної шкоди\n§a+15% швидкості атаки\n§c-25% кількості перекатів\n§a+75% перезаряджання перекату\n§c-50% броні\n§a+1 дистанції перекату\n§a+20 здоров'я",
+  "classes.yggdrasil_ld.trickster.extra_description": "§a+3 фізичної шкоди\n§a+20% фізичної шкоди\n§a+15% швидкості атаки\n§c-25% кількості перекатів\n§a+75% перезаряджання перекату\n§c-50% броні\n§a+1 дистанції перекату\n§a+20 здоров'я",
   "classes.yggdrasil_ld.paladin.extra_description": "§a+80% стійкості до відкиданню\n§a+30% опору\n§c-30% броні\n§c-30% стійкості броні\n§a+40 здоров'я",
   "classes.yggdrasil_ld.iceking.extra_description": "§a+5 сили морозу\n§a+5% шансу критичного удару\n§c-20% дальньобійної шкоди\n§a+20% критичної шкоди\n§a+20 здоров'я",
   "classes.yggdrasil_ld.fireking.extra_description": "§a+5 сили вогню\n§c-20% дальньобійної шкоди\n§a+10% шансу критичного удару\n§a+20 здоров'я",
@@ -95,12 +95,19 @@
   "item.yggdrasil_ld.reset_scroll": "Сувій забуття",
   "item.yggdrasil_ld.escape_scroll": "Сувій втечі",
   "item.yggdrasil_ld.dripstone_scroll": "Сувій загостреного капельника",
+  "item.yggdrasil_ld.healing_potion_1": "Мале Зілля Лікування 10%",
+  "item.yggdrasil_ld.healing_potion_2": "Звичайне Зілля Лікування 25%",
+  "item.yggdrasil_ld.healing_potion_3": "Велике Зілля Лікування 35%",
+  "item.yggdrasil_ld.healing_potion_4": "Чудове Зілля Лікування 50%",
+  "item.yggdrasil_ld.healing_potion_5": "Гігантське Зілля Лікування 75%",
+  "item.yggdrasil_ld.healing_potion_6": "Зілля Повного Відновлення 100%",
 
 
   "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
   "dungeon.dark_dungeon_yggdrasil": "Темне підземемелля",
 
   "message.yggdrasil_ld.elytra_boost_disabled": "У цьому вимірі використання феєрверків для польоту заборонено!!",
+  "message.yggdrasil_ld.healing_potion_used": "Ви відчуваєте себе краще!",
 
   "message.yggdrasil_ld.pvp_cooldown": "Ви не можете отримати репутіцію за вбивство цього гравця ще раз так скоро.",
   "command.yggdrasil_ld.leaderboard.top_title": "--- Топ героїв ---",

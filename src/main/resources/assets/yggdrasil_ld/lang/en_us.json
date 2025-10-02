@@ -83,7 +83,7 @@
   "path.yggdrasil_ld.path_priest.extra_description": "§a+1 сили зцілення\n§a+4 здоров'я",
   "classes.yggdrasil_ld.warrior.extra_description": "§a+25% до фізичної шкоди\n§a+5% швидкості пересування\n§a+10% броні\n§a+35 здоров'я",
   "classes.yggdrasil_ld.bowmaster.extra_description": "§c-1 опір відкиданню\n§a+30% дальньобійної шкоди\n§a+7% швидкості стрільби\n§c-25% броні\n§a+20 здоров'я",
-  "classes.yggdrasil_ld.trickster.extra_description": "§a+3 фізичної шкоди\n§a+15% швидкості атаки\n§c-25% кількості перекатів\n§a+75% перезаряджання перекату\n§c-50% броні\n§a+1 дистанції перекату\n§a+20 здоров'я",
+  "classes.yggdrasil_ld.trickster.extra_description": "§a+3 фізичної шкоди\n§a+20% фізичної шкоди\n§a+15% швидкості атаки\n§c-25% кількості перекатів\n§a+75% перезаряджання перекату\n§c-50% броні\n§a+1 дистанції перекату\n§a+20 здоров'я",
   "classes.yggdrasil_ld.paladin.extra_description": "§a+80% стійкості до відкиданню\n§a+30% опору\n§c-30% броні\n§c-30% стійкості броні\n§a+40 здоров'я",
   "classes.yggdrasil_ld.iceking.extra_description": "§a+5 сили морозу\n§a+5% шансу критичного удару\n§c-20% дальньобійної шкоди\n§a+20% критичної шкоди\n§a+20 здоров'я",
   "classes.yggdrasil_ld.fireking.extra_description": "§a+5 сили вогню\n§c-20% дальньобійної шкоди\n§a+10% шансу критичного удару\n§a+20 здоров'я",
@@ -95,12 +95,19 @@
   "item.yggdrasil_ld.reset_scroll": "Reset Scroll",
   "item.yggdrasil_ld.escape_scroll": "Escape Scroll",
   "item.yggdrasil_ld.dripstone_scroll": "Scroll of Pointed Dripstone",
+  "item.yggdrasil_ld.healing_potion_1": "Minor Healing Potion",
+  "item.yggdrasil_ld.healing_potion_2": "Standard Healing Potion",
+  "item.yggdrasil_ld.healing_potion_3": "Greater Healing Potion",
+  "item.yggdrasil_ld.healing_potion_4": "Superior Healing Potion",
+  "item.yggdrasil_ld.healing_potion_5": "Grand Healing Potion",
+  "item.yggdrasil_ld.healing_potion_6": "Potion of Total Restoration",
 
 
   "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
   "dungeon.dark_dungeon_yggdrasil": "Темне підземемелля",
 
   "message.yggdrasil_ld.elytra_boost_disabled": "Невідома сила не дає використовувати феєрверки у цьому вимірі!!",
+  "message.yggdrasil_ld.healing_potion_used": "You feel rejuvenated!",
 
   "message.yggdrasil_ld.pvp_cooldown": "You cannot gain or lose reputation by killing this player again so soon.",
   "command.yggdrasil_ld.leaderboard.top_title": "--- Top Heroes ---",

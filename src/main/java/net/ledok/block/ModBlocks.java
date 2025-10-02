@@ -1,6 +1,6 @@
 package net.ledok.block;
 
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -27,11 +27,11 @@ public class ModBlocks {
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
-        return Registry.register(Registries.BLOCK, Identifier.of(Yggdrasil_ld.MOD_ID, name), block);
+        return Registry.register(Registries.BLOCK, Identifier.of(YggdrasilLdMod.MOD_ID, name), block);
     }
 
     private static void registerBlockItem(String name, Block block) {
-        Registry.register(Registries.ITEM, Identifier.of(Yggdrasil_ld.MOD_ID, name),
+        Registry.register(Registries.ITEM, Identifier.of(YggdrasilLdMod.MOD_ID, name),
                 new BlockItem(block, new Item.Settings()));
     }
 

@@ -1,7 +1,7 @@
 package net.ledok.reputation;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.networking.ModPackets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -45,7 +45,7 @@ public class ReputationManager {
     // --- COOLDOWN METHODS ---
     public static boolean wasRecentlyKilledBy(MinecraftServer server, UUID attacker, UUID victim) {
         long currentTime = server.getOverworld().getTime();
-        int cooldown = Yggdrasil_ld.CONFIG.pvp_cooldown_ticks;
+        int cooldown = YggdrasilLdMod.CONFIG.pvp_cooldown_ticks;
         return getState(server).wasRecentlyKilledBy(attacker, victim, currentTime, cooldown);
     }
 

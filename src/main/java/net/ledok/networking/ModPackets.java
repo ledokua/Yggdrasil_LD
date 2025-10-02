@@ -2,7 +2,7 @@ package net.ledok.networking;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.block.entity.BossSpawnerBlockEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class ModPackets {
 
     public record ReputationSyncPayload(UUID playerUuid, int reputation) implements CustomPayload {
-        public static final Id<ReputationSyncPayload> ID = new Id<>(Identifier.of(Yggdrasil_ld.MOD_ID, "reputation_sync"));
+        public static final Id<ReputationSyncPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "reputation_sync"));
         public static final PacketCodec<PacketByteBuf, ReputationSyncPayload> CODEC = PacketCodec.of(ReputationSyncPayload::write, ReputationSyncPayload::new);
         public ReputationSyncPayload(PacketByteBuf buf) { this(buf.readUuid(), buf.readInt()); }
         public void write(PacketByteBuf buf) { buf.writeUuid(playerUuid); buf.writeInt(reputation); }
@@ -29,7 +29,7 @@ public class ModPackets {
             BlockPos exitCoords, BlockPos enterSpawnCoords, BlockPos enterDestCoords, // --- NEW FIELDS ---
             int triggerRadius, int battleRadius, int regeneration
     ) implements CustomPayload {
-        public static final Id<UpdateBossSpawnerPayload> ID = new Id<>(Identifier.of(Yggdrasil_ld.MOD_ID, "update_boss_spawner"));
+        public static final Id<UpdateBossSpawnerPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "update_boss_spawner"));
         public static final PacketCodec<PacketByteBuf, UpdateBossSpawnerPayload> CODEC = PacketCodec.of(UpdateBossSpawnerPayload::write, UpdateBossSpawnerPayload::new);
 
         public UpdateBossSpawnerPayload(PacketByteBuf buf) {

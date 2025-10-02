@@ -8,7 +8,7 @@ import net.ledok.screen.BossSpawnerScreen;
 import net.ledok.screen.ModScreenHandlers;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
-public class Yggdrasil_ldClient implements ClientModInitializer {
+public class YggdrasilLdClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Register the new Screen
