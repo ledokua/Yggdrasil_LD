@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModConfigs {
-    // --- Puffish Skills Main skill tree ---
+    // --- Puffish Skills Main skill tree NOT USED ---
     public String puffish_skills_tree_id = "puffish_skills:minestar";
 
     // --- Runtime toggle for the partial inventory save feature ---
@@ -55,7 +55,6 @@ public class ModConfigs {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), Yggdrasil_ld.MOD_ID + ".json");
 
-    // ... load() and save() methods remain unchanged ...
     public static ModConfigs load() {
         ModConfigs config;
         if (CONFIG_FILE.exists()) {

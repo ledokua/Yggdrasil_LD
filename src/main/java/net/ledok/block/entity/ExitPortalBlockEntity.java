@@ -14,7 +14,7 @@ public class ExitPortalBlockEntity extends BlockEntity {
     private BlockPos destination;
 
     public ExitPortalBlockEntity(BlockPos pos, BlockState state) {
-        // --- FIX: Correctly reference the registered block entity type ---
+        // --- Correctly reference the registered block entity type ---
         super(ModBlockEntities.EXIT_PORTAL_BLOCK_ENTITY, pos, state);
     }
 

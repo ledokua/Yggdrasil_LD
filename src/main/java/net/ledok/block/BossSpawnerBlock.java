@@ -43,7 +43,7 @@ public class BossSpawnerBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient) {
-            // --- NEW: Permission Check ---
+            // --- Permission Check ---
             if (!player.isCreative() && !player.hasPermissionLevel(2)) {
                 player.sendMessage(Text.literal("You don't have permission to configure this block.").formatted(Formatting.RED), false);
                 return ActionResult.FAIL;

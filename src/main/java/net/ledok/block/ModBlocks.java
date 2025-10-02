@@ -11,13 +11,13 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
+// --- Blocks register ---
 public class ModBlocks {
 
     public static final Block BOSS_SPAWNER_BLOCK = registerBlock("boss_spawner",
             new BossSpawnerBlock(AbstractBlock.Settings.copy(Blocks.SPAWNER)
                     .strength(-1.0f, 3600000.0f)));
 
-    // --- FIX: This was missing from the previous version ---
     public static final Block EXIT_PORTAL_BLOCK = registerBlock("exit_portal",
             new ExitPortalBlock(AbstractBlock.Settings.copy(Blocks.NETHER_PORTAL).sounds(BlockSoundGroup.GLASS).noCollision()));
 

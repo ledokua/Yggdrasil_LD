@@ -142,7 +142,6 @@ public class ReputationCommand {
             UUID playerUuid = entry.getKey();
             int reputation = entry.getValue();
 
-            // This works even for offline players by checking the server's user cache
             Optional<GameProfile> profileOpt = server.getUserCache().getByUuid(playerUuid);
             String playerName = profileOpt.map(GameProfile::getName).orElse(playerUuid.toString().substring(0, 8));
 

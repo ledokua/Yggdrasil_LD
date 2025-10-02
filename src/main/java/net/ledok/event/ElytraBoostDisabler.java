@@ -18,7 +18,7 @@ public class ElytraBoostDisabler implements UseItemCallback {
         if (!world.isClient) {
             ItemStack itemStack = player.getStackInHand(hand);
 
-            // CONDITIONS
+            // CONDITIONS:
             // Using elytra
             // Has firework in hand
             if (player.isFallFlying() && itemStack.isOf(Items.FIREWORK_ROCKET)) {

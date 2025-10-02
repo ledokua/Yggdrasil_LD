@@ -45,7 +45,6 @@ public class ExitPortalBlock extends BlockWithEntity {
             if (world.getBlockEntity(pos) instanceof ExitPortalBlockEntity portalEntity) {
                 BlockPos destination = portalEntity.getDestination();
                 if(destination != null && world instanceof ServerWorld serverWorld) {
-                    // --- FIX: Use the correct, modern teleport method signature ---
                     player.teleport(serverWorld, destination.getX() + 0.5, destination.getY(), destination.getZ() + 0.5, Collections.emptySet(), player.getYaw(), player.getPitch());
                 }
             }

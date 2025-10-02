@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public class ModBlockEntities {
 
-    // --- FIX: Switched from the deprecated FabricBlockEntityTypeBuilder to the standard one ---
+    // --- Block entities register ---
     public static final BlockEntityType<BossSpawnerBlockEntity> BOSS_SPAWNER_BLOCK_ENTITY =
             Registry.register(Registries.BLOCK_ENTITY_TYPE,
                     Identifier.of(Yggdrasil_ld.MOD_ID, "boss_spawner_be"),
@@ -27,7 +27,6 @@ public class ModBlockEntities {
 
 
     public static void initialize() {
-        // This method is called to ensure the block entities are registered.
     }
 }
 

@@ -11,7 +11,7 @@ public class AdminCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("yggdrasil_ld")
-                .requires(source -> source.hasPermissionLevel(3)) // Require high permission level for admin commands
+                .requires(source -> source.hasPermissionLevel(3)) // Require OP permission level for admin commands
                 .then(CommandManager.literal("partial_inventory_save")
                         .then(CommandManager.argument("enabled", BoolArgumentType.bool())
                                 .executes(context -> {

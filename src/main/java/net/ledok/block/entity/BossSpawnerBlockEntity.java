@@ -61,7 +61,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     private UUID activeBossUuid = null;
     private RegistryKey<World> bossDimension = null;
     private int regenerationTickTimer = 0;
-    // --- NEW: Timer for removing the enter portal after the battle starts ---
+    // --- Timer for removing the enter portal after the battle starts ---
     private int enterPortalRemovalTimer = -1;
 
 
@@ -98,7 +98,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     }
 
     private void handleActiveBattle(ServerWorld world) {
-        // --- NEW: Handle enter portal timeout ---
+        // ---  Handle enter portal timeout ---
         if (this.enterPortalRemovalTimer > 0) {
             this.enterPortalRemovalTimer--;
             if (this.enterPortalRemovalTimer == 0) {
@@ -144,8 +144,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     }
 
     private void startBattle(ServerWorld world, BlockPos spawnPos) {
-        // --- NEW: Start the 1-minute timer for portal removal ---
-        // The portal is not removed immediately to give players a moment to enter.
+        // The portal is not removed immediately.
         this.enterPortalRemovalTimer = 1200; // 60 seconds * 20 ticks/second
 
         Optional<EntityType<?>> entityType = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(this.mobId));
@@ -206,7 +205,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         this.bossDimension = null;
         this.respawnCooldown = this.respawnTime;
         this.regenerationTickTimer = 0;
-        // --- NEW: Reset the portal removal timer ---
+        // --- Reset the portal removal timer ---
         this.enterPortalRemovalTimer = -1;
         this.markDirty();
         world.updateListeners(pos, getCachedState(), getCachedState(), 3);
