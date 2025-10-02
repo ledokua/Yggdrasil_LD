@@ -189,7 +189,7 @@ public abstract class PlayerEntityMixin {
         return new ArrayList<>();
     }
 
-    // --- NEW HELPER FOR TRINKETS ---
+    // --- HELPER FOR TRINKETS ---
     private List<DroppableSlot> getTrinketSlots(PlayerEntity player) {
         if (FabricLoader.getInstance().isModLoaded("trinkets")) {
             return TrinketsCompat.getTrinketSlots(player);

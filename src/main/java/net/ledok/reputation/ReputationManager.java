@@ -11,8 +11,6 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.Map;
 import java.util.UUID;
 
-import java.util.UUID;
-
 public class ReputationManager {
 
     private static ReputationState getState(MinecraftServer server) {
@@ -44,7 +42,7 @@ public class ReputationManager {
         setReputation(player, getReputation(player) - amount);
     }
 
-    // --- NEW COOLDOWN METHODS ---
+    // --- COOLDOWN METHODS ---
     public static boolean wasRecentlyKilledBy(MinecraftServer server, UUID attacker, UUID victim) {
         long currentTime = server.getOverworld().getTime();
         int cooldown = Yggdrasil_ld.CONFIG.pvp_cooldown_ticks;
@@ -66,13 +64,5 @@ public class ReputationManager {
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             ServerPlayNetworking.send(player, payload);
         }
-    }
-
-    public static void syncReputationWithPlayer(ServerPlayerEntity playerToSync, ServerPlayerEntity recipient) {
-        ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
-                playerToSync.getUuid(),
-                getReputation(playerToSync)
-        );
-        ServerPlayNetworking.send(recipient, payload);
     }
 }

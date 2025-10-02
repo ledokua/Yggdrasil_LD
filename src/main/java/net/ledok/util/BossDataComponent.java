@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public record BossDataComponent(int bossLevel) {
     public static final Codec<BossDataComponent> CODEC = Codec.INT.xmap(BossDataComponent::new, BossDataComponent::bossLevel);
 
-    // --- FIX: Use the correct registry for data components ---
+    // --- NOT USED FOR NOW ---
     public static final ComponentType<BossDataComponent> BOSS_DATA = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(Yggdrasil_ld.MOD_ID, "boss_data"),
@@ -19,7 +19,6 @@ public record BossDataComponent(int bossLevel) {
     );
 
     public static void initialize() {
-        // This ensures the component is registered.
     }
 }
 

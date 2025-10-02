@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
 
-    // --- All fields from the original code ---
+    // --- All fields for the block gui ---
     private TextFieldWidget mobIdField;
     private TextFieldWidget respawnTimeField;
     private TextFieldWidget portalActiveTimeField;
@@ -22,14 +22,12 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
     private TextFieldWidget triggerRadiusField;
     private TextFieldWidget battleRadiusField;
     private TextFieldWidget regenerationField;
-    // --- New fields for the enter portal ---
     private TextFieldWidget enterPortalSpawnCoordsField;
     private TextFieldWidget enterPortalDestCoordsField;
 
 
     public BossSpawnerScreen(BossSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        // Make the screen taller to accommodate all the new fields
         this.backgroundHeight = 220;
     }
 
@@ -124,7 +122,7 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
                 .dimensions(this.width / 2 - 50, this.height - 50, 100, 20)
                 .build());
 
-        // --- Load initial data into fields ---
+        // --- Preload initial data into fields ---
         loadBlockEntityData();
     }
 
@@ -176,12 +174,11 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        // No custom background texture, just the default gray
+        // No custom background texture for now
     }
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-        // We don't call super.drawForeground to prevent the title from rendering in the top-left corner
     }
 
     @Override

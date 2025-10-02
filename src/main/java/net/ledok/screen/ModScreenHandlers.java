@@ -9,14 +9,12 @@ import net.minecraft.util.Identifier;
 
 public class ModScreenHandlers {
 
-    // --- FIX: Use the correct modern constructor for ExtendedScreenHandlerType ---
+    // --- Constructor for ExtendedScreenHandlerType ---
     public static final ScreenHandlerType<BossSpawnerScreenHandler> BOSS_SPAWNER_SCREEN_HANDLER =
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(Yggdrasil_ld.MOD_ID, "boss_spawner"),
                     new ExtendedScreenHandlerType<>(BossSpawnerScreenHandler::new, BossSpawnerData.CODEC));
 
-
     public static void initialize() {
-        // This method is called to ensure the screen handlers are registered.
     }
 }
 

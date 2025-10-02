@@ -31,7 +31,6 @@ public class ReputationTicker {
             // Calculate the target number of ticks based on the config.
             int intervalInTicks = Yggdrasil_ld.CONFIG.passive_reputation_interval_minutes * TICKS_PER_MINUTE;
 
-            // When the timer reaches the target interval...
             if (timer >= intervalInTicks) {
                 timer = 0; // Reset the timer.
 
