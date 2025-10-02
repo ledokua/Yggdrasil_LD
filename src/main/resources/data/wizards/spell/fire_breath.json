@@ -78,7 +78,7 @@
       "action": {
         "type": "DAMAGE",
         "damage": {
-          "spell_power_coefficient": 0.9
+          "spell_power_coefficient": 1.08
         }
       },
       "particles": [
