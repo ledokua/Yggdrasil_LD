@@ -45,7 +45,7 @@
           "effect_id": "archers:entangling_roots",
           "duration": 1.0,
           "apply_limit": {
-            "health_base": 50.0,
+            "health_base": 1000.0,
             "spell_power_multiplier": 5.0
           }
         }

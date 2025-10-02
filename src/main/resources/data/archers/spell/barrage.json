@@ -36,7 +36,7 @@
   },
   "cost": {
     "cooldown": {
-      "duration": 10.0
+      "duration": 16.0
     },
     "item": {
       "id": "arrow",

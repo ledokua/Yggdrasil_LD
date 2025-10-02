@@ -61,7 +61,7 @@
           "effect_id": "rogues:shatter",
           "duration": 8.0,
           "apply_limit": {
-            "health_base": 100.0,
+            "health_base": 10000.0,
             "spell_power_multiplier": 2.0
           }
         }
