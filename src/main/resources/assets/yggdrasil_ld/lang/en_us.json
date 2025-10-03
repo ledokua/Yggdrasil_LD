@@ -117,7 +117,7 @@
   "command.yggdrasil_ld.tozero.already_zero": "%s's reputation is already 0.",
 
   "item.yggdrasil_ld.healing_potion.tooltip": "Heals for: %1$s\nUse Time: %2$s seconds\nCooldown: %3$s seconds",
-  "item.yggdrasil_ld.healing_potion.tooltip.heal": "Heals for: %1$s%%",
+  "item.yggdrasil_ld.healing_potion.tooltip.heal": "Heals for: %1$s%",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Use Time: %1$s seconds",
   "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Cooldown: %1$s seconds"
 }
