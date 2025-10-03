@@ -30,15 +30,15 @@ public class Items {
             "healing_potion_2"
     );
     public static final Item HEALING_POTION_3 = ItemInit.register(
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.35f, 40, 1200),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.35f, 35, 1200),
             "healing_potion_3"
     );
     public static final Item HEALING_POTION_4 = ItemInit.register(
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.5f, 40, 1600),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.5f, 30, 1600),
             "healing_potion_4"
     );
     public static final Item HEALING_POTION_5 = ItemInit.register(
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.75f, 20, 3400),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.75f, 25, 3400),
             "healing_potion_5"
     );
     public static final Item HEALING_POTION_6 = ItemInit.register(
