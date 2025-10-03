@@ -22,33 +22,28 @@ public class Items {
             "dripstone_scroll"
     );
     public static final Item HEALING_POTION_1 = ItemInit.register(
-            // healPercentage: 10%, useTimeTicks: 3s, cooldownTicks: 5s
-            new PercentageHealItem(new Item.Settings().maxCount(8), 0.1f, 60, 100),
+            new PercentageHealItem(new Item.Settings().maxCount(8), 0.1f, 20, 120),
             "healing_potion_1"
     );
     public static final Item HEALING_POTION_2 = ItemInit.register(
-            // healPercentage: 25%, useTimeTicks: 3s, cooldownTicks: 35s
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.25f, 60, 700),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.25f, 40, 900),
             "healing_potion_2"
     );
     public static final Item HEALING_POTION_3 = ItemInit.register(
-            // healPercentage: 35%, useTimeTicks: 1.25s, cooldownTicks: 50s
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.35f, 80, 1000),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.35f, 40, 1200),
             "healing_potion_3"
     );
     public static final Item HEALING_POTION_4 = ItemInit.register(
-            // healPercentage: 50%, useTimeTicks: 7s, cooldownTicks: 60s
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.5f, 140, 1200),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.5f, 40, 1600),
             "healing_potion_4"
     );
     public static final Item HEALING_POTION_5 = ItemInit.register(
-            // healPercentage: 75%, useTimeTicks: 10s, cooldownTicks: 100s
-            new PercentageHealItem(new Item.Settings().maxCount(16), 0.75f, 140, 2000),
+            new PercentageHealItem(new Item.Settings().maxCount(16), 0.75f, 20, 3400),
             "healing_potion_5"
     );
     public static final Item HEALING_POTION_6 = ItemInit.register(
-            // healPercentage: 100%, useTimeTicks: 0.5s, cooldownTicks: 10m
-            new PercentageHealItem(new Item.Settings().maxCount(1), 1f, 10, 12000),
+            // healPercentage: 100%, useTimeTicks: 0.25s, cooldownTicks: 10m
+            new PercentageHealItem(new Item.Settings().maxCount(1), 1f, 5, 12000),
             "healing_potion_6"
     );
 
