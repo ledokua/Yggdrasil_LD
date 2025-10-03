@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -11,6 +12,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class PercentageHealItem extends Item {
 
@@ -62,6 +65,34 @@ public class PercentageHealItem extends Item {
         }
         user.setCurrentHand(hand);
         return TypedActionResult.consume(itemStack);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        tooltip.add(Text.literal(""));
+
+        // Prepare the placeholder values
+        String healAmount = (int)(this.healPercentage * 100) + "%";
+        String useTime = String.format("%.1f", this.useTimeTicks / 20.0f);
+        String cooldown = String.format("%.1f", this.cooldownTicks / 20.0f);
+
+        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.heal", healAmount)
+                .formatted(Formatting.BLUE));
+
+        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.use_time", useTime)
+                .formatted(Formatting.GRAY));
+
+        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.cooldown", cooldown)
+                .formatted(Formatting.GRAY));
+
+/*
+        // One line tooltip
+        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip", healAmount, useTime, cooldown)
+                .formatted(Formatting.BLUE));
+
+*/
+
+        super.appendTooltip(stack, context, tooltip, type);
     }
 }
 
