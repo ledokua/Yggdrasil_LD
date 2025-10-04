@@ -112,7 +112,7 @@
           "effect_id": "paladins:judgement",
           "duration": 3.0,
           "apply_limit": {
-            "health_base": 600.0,
+            "health_base": 10000.0,
             "spell_power_multiplier": 4.0
           }
         }

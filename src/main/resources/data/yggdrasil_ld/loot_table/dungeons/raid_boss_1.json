@@ -2,7 +2,7 @@
   "type": "minecraft:chest",
   "pools": [
     {
-      "rolls": 4,
+      "rolls": 15,
       "entries": [
         {
           "type": "minecraft:item",
@@ -18,8 +18,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 15,
-                "max": 30
+                "min": 10,
+                "max": 25
               }
             }
           ]
@@ -33,8 +33,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 20,
-                "max": 35
+                "min": 10,
+                "max": 30
               }
             }
           ]
@@ -46,42 +46,29 @@
       "entries": [
         {
           "type": "minecraft:tag",
-          "name": "rpg_series:loot_tier/tier_3_armors",
+          "name": "rpg_series:loot_tier/tier_5_weapons",
           "expand": true,
           "weight": 25,
           "functions": []
-        },
+        }
+      ],
+      "functions": [
         {
-          "type": "minecraft:tag",
-          "name": "rpg_series:loot_tier/tier_3_relics",
-          "expand": true,
-          "weight": 25,
-          "functions": []
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "rpg_series:loot_tier/tier_3_weapons",
-          "expand": true,
-          "weight": 25,
-          "functions": []
-        },
+          "function": "minecraft:set_components",
+          "components": {
+            "enchant_limiter:limit": {
+              "count": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 8,
+      "entries": [
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_armors",
-          "expand": true,
-          "weight": 10,
-          "functions": []
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "rpg_series:loot_tier/tier_4_relics",
-          "expand": true,
-          "weight": 5,
-          "functions": []
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "rpg_series:loot_tier/tier_5_weapons",
           "expand": true,
           "weight": 10,
           "functions": []
@@ -95,6 +82,45 @@
               "count": 5
             }
           }
+        }
+      ]
+    },
+    {
+      "rolls": 8,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_4_relics",
+          "expand": true,
+          "weight": 5,
+          "functions": []
+        }
+      ]
+    },
+    {
+      "rolls": 16,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_4_accessories",
+          "expand": true,
+          "weight": 5,
+          "functions": []
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 999
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "icarus:wings",
+          "expand": true,
+          "weight": 1
         }
       ]
     }
