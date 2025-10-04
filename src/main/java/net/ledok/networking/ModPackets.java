@@ -6,6 +6,7 @@ import net.ledok.YggdrasilLdMod;
 import net.ledok.block.entity.BossSpawnerBlockEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -18,38 +19,73 @@ public class ModPackets {
     public record ReputationSyncPayload(UUID playerUuid, int reputation) implements CustomPayload {
         public static final Id<ReputationSyncPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "reputation_sync"));
         public static final PacketCodec<PacketByteBuf, ReputationSyncPayload> CODEC = PacketCodec.of(ReputationSyncPayload::write, ReputationSyncPayload::new);
-        public ReputationSyncPayload(PacketByteBuf buf) { this(buf.readUuid(), buf.readInt()); }
-        public void write(PacketByteBuf buf) { buf.writeUuid(playerUuid); buf.writeInt(reputation); }
-        @Override public Id<? extends CustomPayload> getId() { return ID; }
-    }
 
-    // --- C2S Boss Spawner Update Packet ---
-    public record UpdateBossSpawnerPayload(
-            BlockPos pos, String mobId, int respawnTime, int portalTime, String lootTable,
-            BlockPos exitCoords, BlockPos enterSpawnCoords, BlockPos enterDestCoords, // --- NEW FIELDS ---
-            int triggerRadius, int battleRadius, int regeneration
-    ) implements CustomPayload {
-        public static final Id<UpdateBossSpawnerPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "update_boss_spawner"));
-        public static final PacketCodec<PacketByteBuf, UpdateBossSpawnerPayload> CODEC = PacketCodec.of(UpdateBossSpawnerPayload::write, UpdateBossSpawnerPayload::new);
-
-        public UpdateBossSpawnerPayload(PacketByteBuf buf) {
-            this(
-                    buf.readBlockPos(), buf.readString(), buf.readInt(), buf.readInt(), buf.readString(),
-                    buf.readBlockPos(), buf.readBlockPos(), buf.readBlockPos(), // --- NEW ---
-                    buf.readInt(), buf.readInt(), buf.readInt()
-            );
+        public ReputationSyncPayload(PacketByteBuf buf) {
+            this(buf.readUuid(), buf.readInt());
         }
 
         public void write(PacketByteBuf buf) {
-            buf.writeBlockPos(pos); buf.writeString(mobId); buf.writeInt(respawnTime);
-            buf.writeInt(portalTime); buf.writeString(lootTable); buf.writeBlockPos(exitCoords);
-            // --- NEW ---
-            buf.writeBlockPos(enterSpawnCoords); buf.writeBlockPos(enterDestCoords);
-            buf.writeInt(triggerRadius); buf.writeInt(battleRadius); buf.writeInt(regeneration);
+            buf.writeUuid(playerUuid);
+            buf.writeInt(reputation);
         }
 
-        @Override public Id<? extends CustomPayload> getId() { return ID; }
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
     }
+
+    public record UpdateBossSpawnerPayload(
+            BlockPos pos, String mobId, int respawnTime, int portalTime, String lootTable,
+            BlockPos exitCoords, BlockPos enterSpawnCoords, BlockPos enterDestCoords,
+            int triggerRadius, int battleRadius, int regeneration, int minPlayers
+    ) implements CustomPayload {
+        public static final Id<UpdateBossSpawnerPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "update_boss_spawner"));
+
+        // FIX: Replaced the tuple() method with a manual codec, as the number of arguments was too high.
+        public static final PacketCodec<PacketByteBuf, UpdateBossSpawnerPayload> CODEC = PacketCodec.of(
+                UpdateBossSpawnerPayload::write, UpdateBossSpawnerPayload::new);
+
+        // Constructor to read data from the packet buffer
+        public UpdateBossSpawnerPayload(PacketByteBuf buf) {
+            this(
+                    buf.readBlockPos(),
+                    buf.readString(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
+                    buf.readString(),
+                    buf.readBlockPos(),
+                    buf.readBlockPos(),
+                    buf.readBlockPos(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
+                    buf.readVarInt()
+            );
+        }
+
+        // Method to write data to the packet buffer
+        public void write(PacketByteBuf buf) {
+            buf.writeBlockPos(pos);
+            buf.writeString(mobId);
+            buf.writeVarInt(respawnTime);
+            buf.writeVarInt(portalTime);
+            buf.writeString(lootTable);
+            buf.writeBlockPos(exitCoords);
+            buf.writeBlockPos(enterSpawnCoords);
+            buf.writeBlockPos(enterDestCoords);
+            buf.writeVarInt(triggerRadius);
+            buf.writeVarInt(battleRadius);
+            buf.writeVarInt(regeneration);
+            buf.writeVarInt(minPlayers);
+        }
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
 
     public static void registerS2CPackets() {
         PayloadTypeRegistry.playS2C().register(ReputationSyncPayload.ID, ReputationSyncPayload.CODEC);
@@ -67,12 +103,12 @@ public class ModPackets {
                     blockEntity.portalActiveTime = payload.portalTime();
                     blockEntity.lootTableId = payload.lootTable();
                     blockEntity.exitPortalCoords = payload.exitCoords();
-                    // --- NEW: Update Enter Portal fields on the server ---
                     blockEntity.enterPortalSpawnCoords = payload.enterSpawnCoords();
                     blockEntity.enterPortalDestCoords = payload.enterDestCoords();
                     blockEntity.triggerRadius = payload.triggerRadius();
                     blockEntity.battleRadius = payload.battleRadius();
                     blockEntity.regeneration = payload.regeneration();
+                    blockEntity.minPlayers = payload.minPlayers();
                     blockEntity.markDirty();
                     world.updateListeners(payload.pos(), blockEntity.getCachedState(), blockEntity.getCachedState(), 3);
                 }

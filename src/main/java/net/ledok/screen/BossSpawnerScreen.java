@@ -13,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 
 public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
 
-    // --- All fields for the block gui ---
     private TextFieldWidget mobIdField;
     private TextFieldWidget respawnTimeField;
     private TextFieldWidget portalActiveTimeField;
@@ -24,57 +23,54 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
     private TextFieldWidget regenerationField;
     private TextFieldWidget enterPortalSpawnCoordsField;
     private TextFieldWidget enterPortalDestCoordsField;
+    // --- NEW: Text field for min players ---
+    private TextFieldWidget minPlayersField;
 
 
     public BossSpawnerScreen(BossSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.backgroundHeight = 220;
+        this.backgroundHeight = 240; // Increased height for the new field
     }
 
     @Override
     protected void init() {
         super.init();
 
-        int fieldWidth = 130;
+        int fieldWidth = 150;
         int fieldHeight = 20;
         int yOffset = 24;
 
         // --- Column 1 ---
-        int col1X = (this.width / 2) - fieldWidth - 5;
+        int col1X = (this.width / 2) - fieldWidth - 10;
         int y = 20;
 
-        // Mob ID
         this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob ID"), this.textRenderer));
         mobIdField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        mobIdField.setMaxLength(128); // RESTORED
+        mobIdField.setMaxLength(128);
         this.addDrawableChild(mobIdField);
         y += yOffset * 1.5;
 
-        // Loot Table
         this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Loot Table ID"), this.textRenderer));
         lootTableIdField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        lootTableIdField.setMaxLength(128); // RESTORED
+        lootTableIdField.setMaxLength(128);
         this.addDrawableChild(lootTableIdField);
         y += yOffset * 1.5;
 
-        // Enter Portal Spawn
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Spawn"), this.textRenderer));
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Spawn (X Y Z)"), this.textRenderer));
         enterPortalSpawnCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        enterPortalSpawnCoordsField.setMaxLength(64); // RESTORED
+        enterPortalSpawnCoordsField.setMaxLength(32);
         this.addDrawableChild(enterPortalSpawnCoordsField);
         y += yOffset * 1.5;
 
-        // Enter Portal Destination
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Destination"), this.textRenderer));
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Dest (X Y Z)"), this.textRenderer));
         enterPortalDestCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        enterPortalDestCoordsField.setMaxLength(64); // RESTORED
+        enterPortalDestCoordsField.setMaxLength(32);
         this.addDrawableChild(enterPortalDestCoordsField);
         y += yOffset * 1.5;
 
-        // Exit Portal Destination
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Exit Portal Destination"), this.textRenderer));
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Exit Portal Dest (X Y Z)"), this.textRenderer));
         exitPortalCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        exitPortalCoordsField.setMaxLength(64); // RESTORED
+        exitPortalCoordsField.setMaxLength(32);
         this.addDrawableChild(exitPortalCoordsField);
 
 
@@ -82,39 +78,41 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         int col2X = (this.width / 2) + 5;
         y = 20;
 
-        // Respawn Time
         this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Respawn Time (ticks)"), this.textRenderer));
         respawnTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        respawnTimeField.setMaxLength(64); // RESTORED
+        respawnTimeField.setMaxLength(8);
         this.addDrawableChild(respawnTimeField);
         y += yOffset * 1.5;
 
-        // Portal Active Time
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Portal Active Time"), this.textRenderer));
+        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Portal Active Time (ticks)"), this.textRenderer));
         portalActiveTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        portalActiveTimeField.setMaxLength(64); // RESTORED
+        portalActiveTimeField.setMaxLength(8);
         this.addDrawableChild(portalActiveTimeField);
         y += yOffset * 1.5;
 
-        // Trigger Radius
         this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Trigger Radius"), this.textRenderer));
         triggerRadiusField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        triggerRadiusField.setMaxLength(64); // RESTORED
+        triggerRadiusField.setMaxLength(4);
         this.addDrawableChild(triggerRadiusField);
         y += yOffset * 1.5;
 
-        // Battle Radius
         this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Battle Radius"), this.textRenderer));
         battleRadiusField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        battleRadiusField.setMaxLength(64); // RESTORED
+        battleRadiusField.setMaxLength(4);
         this.addDrawableChild(battleRadiusField);
         y += yOffset * 1.5;
 
-        // Regeneration
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Regeneration"), this.textRenderer));
+        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Regeneration / 5s"), this.textRenderer));
         regenerationField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        regenerationField.setMaxLength(64); // RESTORED
+        regenerationField.setMaxLength(4);
         this.addDrawableChild(regenerationField);
+
+        // --- NEW: Add min players field to the second column ---
+        y += yOffset * 1.5;
+        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Min Players"), this.textRenderer));
+        minPlayersField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        minPlayersField.setMaxLength(3);
+        this.addDrawableChild(minPlayersField);
 
 
         // --- Save Button ---
@@ -122,7 +120,6 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
                 .dimensions(this.width / 2 - 50, this.height - 50, 100, 20)
                 .build());
 
-        // --- Preload initial data into fields ---
         loadBlockEntityData();
     }
 
@@ -138,6 +135,7 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
             regenerationField.setText(String.valueOf(handler.blockEntity.regeneration));
             enterPortalSpawnCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalSpawnCoords.getX(), handler.blockEntity.enterPortalSpawnCoords.getY(), handler.blockEntity.enterPortalSpawnCoords.getZ()));
             enterPortalDestCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalDestCoords.getX(), handler.blockEntity.enterPortalDestCoords.getY(), handler.blockEntity.enterPortalDestCoords.getZ()));
+            minPlayersField.setText(String.valueOf(handler.blockEntity.minPlayers)); // NEW: Load data
         }
     }
 
@@ -147,7 +145,8 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
             if (parts.length == 3) {
                 return new BlockPos(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
             }
-        } catch (NumberFormatException ignored) { }
+        } catch (NumberFormatException ignored) {
+        }
         return new BlockPos(0, 0, 0);
     }
 
@@ -164,7 +163,8 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
                     parseCoords(enterPortalDestCoordsField.getText()),
                     Integer.parseInt(triggerRadiusField.getText()),
                     Integer.parseInt(battleRadiusField.getText()),
-                    Integer.parseInt(regenerationField.getText())
+                    Integer.parseInt(regenerationField.getText()),
+                    Integer.parseInt(minPlayersField.getText()) // NEW: Send data
             ));
             this.close();
         } catch (NumberFormatException e) {
@@ -174,7 +174,6 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        // No custom background texture for now
     }
 
     @Override

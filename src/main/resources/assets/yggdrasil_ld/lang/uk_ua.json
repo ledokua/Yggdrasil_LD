@@ -108,6 +108,7 @@
 
   "message.yggdrasil_ld.elytra_boost_disabled": "У цьому вимірі використання феєрверків для польоту заборонено!!",
   "message.yggdrasil_ld.healing_potion_used": "Ви відчуваєте себе краще!",
+  "message.yggdrasil_ld.raid_start": "%1$s розпочав рейд проти %2$s!",
 
   "message.yggdrasil_ld.pvp_cooldown": "Ви не можете отримати репутіцію за вбивство цього гравця ще раз так скоро.",
   "command.yggdrasil_ld.leaderboard.top_title": "--- Топ героїв ---",

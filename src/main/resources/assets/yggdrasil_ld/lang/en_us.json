@@ -108,6 +108,7 @@
 
   "message.yggdrasil_ld.elytra_boost_disabled": "Невідома сила не дає використовувати феєрверки у цьому вимірі!",
   "message.yggdrasil_ld.healing_potion_used": "You feel rejuvenated!",
+  "message.yggdrasil_ld.raid_start": "%1$s has started a raid against %2$s!",
 
   "message.yggdrasil_ld.pvp_cooldown": "You cannot gain or lose reputation by killing this player again so soon.",
   "command.yggdrasil_ld.leaderboard.top_title": "--- Top Heroes ---",

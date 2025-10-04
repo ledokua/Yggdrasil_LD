@@ -32,11 +32,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +56,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     public int triggerRadius = 16;
     public int battleRadius = 64;
     public int regeneration = 0;
+    public int minPlayers = 2;
 
     // --- State Machine Fields ---
     private boolean isBattleActive = false;
@@ -61,15 +64,12 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     private UUID activeBossUuid = null;
     private RegistryKey<World> bossDimension = null;
     private int regenerationTickTimer = 0;
-    // --- Timer for removing the enter portal after the battle starts ---
     private int enterPortalRemovalTimer = -1;
-
 
     public BossSpawnerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BOSS_SPAWNER_BLOCK_ENTITY, pos, state);
     }
 
-    // --- TICK LOGIC ---
     public static void tick(World world, BlockPos pos, BlockState state, BossSpawnerBlockEntity be) {
         if (world.isClient() || !(world instanceof ServerWorld serverWorld)) return;
 
@@ -83,7 +83,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     private void handleIdleState(ServerWorld world, BlockPos pos) {
         if (respawnCooldown > 0) {
             respawnCooldown--;
-            if(respawnCooldown == 0) {
+            if (respawnCooldown == 0) {
                 spawnEnterPortal(world);
             }
             return;
@@ -92,13 +92,12 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         Box triggerBox = new Box(pos).expand(triggerRadius);
         List<ServerPlayerEntity> playersInTriggerZone = world.getEntitiesByClass(ServerPlayerEntity.class, triggerBox, p -> !p.isSpectator());
 
-        if (!playersInTriggerZone.isEmpty()) {
-            startBattle(world, pos);
+        if (playersInTriggerZone.size() >= this.minPlayers) {
+            startBattle(world, pos, playersInTriggerZone.get(0));
         }
     }
 
     private void handleActiveBattle(ServerWorld world) {
-        // ---  Handle enter portal timeout ---
         if (this.enterPortalRemovalTimer > 0) {
             this.enterPortalRemovalTimer--;
             if (this.enterPortalRemovalTimer == 0) {
@@ -136,24 +135,43 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         }
         if (regeneration > 0 && bossEntity instanceof LivingEntity livingBoss) {
             regenerationTickTimer++;
-            if (regenerationTickTimer >= 20) {
+            if (regenerationTickTimer >= 100) {
                 livingBoss.heal((float) regeneration);
                 regenerationTickTimer = 0;
             }
         }
     }
 
-    private void startBattle(ServerWorld world, BlockPos spawnPos) {
-        // The portal is not removed immediately.
-        this.enterPortalRemovalTimer = 1200; // 60 seconds * 20 ticks/second
+    private void startBattle(ServerWorld world, BlockPos spawnPos, ServerPlayerEntity triggeringPlayer) {
+        this.enterPortalRemovalTimer = 1200;
 
-        Optional<EntityType<?>> entityType = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(this.mobId));
-        if (entityType.isEmpty()) {
+        String fullMobId = this.mobId;
+        if (!fullMobId.contains(":")) {
+            fullMobId = "minecraft:" + fullMobId;
+        }
+
+        Optional<EntityType<?>> entityTypeOpt = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(fullMobId));
+
+        // --- NEW: Get the proper display name for the announcement ---
+        Text mobDisplayName;
+        if (entityTypeOpt.isPresent()) {
+            // This gets the translatable name like "Zombie" or "Wither"
+            mobDisplayName = entityTypeOpt.get().getName();
+        } else {
+            // Fallback to the raw ID if the entity type is invalid
+            mobDisplayName = Text.literal(this.mobId);
+        }
+
+        Text announcement = Text.translatable("message.yggdrasil_ld.raid_start", triggeringPlayer.getDisplayName(), mobDisplayName)
+                .formatted(Formatting.GOLD);
+        world.getServer().getPlayerManager().broadcast(announcement, false);
+
+        if (entityTypeOpt.isEmpty()) {
             YggdrasilLdMod.LOGGER.error("Invalid mob ID in spawner at {}: {}", this.pos, this.mobId);
             this.respawnCooldown = this.respawnTime;
             return;
         }
-        Entity boss = entityType.get().create(world);
+        Entity boss = entityTypeOpt.get().create(world);
         if (boss == null) {
             YggdrasilLdMod.LOGGER.error("Failed to create entity from ID: {}", this.mobId);
             return;
@@ -194,7 +212,6 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
 
     private void handleBattleLoss(ServerWorld world, String reason) {
         YggdrasilLdMod.LOGGER.info("Battle lost at spawner {}: {}", pos, reason);
-        // Ensure portal is gone if the battle ends before the timer
         removeEnterPortal(world);
         resetSpawner(world);
     }
@@ -205,7 +222,6 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         this.bossDimension = null;
         this.respawnCooldown = this.respawnTime;
         this.regenerationTickTimer = 0;
-        // --- Reset the portal removal timer ---
         this.enterPortalRemovalTimer = -1;
         this.markDirty();
         world.updateListeners(pos, getCachedState(), getCachedState(), 3);
@@ -216,17 +232,17 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     }
 
     private void spawnEnterPortal(ServerWorld world) {
-        if (enterPortalSpawnCoords == null || enterPortalDestCoords == null || enterPortalSpawnCoords.equals(new BlockPos(0,0,0))) {
+        if (enterPortalSpawnCoords == null || enterPortalDestCoords == null || enterPortalSpawnCoords.equals(new BlockPos(0, 0, 0))) {
             return;
         }
         world.setBlockState(enterPortalSpawnCoords, ModBlocks.ENTER_PORTAL_BLOCK.getDefaultState());
-        if(world.getBlockEntity(enterPortalSpawnCoords) instanceof EnterPortalBlockEntity be) {
+        if (world.getBlockEntity(enterPortalSpawnCoords) instanceof EnterPortalBlockEntity be) {
             be.setDestination(enterPortalDestCoords);
         }
     }
 
     private void removeEnterPortal(ServerWorld world) {
-        if(enterPortalSpawnCoords != null && world.getBlockState(enterPortalSpawnCoords).isOf(ModBlocks.ENTER_PORTAL_BLOCK)) {
+        if (enterPortalSpawnCoords != null && world.getBlockState(enterPortalSpawnCoords).isOf(ModBlocks.ENTER_PORTAL_BLOCK)) {
             world.setBlockState(enterPortalSpawnCoords, Blocks.AIR.getDefaultState());
         }
     }
@@ -244,6 +260,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         nbt.putInt("TriggerRadius", triggerRadius);
         nbt.putInt("BattleRadius", battleRadius);
         nbt.putInt("Regeneration", regeneration);
+        nbt.putInt("MinPlayers", minPlayers);
         nbt.putBoolean("IsBattleActive", isBattleActive);
         nbt.putInt("RespawnCooldown", respawnCooldown);
         if (activeBossUuid != null) nbt.putUuid("ActiveBossUuid", activeBossUuid);
@@ -258,21 +275,46 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         portalActiveTime = nbt.getInt("PortalActiveTime");
         lootTableId = nbt.getString("LootTableId");
         exitPortalCoords = BlockPos.fromLong(nbt.getLong("ExitPortalCoords"));
-        if (nbt.contains("EnterPortalSpawn")) enterPortalSpawnCoords = BlockPos.fromLong(nbt.getLong("EnterPortalSpawn"));
-        if (nbt.contains("EnterPortalDest")) enterPortalDestCoords = BlockPos.fromLong(nbt.getLong("EnterPortalDest"));
+        if (nbt.contains("EnterPortalSpawn"))
+            enterPortalSpawnCoords = BlockPos.fromLong(nbt.getLong("EnterPortalSpawn"));
+        if (nbt.contains("EnterPortalDest"))
+            enterPortalDestCoords = BlockPos.fromLong(nbt.getLong("EnterPortalDest"));
         triggerRadius = nbt.getInt("TriggerRadius");
         battleRadius = nbt.getInt("BattleRadius");
         regeneration = nbt.getInt("Regeneration");
+        minPlayers = nbt.contains("MinPlayers") ? nbt.getInt("MinPlayers") : 1;
         isBattleActive = nbt.getBoolean("IsBattleActive");
         respawnCooldown = nbt.getInt("RespawnCooldown");
         if (nbt.containsUuid("ActiveBossUuid")) activeBossUuid = nbt.getUuid("ActiveBossUuid");
-        if (nbt.contains("BossDimension")) bossDimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(nbt.getString("BossDimension")));
+        if (nbt.contains("BossDimension"))
+            bossDimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(nbt.getString("BossDimension")));
     }
 
-    @Nullable @Override public Packet<ClientPlayPacketListener> toUpdatePacket() { return BlockEntityUpdateS2CPacket.create(this); }
-    @Override public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) { return createNbt(registryLookup); }
-    @Override public Text getDisplayName() { return Text.literal("Boss Spawner Configuration"); }
-    @Nullable @Override public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) { return new BossSpawnerScreenHandler(syncId, playerInventory, this); }
-    @Override public BossSpawnerData getScreenOpeningData(ServerPlayerEntity player) { return new BossSpawnerData(this.pos); }
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
+    }
+
+    @Override
+    public Text getDisplayName() {
+        return Text.literal("Boss Spawner Configuration");
+    }
+
+    @Nullable
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+        return new BossSpawnerScreenHandler(syncId, playerInventory, this);
+    }
+
+    @Override
+    public BossSpawnerData getScreenOpeningData(ServerPlayerEntity player) {
+        return new BossSpawnerData(this.pos);
+    }
 }
 
