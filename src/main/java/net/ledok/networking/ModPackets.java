@@ -38,7 +38,7 @@ public class ModPackets {
     public record UpdateBossSpawnerPayload(
             BlockPos pos, String mobId, int respawnTime, int portalTime, String lootTable,
             BlockPos exitCoords, BlockPos enterSpawnCoords, BlockPos enterDestCoords,
-            int triggerRadius, int battleRadius, int regeneration, int minPlayers
+            int triggerRadius, int battleRadius, int regeneration, int minPlayers, int skillExperiencePerWin
     ) implements CustomPayload {
         public static final Id<UpdateBossSpawnerPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "update_boss_spawner"));
 
@@ -60,6 +60,7 @@ public class ModPackets {
                     buf.readVarInt(),
                     buf.readVarInt(),
                     buf.readVarInt(),
+                    buf.readVarInt(),
                     buf.readVarInt()
             );
         }
@@ -78,6 +79,7 @@ public class ModPackets {
             buf.writeVarInt(battleRadius);
             buf.writeVarInt(regeneration);
             buf.writeVarInt(minPlayers);
+            buf.writeVarInt(skillExperiencePerWin);
         }
 
         @Override
@@ -109,6 +111,7 @@ public class ModPackets {
                     blockEntity.battleRadius = payload.battleRadius();
                     blockEntity.regeneration = payload.regeneration();
                     blockEntity.minPlayers = payload.minPlayers();
+                    blockEntity.skillExperiencePerWin = payload.skillExperiencePerWin();
                     blockEntity.markDirty();
                     world.updateListeners(payload.pos(), blockEntity.getCachedState(), blockEntity.getCachedState(), 3);
                 }

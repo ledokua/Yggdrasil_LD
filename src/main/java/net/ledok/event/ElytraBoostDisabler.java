@@ -33,7 +33,6 @@ public class ElytraBoostDisabler implements UseItemCallback {
                 }
             }
         }
-        // If all ok allow boost
         return TypedActionResult.pass(player.getStackInHand(hand));
     }
 }

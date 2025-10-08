@@ -117,7 +117,8 @@
   "command.yggdrasil_ld.tozero.success": "Змінено репутацію %s's на %d%% до нуля. Нова репутація: %d",
   "command.yggdrasil_ld.tozero.already_zero": "%s's репутація вже 0.",
 
-
+  "item.yggdrasil_ld.healing_potion.tooltip.reset_scroll": "Очищає ваше дерево навичок та вертає всі очки навичок",
+  "item.yggdrasil_ld.healing_potion.tooltip.dripstone": "Створює капельник над випадковим гравцем",
   "item.yggdrasil_ld.healing_potion.tooltip": "Зцілює на: %1$s\nЧас використання: %2$s секунд\nПерезарядка: %3$s секунд",
   "item.yggdrasil_ld.healing_potion.tooltip.heal": "Зцілює на: %1$s",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Час використання: %1$s секунд",

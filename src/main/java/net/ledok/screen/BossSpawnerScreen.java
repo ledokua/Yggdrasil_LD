@@ -23,9 +23,8 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
     private TextFieldWidget regenerationField;
     private TextFieldWidget enterPortalSpawnCoordsField;
     private TextFieldWidget enterPortalDestCoordsField;
-    // --- NEW: Text field for min players ---
     private TextFieldWidget minPlayersField;
-
+    private TextFieldWidget experiencePerWinField;
 
     public BossSpawnerScreen(BossSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -72,6 +71,12 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         exitPortalCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
         exitPortalCoordsField.setMaxLength(32);
         this.addDrawableChild(exitPortalCoordsField);
+        y += yOffset * 1.5;
+
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("SkillTree XP per win"), this.textRenderer));
+        experiencePerWinField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        experiencePerWinField.setMaxLength(32);
+        this.addDrawableChild(experiencePerWinField);
 
 
         // --- Column 2 ---
@@ -107,7 +112,6 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         regenerationField.setMaxLength(4);
         this.addDrawableChild(regenerationField);
 
-        // --- NEW: Add min players field to the second column ---
         y += yOffset * 1.5;
         this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Min Players"), this.textRenderer));
         minPlayersField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
@@ -135,7 +139,8 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
             regenerationField.setText(String.valueOf(handler.blockEntity.regeneration));
             enterPortalSpawnCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalSpawnCoords.getX(), handler.blockEntity.enterPortalSpawnCoords.getY(), handler.blockEntity.enterPortalSpawnCoords.getZ()));
             enterPortalDestCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalDestCoords.getX(), handler.blockEntity.enterPortalDestCoords.getY(), handler.blockEntity.enterPortalDestCoords.getZ()));
-            minPlayersField.setText(String.valueOf(handler.blockEntity.minPlayers)); // NEW: Load data
+            minPlayersField.setText(String.valueOf(handler.blockEntity.minPlayers));
+            experiencePerWinField.setText(String.valueOf(handler.blockEntity.skillExperiencePerWin));
         }
     }
 
@@ -164,7 +169,8 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
                     Integer.parseInt(triggerRadiusField.getText()),
                     Integer.parseInt(battleRadiusField.getText()),
                     Integer.parseInt(regenerationField.getText()),
-                    Integer.parseInt(minPlayersField.getText()) // NEW: Send data
+                    Integer.parseInt(minPlayersField.getText()),
+                    Integer.parseInt(experiencePerWinField.getText())
             ));
             this.close();
         } catch (NumberFormatException e) {

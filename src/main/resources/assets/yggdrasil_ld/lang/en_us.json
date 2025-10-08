@@ -103,10 +103,10 @@
   "item.yggdrasil_ld.healing_potion_6": "Potion of Total Restoration",
 
 
-  "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
-  "dungeon.dark_dungeon_yggdrasil": "Темне підземемелля",
+  "dungeon.temple_dungeon_yggdrasil": "Temple dungeon",
+  "dungeon.dark_dungeon_yggdrasil": "Dark dungeon",
 
-  "message.yggdrasil_ld.elytra_boost_disabled": "Невідома сила не дає використовувати феєрверки у цьому вимірі!",
+  "message.yggdrasil_ld.elytra_boost_disabled": "You can't use fireworks in this dimension!",
   "message.yggdrasil_ld.healing_potion_used": "You feel rejuvenated!",
   "message.yggdrasil_ld.raid_start": "%1$s has started a raid against %2$s!",
 
@@ -117,6 +117,8 @@
   "command.yggdrasil_ld.tozero.success": "Moved %s's reputation %d%% closer to zero. New reputation: %d",
   "command.yggdrasil_ld.tozero.already_zero": "%s's reputation is already 0.",
 
+  "item.yggdrasil_ld.healing_potion.tooltip.reset_scroll": "Resets your skill tree (You don't loose points)",
+  "item.yggdrasil_ld.healing_potion.tooltip.dripstone": "Creates pointed dripstone above random player",
   "item.yggdrasil_ld.healing_potion.tooltip": "Heals for: %1$s\nUse Time: %2$s seconds\nCooldown: %3$s seconds",
   "item.yggdrasil_ld.healing_potion.tooltip.heal": "Heals for: %1$s",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Use Time: %1$s seconds",

@@ -1,8 +1,10 @@
 package net.ledok.block.entity;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.YggdrasilLdMod;
 import net.ledok.block.ModBlocks;
+import net.ledok.compat.PuffishSkillsCompat;
 import net.ledok.screen.BossSpawnerData;
 import net.ledok.screen.BossSpawnerScreenHandler;
 import net.minecraft.block.BlockState;
@@ -57,6 +59,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     public int battleRadius = 64;
     public int regeneration = 0;
     public int minPlayers = 2;
+    public int skillExperiencePerWin = 100;
 
     // --- State Machine Fields ---
     private boolean isBattleActive = false;
@@ -187,6 +190,20 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
 
     private void handleBattleWin(ServerWorld world, Entity defeatedBoss) {
         YggdrasilLdMod.LOGGER.info("Battle won at spawner {}", pos);
+
+        // --- NEW: Award experience to players in the battle radius ---
+        if (this.skillExperiencePerWin > 0) {
+            Box battleBox = new Box(pos).expand(battleRadius);
+            List<ServerPlayerEntity> playersInBattle = world.getEntitiesByClass(ServerPlayerEntity.class, battleBox, p -> !p.isSpectator());
+            for (ServerPlayerEntity player : playersInBattle) {
+
+                // Puffish Skills Experience (safely)
+                if (this.skillExperiencePerWin > 0 && FabricLoader.getInstance().isModLoaded("puffish_skills")) {
+                    PuffishSkillsCompat.addExperience(player, this.skillExperiencePerWin);
+                }
+            }
+        }
+
         Identifier lootTableIdentifier = Identifier.tryParse(this.lootTableId);
         if (lootTableIdentifier != null) {
             RegistryKey<LootTable> lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTableIdentifier);
@@ -261,6 +278,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         nbt.putInt("BattleRadius", battleRadius);
         nbt.putInt("Regeneration", regeneration);
         nbt.putInt("MinPlayers", minPlayers);
+        nbt.putInt("SkillExperiencePerWin", skillExperiencePerWin);
         nbt.putBoolean("IsBattleActive", isBattleActive);
         nbt.putInt("RespawnCooldown", respawnCooldown);
         if (activeBossUuid != null) nbt.putUuid("ActiveBossUuid", activeBossUuid);
@@ -283,6 +301,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         battleRadius = nbt.getInt("BattleRadius");
         regeneration = nbt.getInt("Regeneration");
         minPlayers = nbt.contains("MinPlayers") ? nbt.getInt("MinPlayers") : 1;
+        skillExperiencePerWin = nbt.getInt("SkillExperiencePerWin");
         isBattleActive = nbt.getBoolean("IsBattleActive");
         respawnCooldown = nbt.getInt("RespawnCooldown");
         if (nbt.containsUuid("ActiveBossUuid")) activeBossUuid = nbt.getUuid("ActiveBossUuid");

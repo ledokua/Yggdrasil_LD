@@ -23,7 +23,6 @@ public class ReputationTicker {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
 
             if (!YggdrasilLdMod.CONFIG.reputation_change_enabled) {
-                return; // Do nothing if the feature is disabled by an admin.
             }
 
             timer++;

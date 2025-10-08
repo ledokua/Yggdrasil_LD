@@ -5,14 +5,19 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class RandomDripstoneItem extends Item {
 
@@ -63,6 +68,15 @@ public class RandomDripstoneItem extends Item {
         // This tells the game to start the "using" animation
         user.setCurrentHand(hand);
         return TypedActionResult.consume(itemStack);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        tooltip.add(Text.literal(""));
+
+        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.dripstone")
+                .formatted(Formatting.GRAY));
+        super.appendTooltip(stack, context, tooltip, type);
     }
 }
 
