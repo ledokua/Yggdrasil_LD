@@ -69,4 +69,3 @@ public class YggdrasilLdMod implements ModInitializer {
         });
     }
 }
-

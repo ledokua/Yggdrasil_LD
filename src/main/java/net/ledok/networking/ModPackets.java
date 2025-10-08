@@ -4,9 +4,9 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.ledok.YggdrasilLdMod;
 import net.ledok.block.entity.BossSpawnerBlockEntity;
+import net.ledok.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -41,12 +41,9 @@ public class ModPackets {
             int triggerRadius, int battleRadius, int regeneration, int minPlayers, int skillExperiencePerWin
     ) implements CustomPayload {
         public static final Id<UpdateBossSpawnerPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "update_boss_spawner"));
-
-        // FIX: Replaced the tuple() method with a manual codec, as the number of arguments was too high.
         public static final PacketCodec<PacketByteBuf, UpdateBossSpawnerPayload> CODEC = PacketCodec.of(
                 UpdateBossSpawnerPayload::write, UpdateBossSpawnerPayload::new);
 
-        // Constructor to read data from the packet buffer
         public UpdateBossSpawnerPayload(PacketByteBuf buf) {
             this(
                     buf.readBlockPos(),
@@ -65,7 +62,6 @@ public class ModPackets {
             );
         }
 
-        // Method to write data to the packet buffer
         public void write(PacketByteBuf buf) {
             buf.writeBlockPos(pos);
             buf.writeString(mobId);
@@ -88,6 +84,44 @@ public class ModPackets {
         }
     }
 
+    public record UpdateMobSpawnerPayload(
+            BlockPos pos, String mobId, int respawnTime, String lootTable,
+            int triggerRadius, int battleRadius, int regeneration, int skillExperience,
+            int mobCount, int mobSpread, double mobHealth, double mobAttackDamage
+    ) implements CustomPayload {
+        public static final Id<UpdateMobSpawnerPayload> ID = new Id<>(Identifier.of(YggdrasilLdMod.MOD_ID, "update_mob_spawner"));
+        public static final PacketCodec<PacketByteBuf, UpdateMobSpawnerPayload> CODEC = PacketCodec.of(
+                UpdateMobSpawnerPayload::write, UpdateMobSpawnerPayload::new);
+
+        public UpdateMobSpawnerPayload(PacketByteBuf buf) {
+            this(
+                    buf.readBlockPos(), buf.readString(), buf.readVarInt(), buf.readString(),
+                    buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
+                    buf.readVarInt(), buf.readVarInt(), buf.readDouble(), buf.readDouble()
+            );
+        }
+
+        public void write(PacketByteBuf buf) {
+            buf.writeBlockPos(pos);
+            buf.writeString(mobId);
+            buf.writeVarInt(respawnTime);
+            buf.writeString(lootTable);
+            buf.writeVarInt(triggerRadius);
+            buf.writeVarInt(battleRadius);
+            buf.writeVarInt(regeneration);
+            buf.writeVarInt(skillExperience);
+            buf.writeVarInt(mobCount);
+            buf.writeVarInt(mobSpread);
+            buf.writeDouble(mobHealth);
+            buf.writeDouble(mobAttackDamage);
+        }
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
 
     public static void registerS2CPackets() {
         PayloadTypeRegistry.playS2C().register(ReputationSyncPayload.ID, ReputationSyncPayload.CODEC);
@@ -95,6 +129,7 @@ public class ModPackets {
 
     public static void registerC2SPackets() {
         PayloadTypeRegistry.playC2S().register(UpdateBossSpawnerPayload.ID, UpdateBossSpawnerPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(UpdateMobSpawnerPayload.ID, UpdateMobSpawnerPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateBossSpawnerPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
@@ -112,6 +147,27 @@ public class ModPackets {
                     blockEntity.regeneration = payload.regeneration();
                     blockEntity.minPlayers = payload.minPlayers();
                     blockEntity.skillExperiencePerWin = payload.skillExperiencePerWin();
+                    blockEntity.markDirty();
+                    world.updateListeners(payload.pos(), blockEntity.getCachedState(), blockEntity.getCachedState(), 3);
+                }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(UpdateMobSpawnerPayload.ID, (payload, context) -> {
+            context.server().execute(() -> {
+                World world = context.player().getWorld();
+                if (world.getBlockEntity(payload.pos()) instanceof MobSpawnerBlockEntity blockEntity) {
+                    blockEntity.mobId = payload.mobId();
+                    blockEntity.respawnTime = payload.respawnTime();
+                    blockEntity.lootTableId = payload.lootTable();
+                    blockEntity.triggerRadius = payload.triggerRadius();
+                    blockEntity.battleRadius = payload.battleRadius();
+                    blockEntity.regeneration = payload.regeneration();
+                    blockEntity.skillExperiencePerWin = payload.skillExperience();
+                    blockEntity.mobCount = payload.mobCount();
+                    blockEntity.mobSpread = payload.mobSpread();
+                    blockEntity.mobHealth = payload.mobHealth();
+                    blockEntity.mobAttackDamage = payload.mobAttackDamage();
                     blockEntity.markDirty();
                     world.updateListeners(payload.pos(), blockEntity.getCachedState(), blockEntity.getCachedState(), 3);
                 }

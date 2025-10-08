@@ -25,6 +25,11 @@ public class ModBlockEntities {
                     Identifier.of(YggdrasilLdMod.MOD_ID, "enter_portal_be"),
                     BlockEntityType.Builder.create(EnterPortalBlockEntity::new, ModBlocks.ENTER_PORTAL_BLOCK).build());
 
+    public static final BlockEntityType<MobSpawnerBlockEntity> MOB_SPAWNER_BLOCK_ENTITY =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE,
+                    Identifier.of(YggdrasilLdMod.MOD_ID, "mob_spawner_be"),
+                    BlockEntityType.Builder.create(MobSpawnerBlockEntity::new, ModBlocks.MOB_SPAWNER_BLOCK).build());
+
 
     public static void initialize() {
     }

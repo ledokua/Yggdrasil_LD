@@ -14,6 +14,10 @@ public class ModScreenHandlers {
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(YggdrasilLdMod.MOD_ID, "boss_spawner"),
                     new ExtendedScreenHandlerType<>(BossSpawnerScreenHandler::new, BossSpawnerData.CODEC));
 
+    public static final ScreenHandlerType<MobSpawnerScreenHandler> MOB_SPAWNER_SCREEN_HANDLER =
+            Registry.register(Registries.SCREEN_HANDLER, Identifier.of(YggdrasilLdMod.MOD_ID, "mob_spawner"),
+                    new ExtendedScreenHandlerType<>(MobSpawnerScreenHandler::new, MobSpawnerData.CODEC));
+
     public static void initialize() {
     }
 }

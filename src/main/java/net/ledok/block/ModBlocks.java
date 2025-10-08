@@ -24,6 +24,10 @@ public class ModBlocks {
     public static final Block ENTER_PORTAL_BLOCK = registerBlock("enter_portal",
             new EnterPortalBlock(AbstractBlock.Settings.copy(Blocks.NETHER_PORTAL).sounds(BlockSoundGroup.GLASS).noCollision()));
 
+    public static final Block MOB_SPAWNER_BLOCK = registerBlock("mob_spawner",
+            new MobSpawnerBlock(AbstractBlock.Settings.copy(Blocks.SPAWNER)
+                    .strength(-1.0f, 3600000.0f)));
+
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);

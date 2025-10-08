@@ -9,27 +9,24 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 
-public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
+public class MobSpawnerScreen extends HandledScreen<MobSpawnerScreenHandler> {
 
     private TextFieldWidget mobIdField;
     private TextFieldWidget respawnTimeField;
-    private TextFieldWidget portalActiveTimeField;
     private TextFieldWidget lootTableIdField;
-    private TextFieldWidget exitPortalCoordsField;
     private TextFieldWidget triggerRadiusField;
     private TextFieldWidget battleRadiusField;
     private TextFieldWidget regenerationField;
-    private TextFieldWidget enterPortalSpawnCoordsField;
-    private TextFieldWidget enterPortalDestCoordsField;
-    private TextFieldWidget minPlayersField;
     private TextFieldWidget skillExperienceField;
+    private TextFieldWidget mobCountField;
+    private TextFieldWidget mobSpreadField;
+    private TextFieldWidget mobHealthField;
+    private TextFieldWidget mobAttackDamageField;
 
-
-    public BossSpawnerScreen(BossSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
+    public MobSpawnerScreen(MobSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.backgroundHeight = 260;
+        this.backgroundHeight = 240;
     }
 
     @Override
@@ -56,28 +53,22 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         this.addDrawableChild(lootTableIdField);
         y += yOffset * 1.5;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Spawn (X Y Z)"), this.textRenderer));
-        enterPortalSpawnCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        enterPortalSpawnCoordsField.setMaxLength(32);
-        this.addDrawableChild(enterPortalSpawnCoordsField);
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob Count"), this.textRenderer));
+        mobCountField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        mobCountField.setMaxLength(4);
+        this.addDrawableChild(mobCountField);
         y += yOffset * 1.5;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Dest (X Y Z)"), this.textRenderer));
-        enterPortalDestCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        enterPortalDestCoordsField.setMaxLength(32);
-        this.addDrawableChild(enterPortalDestCoordsField);
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob Spread Radius"), this.textRenderer));
+        mobSpreadField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        mobSpreadField.setMaxLength(4);
+        this.addDrawableChild(mobSpreadField);
         y += yOffset * 1.5;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Exit Portal Dest (X Y Z)"), this.textRenderer));
-        exitPortalCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        exitPortalCoordsField.setMaxLength(32);
-        this.addDrawableChild(exitPortalCoordsField);
-        y += yOffset * 1.5;
-
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Skill XP on Win"), this.textRenderer));
-        skillExperienceField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
-        skillExperienceField.setMaxLength(8);
-        this.addDrawableChild(skillExperienceField);
+        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Custom Mob Health"), this.textRenderer));
+        mobHealthField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        mobHealthField.setMaxLength(8);
+        this.addDrawableChild(mobHealthField);
 
 
         // --- Column 2 ---
@@ -88,12 +79,6 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         respawnTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
         respawnTimeField.setMaxLength(8);
         this.addDrawableChild(respawnTimeField);
-        y += yOffset * 1.5;
-
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Portal Active Time (ticks)"), this.textRenderer));
-        portalActiveTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        portalActiveTimeField.setMaxLength(8);
-        this.addDrawableChild(portalActiveTimeField);
         y += yOffset * 1.5;
 
         this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Trigger Radius"), this.textRenderer));
@@ -112,13 +97,18 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         regenerationField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
         regenerationField.setMaxLength(4);
         this.addDrawableChild(regenerationField);
-
         y += yOffset * 1.5;
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Min Players"), this.textRenderer));
-        minPlayersField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
-        minPlayersField.setMaxLength(3);
-        this.addDrawableChild(minPlayersField);
 
+        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Skill XP on Win"), this.textRenderer));
+        skillExperienceField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        skillExperienceField.setMaxLength(8);
+        this.addDrawableChild(skillExperienceField);
+        y += yOffset * 1.5;
+
+        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Custom Attack Damage"), this.textRenderer));
+        mobAttackDamageField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        mobAttackDamageField.setMaxLength(8);
+        this.addDrawableChild(mobAttackDamageField);
 
         // --- Save Button ---
         this.addDrawableChild(ButtonWidget.builder(Text.literal("Save"), button -> onSave())
@@ -132,46 +122,33 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         if (handler.blockEntity != null) {
             mobIdField.setText(handler.blockEntity.mobId);
             respawnTimeField.setText(String.valueOf(handler.blockEntity.respawnTime));
-            portalActiveTimeField.setText(String.valueOf(handler.blockEntity.portalActiveTime));
             lootTableIdField.setText(handler.blockEntity.lootTableId);
-            exitPortalCoordsField.setText(String.format("%d %d %d", handler.blockEntity.exitPortalCoords.getX(), handler.blockEntity.exitPortalCoords.getY(), handler.blockEntity.exitPortalCoords.getZ()));
             triggerRadiusField.setText(String.valueOf(handler.blockEntity.triggerRadius));
             battleRadiusField.setText(String.valueOf(handler.blockEntity.battleRadius));
             regenerationField.setText(String.valueOf(handler.blockEntity.regeneration));
-            enterPortalSpawnCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalSpawnCoords.getX(), handler.blockEntity.enterPortalSpawnCoords.getY(), handler.blockEntity.enterPortalSpawnCoords.getZ()));
-            enterPortalDestCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalDestCoords.getX(), handler.blockEntity.enterPortalDestCoords.getY(), handler.blockEntity.enterPortalDestCoords.getZ()));
-            minPlayersField.setText(String.valueOf(handler.blockEntity.minPlayers));
             skillExperienceField.setText(String.valueOf(handler.blockEntity.skillExperiencePerWin));
+            mobCountField.setText(String.valueOf(handler.blockEntity.mobCount));
+            mobSpreadField.setText(String.valueOf(handler.blockEntity.mobSpread));
+            mobHealthField.setText(String.valueOf(handler.blockEntity.mobHealth));
+            mobAttackDamageField.setText(String.valueOf(handler.blockEntity.mobAttackDamage));
         }
-    }
-
-    private BlockPos parseCoords(String text) {
-        try {
-            String[] parts = text.split(" ");
-            if (parts.length == 3) {
-                return new BlockPos(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
-            }
-        } catch (NumberFormatException ignored) {
-        }
-        return new BlockPos(0, 0, 0);
     }
 
     private void onSave() {
         try {
-            ClientPlayNetworking.send(new ModPackets.UpdateBossSpawnerPayload(
+            ClientPlayNetworking.send(new ModPackets.UpdateMobSpawnerPayload(
                     handler.blockEntity.getPos(),
                     mobIdField.getText(),
                     Integer.parseInt(respawnTimeField.getText()),
-                    Integer.parseInt(portalActiveTimeField.getText()),
                     lootTableIdField.getText(),
-                    parseCoords(exitPortalCoordsField.getText()),
-                    parseCoords(enterPortalSpawnCoordsField.getText()),
-                    parseCoords(enterPortalDestCoordsField.getText()),
                     Integer.parseInt(triggerRadiusField.getText()),
                     Integer.parseInt(battleRadiusField.getText()),
                     Integer.parseInt(regenerationField.getText()),
-                    Integer.parseInt(minPlayersField.getText()),
-                    Integer.parseInt(skillExperienceField.getText())
+                    Integer.parseInt(skillExperienceField.getText()),
+                    Integer.parseInt(mobCountField.getText()),
+                    Integer.parseInt(mobSpreadField.getText()),
+                    Double.parseDouble(mobHealthField.getText()),
+                    Double.parseDouble(mobAttackDamageField.getText())
             ));
             this.close();
         } catch (NumberFormatException e) {
@@ -194,4 +171,3 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 }
-
