@@ -1,0 +1,177 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 7,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_3",
+          "weight": 400,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 6,
+                "max": 18
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_2",
+          "weight": 300,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 20,
+                "max": 35
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_1",
+          "weight": 300,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 25,
+                "max": 50
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 4,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_weapons",
+          "expand": true,
+          "weight": 75
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_weapons",
+          "expand": true,
+          "weight": 25,
+          "functions": []
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "enchant_limiter:limit": {
+              "count": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 4,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_armors",
+          "expand": true,
+          "weight": 75
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_armors",
+          "expand": true,
+          "weight": 25,
+          "functions": []
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "enchant_limiter:limit": {
+              "count": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 6,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_relics",
+          "expand": true,
+          "weight": 50,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_relics",
+          "expand": true,
+          "weight": 50,
+          "functions": []
+        }
+      ]
+    },
+    {
+      "rolls": 8,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_accessories",
+          "expand": true,
+          "weight": 5,
+          "functions": []
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 999
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "icarus:wings",
+          "expand": true,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "toms_storage:inventory_connector",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "toms_storage:storage_terminal",
+          "weight": 40
+        },
+        {
+          "type": "minecraft:item",
+          "name": "toms_storage:crafting_terminal",
+          "weight": 10
+        }
+      ]
+    }
+  ]
+}
