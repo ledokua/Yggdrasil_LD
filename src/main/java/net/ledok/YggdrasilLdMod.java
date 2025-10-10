@@ -37,7 +37,6 @@ public class YggdrasilLdMod implements ModInitializer {
         Items.initialize();
         CONFIG = ModConfigs.load();
 
-        // --- FIX: Initialize all components for the Boss Spawner feature ---
         ModBlocks.initialize();
         ModBlockEntities.initialize();
         ModScreenHandlers.initialize();

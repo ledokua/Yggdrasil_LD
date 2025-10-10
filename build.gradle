@@ -43,6 +43,10 @@ repositories {
     maven {
         url = uri("https://maven.puffish.net")
     }
+
+    flatDir {
+        dirs("libs")
+    }
 }
 
 dependencies {
@@ -73,6 +77,10 @@ dependencies {
 
     // Puffish
     modImplementation("net.puffish:skillsmod:0.16.5+1.21:fabric")
+
+    // Minestar
+    modImplementation include("minestar:minestar-fabric")
+
 }
 
 processResources {
