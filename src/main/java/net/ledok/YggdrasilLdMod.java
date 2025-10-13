@@ -10,9 +10,11 @@ import net.ledok.block.ModBlocks;
 import net.ledok.block.entity.ModBlockEntities;
 import net.ledok.command.AdminCommand;
 import net.ledok.command.ReputationCommand;
+import net.ledok.command.ShopCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
 import net.ledok.event.ReputationTicker;
+import net.ledok.minestar.ShopCompatibility;
 import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.reputation.ReputationManager;
@@ -48,6 +50,7 @@ public class YggdrasilLdMod implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ReputationCommand.register(dispatcher);
             AdminCommand.register(dispatcher);
+            ShopCommand.register(dispatcher);
         });
 
         ReputationTicker.register();
@@ -65,6 +68,7 @@ public class YggdrasilLdMod implements ModInitializer {
                     ReputationManager.syncReputationWithAll(server, onlinePlayer);
                 }
             });
+            ShopCompatibility.notifyOnJoin(handler.getPlayer());
         });
     }
 }

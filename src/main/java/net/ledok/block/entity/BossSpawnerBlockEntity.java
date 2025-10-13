@@ -229,8 +229,37 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
 
     private void handleBattleLoss(ServerWorld world, String reason) {
         YggdrasilLdMod.LOGGER.info("Battle lost at spawner {}: {}", pos, reason);
+
+        // Despawn the boss if it's still alive
+        if (activeBossUuid != null && bossDimension != null) {
+            MinecraftServer server = world.getServer();
+            if (server != null) {
+                ServerWorld bossWorld = server.getWorld(bossDimension);
+                if (bossWorld != null) {
+                    Entity bossEntity = bossWorld.getEntity(activeBossUuid);
+                    if (bossEntity != null && bossEntity.isAlive()) {
+                        bossEntity.discard();
+                        YggdrasilLdMod.LOGGER.info("Despawned boss after battle loss at {}.", pos);
+                    }
+                }
+            }
+        }
+
         removeEnterPortal(world);
-        resetSpawner(world);
+
+        // --- CHANGE: Set a short cooldown on battle loss ---
+        this.respawnCooldown = 1200; // 60 seconds
+
+        // Reset remaining state (from original resetSpawner method)
+        this.isBattleActive = false;
+        this.activeBossUuid = null;
+        this.bossDimension = null;
+        this.regenerationTickTimer = 0;
+        this.enterPortalRemovalTimer = -1;
+        this.markDirty();
+        world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+
+        YggdrasilLdMod.LOGGER.info("Spawner at {} on short cooldown (60s) after battle loss.", pos);
     }
 
     private void resetSpawner(ServerWorld world) {

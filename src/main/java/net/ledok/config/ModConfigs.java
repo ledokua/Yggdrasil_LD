@@ -28,7 +28,10 @@ public class ModConfigs {
     public int passive_reputation_amount = 1;
 
     // --- PRIME ---
-    public boolean prime_role_sync_enabled= true;
+    public boolean prime_role_sync_enabled = true;
+    // --- SHOP ---
+    public int server_id = 12032929;
+
     // --- LEADERBOARD SIZE ---
     public int leaderboard_size= 10;
 
@@ -47,8 +50,8 @@ public class ModConfigs {
     public int reputation_penalty_item_count = 4;
     public boolean predatory_kill_enabled = true;
     public int predatory_kill_victim_positive_rep_threshold = 100;
-    public int predatory_kill_inventory_drop_rep_step = 1500;
-    public int predatory_kill_equipment_drop_rep_step = 6000;
+    public int predatory_kill_inventory_drop_rep_step = 250;
+    public int predatory_kill_equipment_drop_rep_step = 1000;
     public int predatory_kill_equipment_drop_max = 5;
 
 

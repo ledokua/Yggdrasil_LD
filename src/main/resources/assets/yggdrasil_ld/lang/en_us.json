@@ -122,5 +122,13 @@
   "item.yggdrasil_ld.healing_potion.tooltip": "Heals for: %1$s\nUse Time: %2$s seconds\nCooldown: %3$s seconds",
   "item.yggdrasil_ld.healing_potion.tooltip.heal": "Heals for: %1$s",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Use Time: %1$s seconds",
-  "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Cooldown: %1$s seconds"
+  "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Cooldown: %1$s seconds",
+
+  "message.yggdrasil_ld.shop.checking": "Checking for purchased items...",
+  "message.yggdrasil_ld.shop.unclaimed_items": "You have %s unclaimed products! ",
+  "message.yggdrasil_ld.shop.claim_button": "[Click here to claim]",
+  "message.yggdrasil_ld.shop.claim_suffix": " or use /shop-receive.",
+  "message.yggdrasil_ld.shop.no_items": "No new items to claim.",
+  "message.yggdrasil_ld.shop.found_items": "Found %s items to claim! Delivering...",
+  "message.yggdrasil_ld.shop.error": "Error checking for items. Please try again later."
 }

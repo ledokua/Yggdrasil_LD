@@ -2,7 +2,9 @@ package net.ledok.block;
 
 import com.mojang.serialization.MapCodec;
 import net.ledok.block.entity.ExitPortalBlockEntity;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -42,10 +44,15 @@ public class ExitPortalBlock extends BlockWithEntity {
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!world.isClient() && entity instanceof PlayerEntity player) {
-            if (world.getBlockEntity(pos) instanceof ExitPortalBlockEntity portalEntity) {
-                BlockPos destination = portalEntity.getDestination();
-                if(destination != null && world instanceof ServerWorld serverWorld) {
-                    player.teleport(serverWorld, destination.getX() + 0.5, destination.getY(), destination.getZ() + 0.5, Collections.emptySet(), player.getYaw(), player.getPitch());
+            // Check if the player has a portal cooldown
+            if (player.getPortalCooldown() == 0) {
+                if (world.getBlockEntity(pos) instanceof ExitPortalBlockEntity portalEntity) {
+                    BlockPos destination = portalEntity.getDestination();
+                    if (destination != null && world instanceof ServerWorld serverWorld) {
+                        // Set a 1-second (20 ticks) cooldown to prevent re-teleporting immediately
+                        player.setPortalCooldown(20);
+                        player.teleport(serverWorld, destination.getX() + 0.5, destination.getY(), destination.getZ() + 0.5, Collections.emptySet(), player.getYaw(), player.getPitch());
+                    }
                 }
             }
         }
@@ -61,4 +68,3 @@ public class ExitPortalBlock extends BlockWithEntity {
         };
     }
 }
-

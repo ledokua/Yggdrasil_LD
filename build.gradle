@@ -44,8 +44,18 @@ repositories {
         url = uri("https://maven.puffish.net")
     }
 
+    // Minestar
     flatDir {
         dirs("libs")
+    }
+
+    // GeckoLib
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroup("software.bernie.geckolib")
+        }
     }
 }
 
@@ -80,6 +90,9 @@ dependencies {
 
     // Minestar
     modImplementation include("minestar:minestar-fabric")
+
+    //GeckoLib
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 
 }
 

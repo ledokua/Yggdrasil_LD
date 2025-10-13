@@ -122,5 +122,13 @@
   "item.yggdrasil_ld.healing_potion.tooltip": "Зцілює на: %1$s\nЧас використання: %2$s секунд\nПерезарядка: %3$s секунд",
   "item.yggdrasil_ld.healing_potion.tooltip.heal": "Зцілює на: %1$s",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Час використання: %1$s секунд",
-  "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Перезарядка: %1$s секунд"
+  "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Перезарядка: %1$s секунд",
+
+  "message.yggdrasil_ld.shop.checking": "Перевірка придбаних предметів...",
+  "message.yggdrasil_ld.shop.unclaimed_items": "У вас є %s незатребуваних продуктів! ",
+  "message.yggdrasil_ld.shop.claim_button": "[Натисніть тут, щоб забрати]",
+  "message.yggdrasil_ld.shop.claim_suffix": " або використайте /shop-receive.",
+  "message.yggdrasil_ld.shop.no_items": "Немає нових предметів для отримання.",
+  "message.yggdrasil_ld.shop.found_items": "Знайдено %s предметів для отримання! Доставляємо...",
+  "message.yggdrasil_ld.shop.error": "Помилка перевірки предметів. Будь ласка, спробуйте пізніше."
 }
