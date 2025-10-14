@@ -1,7 +1,7 @@
 package net.ledok.mixin;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.compat.BackpackedCompat;
 import net.ledok.compat.TrinketsCompat; // Import the new compatibility class
 import net.ledok.reputation.ReputationManager;
@@ -31,7 +31,7 @@ public abstract class PlayerEntityMixin {
     @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
     private void yggdrasil_partialKeepInventory(CallbackInfo ci) {
 
-        if (!Yggdrasil_ld.CONFIG.partial_inventory_save_enabled) {
+        if (!YggdrasilLdMod.CONFIG.partial_inventory_save_enabled) {
             return;
         }
 
@@ -43,12 +43,12 @@ public abstract class PlayerEntityMixin {
         UUID attackerUuid = PvPContextManager.getAttacker();
         try {
             boolean isPredatoryKill = false;
-            if (attackerUuid != null && Yggdrasil_ld.CONFIG.predatory_kill_enabled) {
+            if (attackerUuid != null && YggdrasilLdMod.CONFIG.predatory_kill_enabled) {
                 ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
                 if (attacker != null) {
                     int attackerRep = ReputationManager.getReputation(attacker);
                     int victimRep = ReputationManager.getReputation(victim);
-                    if (attackerRep < 0 && victimRep >= Yggdrasil_ld.CONFIG.predatory_kill_victim_positive_rep_threshold) {
+                    if (attackerRep < 0 && victimRep >= YggdrasilLdMod.CONFIG.predatory_kill_victim_positive_rep_threshold) {
                         isPredatoryKill = true;
                     }
                 }
@@ -77,12 +77,12 @@ public abstract class PlayerEntityMixin {
         // --- Standard Equipment & Inventory Drops ---
         List<DroppableSlot> equipmentPool = getEquipmentSlots(victim);
         equipmentPool.addAll(getTrinketSlots(victim)); // Add Trinkets to the equipment pool
-        int equipItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_rep_step;
-        equipItemsToDrop = Math.min(equipItemsToDrop, Yggdrasil_ld.CONFIG.predatory_kill_equipment_drop_max);
+        int equipItemsToDrop = Math.abs(attackerRep) / YggdrasilLdMod.CONFIG.predatory_kill_equipment_drop_rep_step;
+        equipItemsToDrop = Math.min(equipItemsToDrop, YggdrasilLdMod.CONFIG.predatory_kill_equipment_drop_max);
         addRandomSlotsToList(finalSlotsToDrop, equipmentPool, equipItemsToDrop);
 
         List<DroppableSlot> mainInvPool = getMainInventorySlots(victim);
-        int invItemsToDrop = Math.abs(attackerRep) / Yggdrasil_ld.CONFIG.predatory_kill_inventory_drop_rep_step;
+        int invItemsToDrop = Math.abs(attackerRep) / YggdrasilLdMod.CONFIG.predatory_kill_inventory_drop_rep_step;
         addRandomSlotsToList(finalSlotsToDrop, mainInvPool, invItemsToDrop);
 
         // --- Backpack Drops for Predatory Kills ---
@@ -98,9 +98,9 @@ public abstract class PlayerEntityMixin {
         int reputation = ReputationManager.getReputation(victim);
 
         // --- Standard Percentage Drops ---
-        double baseDropPercentage = Yggdrasil_ld.CONFIG.keep_inventory_drop_percentage;
+        double baseDropPercentage = YggdrasilLdMod.CONFIG.keep_inventory_drop_percentage;
         double finalDropPercentage = baseDropPercentage;
-        if (Yggdrasil_ld.CONFIG.reputation_affects_drops) {
+        if (YggdrasilLdMod.CONFIG.reputation_affects_drops) {
             finalDropPercentage -= (double)reputation / 20.0;
         }
         finalDropPercentage = Math.max(0, Math.min(100, finalDropPercentage));
@@ -112,10 +112,10 @@ public abstract class PlayerEntityMixin {
         }
 
         // --- Additional Equipment Penalty ---
-        if (reputation <= Yggdrasil_ld.CONFIG.reputation_penalty_threshold) {
+        if (reputation <= YggdrasilLdMod.CONFIG.reputation_penalty_threshold) {
             List<DroppableSlot> equipmentPool = getEquipmentSlots(victim);
             equipmentPool.addAll(getTrinketSlots(victim)); // Add Trinkets to the equipment pool
-            addRandomSlotsToList(finalSlotsToDrop, equipmentPool, Yggdrasil_ld.CONFIG.reputation_penalty_item_count);
+            addRandomSlotsToList(finalSlotsToDrop, equipmentPool, YggdrasilLdMod.CONFIG.reputation_penalty_item_count);
         }
 
         // --- Dedicated Backpack Drop Logic ---
@@ -189,7 +189,7 @@ public abstract class PlayerEntityMixin {
         return new ArrayList<>();
     }
 
-    // --- NEW HELPER FOR TRINKETS ---
+    // --- HELPER FOR TRINKETS ---
     private List<DroppableSlot> getTrinketSlots(PlayerEntity player) {
         if (FabricLoader.getInstance().isModLoaded("trinkets")) {
             return TrinketsCompat.getTrinketSlots(player);

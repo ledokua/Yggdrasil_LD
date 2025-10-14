@@ -3,7 +3,7 @@ package net.ledok.command;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.reputation.ReputationManager;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.MinecraftServer;
@@ -108,7 +108,7 @@ public class ReputationCommand {
         List<Map.Entry<UUID, Integer>> sortedList = allReputations.entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(Yggdrasil_ld.CONFIG.leaderboard_size)
+                .limit(YggdrasilLdMod.CONFIG.leaderboard_size)
                 .collect(Collectors.toList());
 
         displayLeaderboard(source, sortedList, Text.translatable("command.yggdrasil_ld.leaderboard.top_title"), Formatting.GREEN);
@@ -121,7 +121,7 @@ public class ReputationCommand {
         List<Map.Entry<UUID, Integer>> sortedList = allReputations.entrySet().stream()
                 .filter(entry -> entry.getValue() < 0)
                 .sorted(Map.Entry.comparingByValue()) // Default is ascending (most negative first)
-                .limit(Yggdrasil_ld.CONFIG.leaderboard_size)
+                .limit(YggdrasilLdMod.CONFIG.leaderboard_size)
                 .collect(Collectors.toList());
 
         displayLeaderboard(source, sortedList, Text.translatable("command.yggdrasil_ld.leaderboard.bottom_title"), Formatting.RED);
@@ -142,7 +142,6 @@ public class ReputationCommand {
             UUID playerUuid = entry.getKey();
             int reputation = entry.getValue();
 
-            // This works even for offline players by checking the server's user cache
             Optional<GameProfile> profileOpt = server.getUserCache().getByUuid(playerUuid);
             String playerName = profileOpt.map(GameProfile::getName).orElse(playerUuid.toString().substring(0, 8));
 

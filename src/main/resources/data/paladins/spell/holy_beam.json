@@ -94,7 +94,7 @@
       "action": {
         "type": "HEAL",
         "heal": {
-          "spell_power_coefficient": 0.5
+          "spell_power_coefficient": 0.4
         }
       },
       "particles": [
@@ -130,14 +130,26 @@
             }
           ],
           "modifier": {
-            "critical_chance_bonus": 1.0
+            "critical_chance_bonus": 1.0,
+            "critical_damage_bonus": 1.0
+          }
+        },
+        {
+          "conditions": [
+            {
+              "entity_type": "#minecraft:player"
+            }
+          ],
+          "modifier": {
+            "critical_chance_bonus": -1.0,
+            "power_multiplier": -0.4
           }
         }
       ],
       "action": {
         "type": "DAMAGE",
         "damage": {
-          "spell_power_coefficient": 0.8,
+          "spell_power_coefficient": 0.6,
           "knockback": 0.5
         }
       },

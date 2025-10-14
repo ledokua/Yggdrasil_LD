@@ -10,19 +10,22 @@ import net.ledok.block.ModBlocks;
 import net.ledok.block.entity.ModBlockEntities;
 import net.ledok.command.AdminCommand;
 import net.ledok.command.ReputationCommand;
+import net.ledok.command.ShopCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
 import net.ledok.event.ReputationTicker;
+import net.ledok.minestar.ShopCompatibility;
 import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.reputation.ReputationManager;
 import net.ledok.screen.ModScreenHandlers;
+import net.ledok.util.BossDataComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Yggdrasil_ld implements ModInitializer {
+public class YggdrasilLdMod implements ModInitializer {
     public static final String MOD_ID = "yggdrasil_ld";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -36,17 +39,18 @@ public class Yggdrasil_ld implements ModInitializer {
         Items.initialize();
         CONFIG = ModConfigs.load();
 
-        // --- FIX: Initialize all components for the Boss Spawner feature ---
         ModBlocks.initialize();
         ModBlockEntities.initialize();
         ModScreenHandlers.initialize();
         ModPackets.registerC2SPackets();
-
         ModPackets.registerS2CPackets();
+        BossDataComponent.initialize();
+
         UseItemCallback.EVENT.register(new ElytraBoostDisabler());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ReputationCommand.register(dispatcher);
             AdminCommand.register(dispatcher);
+            ShopCommand.register(dispatcher);
         });
 
         ReputationTicker.register();
@@ -64,7 +68,7 @@ public class Yggdrasil_ld implements ModInitializer {
                     ReputationManager.syncReputationWithAll(server, onlinePlayer);
                 }
             });
+            ShopCompatibility.notifyOnJoin(handler.getPlayer());
         });
     }
 }
-

@@ -1,7 +1,7 @@
 package net.ledok.event;
 
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -18,7 +18,7 @@ public class ElytraBoostDisabler implements UseItemCallback {
         if (!world.isClient) {
             ItemStack itemStack = player.getStackInHand(hand);
 
-            // CONDITIONS
+            // CONDITIONS:
             // Using elytra
             // Has firework in hand
             if (player.isFallFlying() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
@@ -26,14 +26,13 @@ public class ElytraBoostDisabler implements UseItemCallback {
                 String currentDimension = world.getRegistryKey().getValue().toString();
 
                 // Is blacklisted?
-                if (Yggdrasil_ld.CONFIG.elytra_boost_disabled_dimensions.contains(currentDimension)) {
+                if (YggdrasilLdMod.CONFIG.elytra_boost_disabled_dimensions.contains(currentDimension)) {
                     // Send player message if no boos allowed and cancel event
                     player.sendMessage(Text.translatable("message.yggdrasil_ld.elytra_boost_disabled").formatted(Formatting.RED), true);
                     return TypedActionResult.fail(itemStack);
                 }
             }
         }
-        // If all ok allow boost
         return TypedActionResult.pass(player.getStackInHand(hand));
     }
 }

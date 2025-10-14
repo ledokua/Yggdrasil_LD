@@ -30,7 +30,6 @@ public class TrinketsCompat {
             component.get().getEquipped(stack -> true).forEach(pair -> {
                 ItemStack trinketStack = pair.getRight();
                 if (!trinketStack.isEmpty()) {
-                    // The clear action uses the SlotReference from the pair to set the specific slot to empty.
                     Runnable clearSlotAction = () -> pair.getLeft().inventory().setStack(pair.getLeft().index(), ItemStack.EMPTY);
                     trinketSlots.add(new DroppableSlot(trinketStack.copy(), clearSlotAction));
                 }

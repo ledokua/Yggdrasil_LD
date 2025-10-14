@@ -1,7 +1,7 @@
 package net.ledok.reputation;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.networking.ModPackets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -9,8 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
-import java.util.UUID;
-
 import java.util.UUID;
 
 public class ReputationManager {
@@ -44,10 +42,10 @@ public class ReputationManager {
         setReputation(player, getReputation(player) - amount);
     }
 
-    // --- NEW COOLDOWN METHODS ---
+    // --- COOLDOWN METHODS ---
     public static boolean wasRecentlyKilledBy(MinecraftServer server, UUID attacker, UUID victim) {
         long currentTime = server.getOverworld().getTime();
-        int cooldown = Yggdrasil_ld.CONFIG.pvp_cooldown_ticks;
+        int cooldown = YggdrasilLdMod.CONFIG.pvp_cooldown_ticks;
         return getState(server).wasRecentlyKilledBy(attacker, victim, currentTime, cooldown);
     }
 
@@ -66,13 +64,5 @@ public class ReputationManager {
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             ServerPlayNetworking.send(player, payload);
         }
-    }
-
-    public static void syncReputationWithPlayer(ServerPlayerEntity playerToSync, ServerPlayerEntity recipient) {
-        ModPackets.ReputationSyncPayload payload = new ModPackets.ReputationSyncPayload(
-                playerToSync.getUuid(),
-                getReputation(playerToSync)
-        );
-        ServerPlayNetworking.send(recipient, payload);
     }
 }

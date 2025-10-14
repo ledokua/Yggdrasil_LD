@@ -5,14 +5,16 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.ledok.networking.ModPackets;
 import net.ledok.screen.BossSpawnerScreen;
+import net.ledok.screen.MobSpawnerScreen;
 import net.ledok.screen.ModScreenHandlers;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
-public class Yggdrasil_ldClient implements ClientModInitializer {
+public class YggdrasilLdClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Register the new Screen
         HandledScreens.register(ModScreenHandlers.BOSS_SPAWNER_SCREEN_HANDLER, BossSpawnerScreen::new);
+        HandledScreens.register(ModScreenHandlers.MOB_SPAWNER_SCREEN_HANDLER, MobSpawnerScreen::new);
 
         // Packet handler
         ClientPlayNetworking.registerGlobalReceiver(ModPackets.ReputationSyncPayload.ID, (payload, context) -> {
@@ -27,3 +29,4 @@ public class Yggdrasil_ldClient implements ClientModInitializer {
         });
     }
 }
+

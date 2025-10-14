@@ -149,7 +149,7 @@
   ],
   "cost": {
     "cooldown": {
-      "duration": 8.0
+      "duration": 12.0
     },
     "item": {
       "id": "arrow"

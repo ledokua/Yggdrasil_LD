@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.ledok.Yggdrasil_ld"
+      "net.ledok.YggdrasilLdMod"
     ],
     "client": [
-      "net.ledok.client.Yggdrasil_ldClient"
+      "net.ledok.client.YggdrasilLdClient"
     ]
   },
   "mixins": [

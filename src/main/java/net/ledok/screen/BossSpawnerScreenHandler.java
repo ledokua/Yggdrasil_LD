@@ -10,7 +10,7 @@ public class BossSpawnerScreenHandler extends ScreenHandler {
     public final BossSpawnerBlockEntity blockEntity;
     public final PlayerEntity player;
 
-    // --- FIX: Updated constructor to receive the BossSpawnerData object ---
+    // --- Constructor to receive the BossSpawnerData object ---
     public BossSpawnerScreenHandler(int syncId, PlayerInventory playerInventory, BossSpawnerData data) {
         this(syncId, playerInventory, (BossSpawnerBlockEntity) playerInventory.player.getWorld().getBlockEntity(data.blockPos()));
     }

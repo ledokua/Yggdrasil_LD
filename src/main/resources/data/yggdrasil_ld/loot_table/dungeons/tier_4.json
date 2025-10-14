@@ -2,6 +2,46 @@
   "type": "minecraft:chest",
   "pools": [
     {
+      "rolls": 4,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_6",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_5",
+          "weight": 600,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 15,
+                "max": 30
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_4",
+          "weight": 390,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 20,
+                "max": 35
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "rolls": 8,
       "entries": [
         {
@@ -24,7 +64,8 @@
           "expand": true,
           "weight": 25,
           "functions": []
-        },{
+        },
+        {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_armors",
           "expand": true,

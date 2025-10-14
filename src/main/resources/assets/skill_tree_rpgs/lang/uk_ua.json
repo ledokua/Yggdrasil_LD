@@ -379,7 +379,7 @@
   "spell.skill_tree_rpgs.priest_spec_b_modifier_1.name": "Святий вибух",
   "spell.skill_tree_rpgs.priest_spec_b_modifier_2.description": "'Святе світло' завдає на {power_multiplier} більше шкоди і підпалює ворогів.",
   "spell.skill_tree_rpgs.priest_spec_b_modifier_2.name": "Пекуче світло",
-  "spell.skill_tree_rpgs.priest_spec_b_modifier_3.description": "'Коло зцілення' залишає позаду освячену зону, що завдає {damage} шкоди ворогам протягом {cloud_duration} с.",
+  "spell.skill_tree_rpgs.priest_spec_b_modifier_3.description": "'Коло зцілення' Тепер зцілює на {power_multiplier} більше, та має на {range_add} блоки більший радіус.",
   "spell.skill_tree_rpgs.priest_spec_b_modifier_3.name": "Освячення",
   "spell.skill_tree_rpgs.priest_spec_b_modifier_4.description": "Збільшує тривалість 'Бар'єру' на {spawn_duration_add} с.",
   "spell.skill_tree_rpgs.priest_spec_b_modifier_4.name": "Тривалість бар'єру",

@@ -3,7 +3,7 @@ package net.ledok.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModConfigs {
+    // --- Puffish Skills Main skill tree NOT USED ---
+    public String puffish_skills_tree_id = "puffish_skills:minestar";
 
     // --- Runtime toggle for the partial inventory save feature ---
     public transient boolean partial_inventory_save_enabled = true;
@@ -26,7 +28,10 @@ public class ModConfigs {
     public int passive_reputation_amount = 1;
 
     // --- PRIME ---
-    public boolean prime_role_sync_enabled= true;
+    public boolean prime_role_sync_enabled = true;
+    // --- SHOP ---
+    public int server_id = 12032929;
+
     // --- LEADERBOARD SIZE ---
     public int leaderboard_size= 10;
 
@@ -45,15 +50,14 @@ public class ModConfigs {
     public int reputation_penalty_item_count = 4;
     public boolean predatory_kill_enabled = true;
     public int predatory_kill_victim_positive_rep_threshold = 100;
-    public int predatory_kill_inventory_drop_rep_step = 1500;
-    public int predatory_kill_equipment_drop_rep_step = 6000;
+    public int predatory_kill_inventory_drop_rep_step = 250;
+    public int predatory_kill_equipment_drop_rep_step = 1000;
     public int predatory_kill_equipment_drop_max = 5;
 
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), Yggdrasil_ld.MOD_ID + ".json");
+    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), YggdrasilLdMod.MOD_ID + ".json");
 
-    // ... load() and save() methods remain unchanged ...
     public static ModConfigs load() {
         ModConfigs config;
         if (CONFIG_FILE.exists()) {
@@ -61,7 +65,7 @@ public class ModConfigs {
                 config = GSON.fromJson(reader, ModConfigs.class);
                 if (config == null) { config = new ModConfigs(); }
             } catch (IOException e) {
-                Yggdrasil_ld.LOGGER.error("Failed to load config, using defaults.", e);
+                YggdrasilLdMod.LOGGER.error("Failed to load config, using defaults.", e);
                 config = new ModConfigs();
             }
         } else {
@@ -77,7 +81,7 @@ public class ModConfigs {
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             GSON.toJson(this, writer);
         } catch (IOException e) {
-            Yggdrasil_ld.LOGGER.error("Failed to save config.", e);
+            YggdrasilLdMod.LOGGER.error("Failed to save config.", e);
         }
     }
 }

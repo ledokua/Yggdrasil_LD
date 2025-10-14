@@ -59,9 +59,9 @@
         "type": "STATUS_EFFECT",
         "status_effect": {
           "effect_id": "rogues:shatter",
-          "duration": 8.0,
+          "duration": 12.0,
           "apply_limit": {
-            "health_base": 100.0,
+            "health_base": 50000.0,
             "spell_power_multiplier": 2.0
           }
         }

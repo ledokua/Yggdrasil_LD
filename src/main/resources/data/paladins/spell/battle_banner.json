@@ -23,7 +23,7 @@
             "vertical_range_multiplier": 0.3
           }
         },
-        "time_to_live_seconds": 10.0,
+        "time_to_live_seconds": 14.0,
         "impact_tick_interval": 10,
         "placement": {
           "location_offset_by_look": 2.0,

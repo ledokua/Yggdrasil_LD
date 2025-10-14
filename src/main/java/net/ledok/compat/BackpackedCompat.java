@@ -34,10 +34,8 @@ public class BackpackedCompat {
             if (unlockedSlots.isUnlocked(i)) {
                 ItemStack backpackStack = backpacks.get(i);
                 if (!backpackStack.isEmpty()) {
-                    // We found one, create the clear action for this specific slot
                     final int slotIndex = i;
                     Runnable clearSlotAction = () -> {
-                        // We get the list again to ensure it's the most current state
                         DefaultedList<ItemStack> currentBackpacks = BackpackHelper.getBackpacks(player);
                         if (slotIndex < currentBackpacks.size()) {
                             currentBackpacks.set(slotIndex, ItemStack.EMPTY);

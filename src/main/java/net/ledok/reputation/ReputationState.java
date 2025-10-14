@@ -1,11 +1,10 @@
 package net.ledok.reputation;
 
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +66,7 @@ public class ReputationState extends PersistentState {
     );
 
     public static ReputationState getServerState(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(Type, Yggdrasil_ld.MOD_ID + "_reputation");
+        return world.getPersistentStateManager().getOrCreate(Type, YggdrasilLdMod.MOD_ID + "_reputation");
     }
 
     // --- Reputation Methods ---

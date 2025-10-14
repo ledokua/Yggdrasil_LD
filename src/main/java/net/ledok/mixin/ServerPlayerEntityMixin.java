@@ -1,6 +1,6 @@
 package net.ledok.mixin;
 
-import net.ledok.Yggdrasil_ld;
+import net.ledok.YggdrasilLdMod;
 import net.ledok.reputation.ReputationManager;
 import net.ledok.util.PvPContextManager;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,7 +17,7 @@ public class ServerPlayerEntityMixin {
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void yggdrasil_handleDeathReputation(DamageSource damageSource, CallbackInfo ci) {
 
-        if (!Yggdrasil_ld.CONFIG.reputation_change_enabled) {
+        if (!YggdrasilLdMod.CONFIG.reputation_change_enabled) {
             return; // If disabled, skip all reputation logic in this method.
         }
 
@@ -26,11 +26,11 @@ public class ServerPlayerEntityMixin {
         // --- GENERAL DEATH PENALTY LOGIC ---
         int currentRep = ReputationManager.getReputation(victim);
         if (currentRep < 0) {
-            double penaltyPercent = Yggdrasil_ld.CONFIG.reputation_death_penalty_negative_percentage / 100.0;
+            double penaltyPercent = YggdrasilLdMod.CONFIG.reputation_death_penalty_negative_percentage / 100.0;
             int repChange = (int) Math.floor(currentRep * penaltyPercent);
             ReputationManager.removeReputation(victim, repChange);
         } else if (currentRep > 0) {
-            double penaltyPercent = Yggdrasil_ld.CONFIG.reputation_death_penalty_positive_percentage / 100.0;
+            double penaltyPercent = YggdrasilLdMod.CONFIG.reputation_death_penalty_positive_percentage / 100.0;
             int repChange = (int) Math.floor(currentRep * penaltyPercent);
             ReputationManager.removeReputation(victim, repChange);
         }
