@@ -29,8 +29,6 @@ public class ModConfigs {
 
     // --- PRIME ---
     public boolean prime_role_sync_enabled = true;
-    // --- SHOP ---
-    public int server_id = 12032929;
 
     // --- LEADERBOARD SIZE ---
     public int leaderboard_size= 10;
