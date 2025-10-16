@@ -2,31 +2,32 @@ package net.ledok.screen;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.ledok.networking.ModPackets;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.Text;
+// MOJANG MAPPINGS: Update all imports to their new Mojang-mapped packages.
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
 
-public class MobSpawnerScreen extends HandledScreen<MobSpawnerScreenHandler> {
+public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHandler> {
 
-    private TextFieldWidget mobIdField;
-    private TextFieldWidget respawnTimeField;
-    private TextFieldWidget lootTableIdField;
-    private TextFieldWidget triggerRadiusField;
-    private TextFieldWidget battleRadiusField;
-    private TextFieldWidget regenerationField;
-    private TextFieldWidget skillExperienceField;
-    private TextFieldWidget mobCountField;
-    private TextFieldWidget mobSpreadField;
-    private TextFieldWidget mobHealthField;
-    private TextFieldWidget mobAttackDamageField;
+    private EditBox mobIdField;
+    private EditBox respawnTimeField;
+    private EditBox lootTableIdField;
+    private EditBox triggerRadiusField;
+    private EditBox battleRadiusField;
+    private EditBox regenerationField;
+    private EditBox skillExperienceField;
+    private EditBox mobCountField;
+    private EditBox mobSpreadField;
+    private EditBox mobHealthField;
+    private EditBox mobAttackDamageField;
 
-    public MobSpawnerScreen(MobSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
+    // MOJANG MAPPINGS: PlayerInventory is now Inventory, Text is Component.
+    public MobSpawnerScreen(MobSpawnerScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        this.backgroundHeight = 240;
+        this.imageHeight = 240;
     }
 
     @Override
@@ -37,137 +38,136 @@ public class MobSpawnerScreen extends HandledScreen<MobSpawnerScreenHandler> {
         int fieldHeight = 20;
         int yOffset = 24;
 
-        // --- Column 1 ---
         int col1X = (this.width / 2) - fieldWidth - 10;
         int y = 20;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob ID"), this.textRenderer));
-        mobIdField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Mob ID"), (button) -> {}, this.font));
+        mobIdField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobIdField.setMaxLength(128);
-        this.addDrawableChild(mobIdField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(mobIdField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Loot Table ID"), this.textRenderer));
-        lootTableIdField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Loot Table ID"), (button) -> {}, this.font));
+        lootTableIdField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         lootTableIdField.setMaxLength(128);
-        this.addDrawableChild(lootTableIdField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(lootTableIdField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob Count"), this.textRenderer));
-        mobCountField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Mob Count"), (button) -> {}, this.font));
+        mobCountField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobCountField.setMaxLength(4);
-        this.addDrawableChild(mobCountField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(mobCountField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob Spread Radius"), this.textRenderer));
-        mobSpreadField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Mob Spread Radius"), (button) -> {}, this.font));
+        mobSpreadField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobSpreadField.setMaxLength(4);
-        this.addDrawableChild(mobSpreadField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(mobSpreadField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Custom Mob Health"), this.textRenderer));
-        mobHealthField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Custom Mob Health"), (button) -> {}, this.font));
+        mobHealthField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobHealthField.setMaxLength(8);
-        this.addDrawableChild(mobHealthField);
+        this.addRenderableWidget(mobHealthField);
 
-
-        // --- Column 2 ---
         int col2X = (this.width / 2) + 5;
         y = 20;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Respawn Time (ticks)"), this.textRenderer));
-        respawnTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Respawn Time (ticks)"), (button) -> {}, this.font));
+        respawnTimeField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         respawnTimeField.setMaxLength(8);
-        this.addDrawableChild(respawnTimeField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(respawnTimeField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Trigger Radius"), this.textRenderer));
-        triggerRadiusField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Trigger Radius"), (button) -> {}, this.font));
+        triggerRadiusField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         triggerRadiusField.setMaxLength(4);
-        this.addDrawableChild(triggerRadiusField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(triggerRadiusField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Battle Radius"), this.textRenderer));
-        battleRadiusField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Battle Radius"), (button) -> {}, this.font));
+        battleRadiusField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         battleRadiusField.setMaxLength(4);
-        this.addDrawableChild(battleRadiusField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(battleRadiusField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Regeneration / 5s"), this.textRenderer));
-        regenerationField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Regeneration / 5s"), (button) -> {}, this.font));
+        regenerationField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         regenerationField.setMaxLength(4);
-        this.addDrawableChild(regenerationField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(regenerationField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Skill XP on Win"), this.textRenderer));
-        skillExperienceField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Skill XP on Win"), (button) -> {}, this.font));
+        skillExperienceField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         skillExperienceField.setMaxLength(8);
-        this.addDrawableChild(skillExperienceField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(skillExperienceField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Custom Attack Damage"), this.textRenderer));
-        mobAttackDamageField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Custom Attack Damage"), (button) -> {}, this.font));
+        mobAttackDamageField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobAttackDamageField.setMaxLength(8);
-        this.addDrawableChild(mobAttackDamageField);
+        this.addRenderableWidget(mobAttackDamageField);
 
-        // --- Save Button ---
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("Save"), button -> onSave())
-                .dimensions(this.width / 2 - 50, this.height - 50, 100, 20)
+        this.addRenderableWidget(Button.builder(Component.literal("Save"), button -> onSave())
+                .bounds(this.width / 2 - 50, this.height - 50, 100, 20)
                 .build());
 
         loadBlockEntityData();
     }
 
     private void loadBlockEntityData() {
-        if (handler.blockEntity != null) {
-            mobIdField.setText(handler.blockEntity.mobId);
-            respawnTimeField.setText(String.valueOf(handler.blockEntity.respawnTime));
-            lootTableIdField.setText(handler.blockEntity.lootTableId);
-            triggerRadiusField.setText(String.valueOf(handler.blockEntity.triggerRadius));
-            battleRadiusField.setText(String.valueOf(handler.blockEntity.battleRadius));
-            regenerationField.setText(String.valueOf(handler.blockEntity.regeneration));
-            skillExperienceField.setText(String.valueOf(handler.blockEntity.skillExperiencePerWin));
-            mobCountField.setText(String.valueOf(handler.blockEntity.mobCount));
-            mobSpreadField.setText(String.valueOf(handler.blockEntity.mobSpread));
-            mobHealthField.setText(String.valueOf(handler.blockEntity.mobHealth));
-            mobAttackDamageField.setText(String.valueOf(handler.blockEntity.mobAttackDamage));
+        // MOJANG MAPPINGS: handler is now menu.
+        if (menu.blockEntity != null) {
+            mobIdField.setValue(menu.blockEntity.mobId);
+            respawnTimeField.setValue(String.valueOf(menu.blockEntity.respawnTime));
+            lootTableIdField.setValue(menu.blockEntity.lootTableId);
+            triggerRadiusField.setValue(String.valueOf(menu.blockEntity.triggerRadius));
+            battleRadiusField.setValue(String.valueOf(menu.blockEntity.battleRadius));
+            regenerationField.setValue(String.valueOf(menu.blockEntity.regeneration));
+            skillExperienceField.setValue(String.valueOf(menu.blockEntity.skillExperiencePerWin));
+            mobCountField.setValue(String.valueOf(menu.blockEntity.mobCount));
+            mobSpreadField.setValue(String.valueOf(menu.blockEntity.mobSpread));
+            mobHealthField.setValue(String.valueOf(menu.blockEntity.mobHealth));
+            mobAttackDamageField.setValue(String.valueOf(menu.blockEntity.mobAttackDamage));
         }
     }
 
     private void onSave() {
         try {
+            // MOJANG MAPPINGS: getPos is now getBlockPos.
             ClientPlayNetworking.send(new ModPackets.UpdateMobSpawnerPayload(
-                    handler.blockEntity.getPos(),
-                    mobIdField.getText(),
-                    Integer.parseInt(respawnTimeField.getText()),
-                    lootTableIdField.getText(),
-                    Integer.parseInt(triggerRadiusField.getText()),
-                    Integer.parseInt(battleRadiusField.getText()),
-                    Integer.parseInt(regenerationField.getText()),
-                    Integer.parseInt(skillExperienceField.getText()),
-                    Integer.parseInt(mobCountField.getText()),
-                    Integer.parseInt(mobSpreadField.getText()),
-                    Double.parseDouble(mobHealthField.getText()),
-                    Double.parseDouble(mobAttackDamageField.getText())
+                    menu.blockEntity.getBlockPos(),
+                    mobIdField.getValue(),
+                    Integer.parseInt(respawnTimeField.getValue()),
+                    lootTableIdField.getValue(),
+                    Integer.parseInt(triggerRadiusField.getValue()),
+                    Integer.parseInt(battleRadiusField.getValue()),
+                    Integer.parseInt(regenerationField.getValue()),
+                    Integer.parseInt(skillExperienceField.getValue()),
+                    Integer.parseInt(mobCountField.getValue()),
+                    Integer.parseInt(mobSpreadField.getValue()),
+                    Double.parseDouble(mobHealthField.getValue()),
+                    Double.parseDouble(mobAttackDamageField.getValue())
             ));
-            this.close();
+            // MOJANG MAPPINGS: close is now onClose.
+            this.onClose();
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format in one of the fields.");
         }
     }
 
+    // MOJANG MAPPINGS: Rendering methods have been updated.
     @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
     }
 
     @Override
-    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(context, mouseX, mouseY);
+        this.renderTooltip(context, mouseX, mouseY);
     }
 }

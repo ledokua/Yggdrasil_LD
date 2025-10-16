@@ -1,20 +1,20 @@
 package net.ledok.Init;
 
 import net.ledok.YggdrasilLdMod;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 
 public class ItemInit {
     public static Item register(Item item, String id) {
-        // Create the identifier for the item.
-        Identifier itemID = Identifier.of(YggdrasilLdMod.MOD_ID, id);
+        // Create the ResourceLocation for the item using the modern method.
+        ResourceLocation itemID = ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, id);
 
-        // Register the item.
-        Item registeredItem = Registry.register(Registries.ITEM, itemID, item);
+        // Register the item to the built-in registry for items.
+        Item registeredItem = Registry.register(BuiltInRegistries.ITEM, itemID, item);
 
-        // Return the registered item!
+        // Return the registered item.
         return registeredItem;
     }
 }

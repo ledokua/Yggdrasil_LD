@@ -2,48 +2,48 @@ package net.ledok.block.entity;
 
 import com.mojang.brigadier.ParseResults;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.YggdrasilLdMod;
+import net.ledok.compat.PuffishSkillsCompat;
 import net.ledok.screen.MobSpawnerData;
 import net.ledok.screen.MobSpawnerScreenHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+// FIX: Implement ExtendedScreenHandlerFactory instead of MenuProvider
 public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<MobSpawnerData> {
 
     // --- Configuration Fields ---
@@ -71,31 +71,31 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         super(ModBlockEntities.MOB_SPAWNER_BLOCK_ENTITY, pos, state);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, MobSpawnerBlockEntity be) {
-        if (world.isClient() || !(world instanceof ServerWorld serverWorld)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, MobSpawnerBlockEntity be) {
+        if (world.isClientSide() || !(world instanceof ServerLevel serverLevel)) return;
 
         if (be.isBattleActive) {
-            be.handleActiveBattle(serverWorld);
+            be.handleActiveBattle(serverLevel);
         } else {
-            be.handleIdleState(serverWorld, pos);
+            be.handleIdleState(serverLevel, pos);
         }
     }
 
-    private void handleIdleState(ServerWorld world, BlockPos pos) {
+    private void handleIdleState(ServerLevel world, BlockPos pos) {
         if (respawnCooldown > 0) {
             respawnCooldown--;
             return;
         }
 
-        Box triggerBox = new Box(pos).expand(triggerRadius);
-        List<ServerPlayerEntity> playersInTriggerZone = world.getEntitiesByClass(ServerPlayerEntity.class, triggerBox, p -> !p.isSpectator());
+        AABB triggerBox = new AABB(pos).inflate(triggerRadius);
+        List<ServerPlayer> playersInTriggerZone = world.getEntitiesOfClass(ServerPlayer.class, triggerBox, p -> !p.isSpectator());
 
         if (!playersInTriggerZone.isEmpty()) {
             startBattle(world, pos);
         }
     }
 
-    private void handleActiveBattle(ServerWorld world) {
+    private void handleActiveBattle(ServerLevel world) {
         activeMobUuids.removeIf(uuid -> world.getEntity(uuid) == null || !world.getEntity(uuid).isAlive());
 
         if (activeMobUuids.isEmpty()) {
@@ -103,8 +103,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
             return;
         }
 
-        Box battleBox = new Box(pos).expand(battleRadius);
-        List<ServerPlayerEntity> playersInBattle = world.getEntitiesByClass(ServerPlayerEntity.class, battleBox, p -> !p.isSpectator());
+        AABB battleBox = new AABB(worldPosition).inflate(battleRadius);
+        List<ServerPlayer> playersInBattle = world.getEntitiesOfClass(ServerPlayer.class, battleBox, p -> !p.isSpectator());
         if (playersInBattle.isEmpty()) {
             handleBattleLoss(world, "All players left the battle area.");
             return;
@@ -114,7 +114,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
             Entity mob = world.getEntity(mobUuid);
             if (mob != null && !battleBox.intersects(mob.getBoundingBox())) {
                 handleBattleLoss(world, "A mob left the battle zone.");
-                return; // Exit immediately
+                return;
             }
         }
 
@@ -133,10 +133,10 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
     }
 
 
-    private void startBattle(ServerWorld world, BlockPos spawnCenter) {
-        Optional<EntityType<?>> entityTypeOpt = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(mobId));
+    private void startBattle(ServerLevel world, BlockPos spawnCenter) {
+        Optional<EntityType<?>> entityTypeOpt = EntityType.byString(mobId);
         if (entityTypeOpt.isEmpty()) {
-            YggdrasilLdMod.LOGGER.error("Invalid mob ID in arena spawner at {}: {}", this.pos, this.mobId);
+            YggdrasilLdMod.LOGGER.error("Invalid mob ID in arena spawner at {}: {}", this.worldPosition, this.mobId);
             return;
         }
 
@@ -146,89 +146,75 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         for (int i = 0; i < mobCount; i++) {
             Entity mob = entityTypeOpt.get().create(world);
             if (mob instanceof LivingEntity livingMob) {
-                // Apply custom stats
-                Objects.requireNonNull(livingMob.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(this.mobHealth);
+                Objects.requireNonNull(livingMob.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(this.mobHealth);
                 livingMob.heal((float) this.mobHealth);
-                if (livingMob.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) {
-                    Objects.requireNonNull(livingMob.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)).setBaseValue(this.mobAttackDamage);
+                if (livingMob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
+                    Objects.requireNonNull(livingMob.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(this.mobAttackDamage);
                 }
-
 
                 double x = spawnCenter.getX() + 0.5 + (world.random.nextDouble() - 0.5) * mobSpread * 2;
                 double y = spawnCenter.getY() + 1;
                 double z = spawnCenter.getZ() + 0.5 + (world.random.nextDouble() - 0.5) * mobSpread * 2;
-                livingMob.refreshPositionAndAngles(x, y, z, world.random.nextFloat() * 360.0F, 0.0F);
-                world.spawnEntity(livingMob);
-                activeMobUuids.add(livingMob.getUuid());
+                livingMob.moveTo(x, y, z, world.random.nextFloat() * 360.0F, 0.0F);
+                world.addFreshEntity(livingMob);
+                activeMobUuids.add(livingMob.getUUID());
             }
         }
-        YggdrasilLdMod.LOGGER.info("Mob Spawner started at {} with {} of {}", this.pos, this.mobCount, this.mobId);
-        markDirty();
+        YggdrasilLdMod.LOGGER.info("Mob Spawner started at {} with {} of {}", this.worldPosition, this.mobCount, this.mobId);
+        setChanged();
     }
 
-    private void handleBattleWin(ServerWorld world) {
-        YggdrasilLdMod.LOGGER.info("Mob Spawner won at {}", pos);
+    private void handleBattleWin(ServerLevel world) {
+        YggdrasilLdMod.LOGGER.info("Mob Spawner won at {}", worldPosition);
 
-        // --- Drop Loot ---
         if (lootTableId != null && !lootTableId.isEmpty()) {
-            Identifier lootTableIdentifier = Identifier.tryParse(lootTableId);
+            ResourceLocation lootTableIdentifier = ResourceLocation.tryParse(lootTableId);
             if (lootTableIdentifier != null) {
-                RegistryKey<LootTable> lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTableIdentifier);
-                LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(lootTableKey);
-
-                ServerPlayerEntity contextPlayer = null;
+                LootTable lootTable = Objects.requireNonNull(world.getServer()).reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableIdentifier));
+                ServerPlayer contextPlayer = null;
                 if (!playerDamageDealt.isEmpty()) {
                     UUID playerUuid = playerDamageDealt.keySet().iterator().next();
-                    contextPlayer = world.getServer().getPlayerManager().getPlayer(playerUuid);
+                    contextPlayer = world.getServer().getPlayerList().getPlayer(playerUuid);
                 }
 
                 if (contextPlayer == null) {
-                    Box battleBox = new Box(pos).expand(battleRadius);
-                    List<ServerPlayerEntity> playersInBattle = world.getEntitiesByClass(ServerPlayerEntity.class, battleBox, p -> !p.isSpectator());
+                    AABB battleBox = new AABB(worldPosition).inflate(battleRadius);
+                    List<ServerPlayer> playersInBattle = world.getEntitiesOfClass(ServerPlayer.class, battleBox, p -> !p.isSpectator());
                     if (!playersInBattle.isEmpty()) {
                         contextPlayer = playersInBattle.get(0);
                     }
                 }
 
                 if (contextPlayer != null) {
-                    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
-                            .add(LootContextParameters.ORIGIN, pos.toCenterPos())
-                            .add(LootContextParameters.THIS_ENTITY, contextPlayer);
+                    LootParams.Builder builder = new LootParams.Builder(world)
+                            .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(worldPosition))
+                            .withParameter(LootContextParams.THIS_ENTITY, contextPlayer);
 
-                    List<ItemStack> loot = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
-                    for (ItemStack stack : loot) {
-                        world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, stack));
-                    }
+                    LootParams lootParams = builder.create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.GIFT);
+                    lootTable.getRandomItems(lootParams).forEach(stack ->
+                            world.addFreshEntity(new ItemEntity(world, worldPosition.getX() + 0.5, worldPosition.getY() + 1.5, worldPosition.getZ() + 0.5, stack)));
+
                 } else {
-                    YggdrasilLdMod.LOGGER.warn("Mob Spawner at {} won, but no player could be found to generate loot.", pos);
+                    YggdrasilLdMod.LOGGER.warn("Mob Spawner at {} won, but no player could be found to generate loot.", worldPosition);
                 }
             }
         }
 
-        // --- Grant Skill Experience ---
-        if (skillExperiencePerWin > 0) {
-            MinecraftServer server = world.getServer();
-            if (server != null) {
-                ServerCommandSource source = server.getCommandSource();
-                CommandManager commandManager = server.getCommandManager();
-
-                playerDamageDealt.forEach((playerUuid, damage) -> {
-                    ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerUuid);
-                    if (player != null) {
-                        String command = String.format("puffish_skills experience add %s %s %d",
-                                player.getName().getString(), YggdrasilLdMod.CONFIG.puffish_skills_tree_id, skillExperiencePerWin);
-                        ParseResults<ServerCommandSource> parseResults = commandManager.getDispatcher().parse(command, source.withSilent());
-                        commandManager.execute(parseResults, command);
-                    }
-                });
+        if (this.skillExperiencePerWin > 0) {
+            AABB battleBox = new AABB(worldPosition).inflate(battleRadius);
+            List<ServerPlayer> playersInBattle = world.getEntitiesOfClass(ServerPlayer.class, battleBox, p -> !p.isSpectator());
+            for (ServerPlayer player : playersInBattle) {
+                if (FabricLoader.getInstance().isModLoaded("puffish_skills")) {
+                    PuffishSkillsCompat.addExperience(player, this.skillExperiencePerWin);
+                }
             }
         }
 
         resetSpawner(world, true);
     }
 
-    private void handleBattleLoss(ServerWorld world, String reason) {
-        YggdrasilLdMod.LOGGER.info("Mob Spawner lost at {}: {}", pos, reason);
+    private void handleBattleLoss(ServerLevel world, String reason) {
+        YggdrasilLdMod.LOGGER.info("Mob Spawner lost at {}: {}", worldPosition, reason);
         for (UUID mobUuid : activeMobUuids) {
             Entity mob = world.getEntity(mobUuid);
             if (mob != null && mob.isAlive()) {
@@ -238,31 +224,26 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         resetSpawner(world, false);
     }
 
-    private void resetSpawner(ServerWorld world, boolean wasWin) {
+    private void resetSpawner(ServerLevel world, boolean wasWin) {
         isBattleActive = false;
         activeMobUuids.clear();
         playerDamageDealt.clear();
         regenerationTickTimer = 0;
-        if (wasWin) {
-            respawnCooldown = respawnTime;
-        } else {
-            respawnCooldown = 0; // Immediate reset
-        }
-        markDirty();
-        world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+        respawnCooldown = wasWin ? respawnTime : 0;
+        setChanged();
+        world.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }
 
     public void onMobDamaged(DamageSource source, float amount) {
-        if (isBattleActive && source.getAttacker() instanceof PlayerEntity) {
-            UUID playerUuid = source.getAttacker().getUuid();
+        if (isBattleActive && source.getEntity() instanceof Player) {
+            UUID playerUuid = source.getEntity().getUUID();
             playerDamageDealt.merge(playerUuid, amount, Float::sum);
         }
     }
 
-
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         nbt.putString("MobId", mobId);
         nbt.putInt("RespawnTime", respawnTime);
         nbt.putString("LootTableId", lootTableId);
@@ -277,18 +258,18 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         nbt.putBoolean("IsBattleActive", isBattleActive);
         nbt.putInt("RespawnCooldown", respawnCooldown);
 
-        NbtList mobUuids = new NbtList();
+        ListTag mobUuids = new ListTag();
         for (UUID uuid : activeMobUuids) {
-            NbtCompound uuidNbt = new NbtCompound();
-            uuidNbt.putUuid("uuid", uuid);
+            CompoundTag uuidNbt = new CompoundTag();
+            uuidNbt.putUUID("uuid", uuid);
             mobUuids.add(uuidNbt);
         }
         nbt.put("ActiveMobs", mobUuids);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
         mobId = nbt.getString("MobId");
         respawnTime = nbt.getInt("RespawnTime");
         lootTableId = nbt.getString("LootTableId");
@@ -304,38 +285,39 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         respawnCooldown = nbt.getInt("RespawnCooldown");
 
         activeMobUuids.clear();
-        NbtList mobUuids = nbt.getList("ActiveMobs", NbtCompound.COMPOUND_TYPE);
-        for (int i = 0; i < mobUuids.size(); i++) {
-            NbtCompound uuidNbt = mobUuids.getCompound(i);
-            activeMobUuids.add(uuidNbt.getUuid("uuid"));
+        ListTag mobUuids = nbt.getList("ActiveMobs", CompoundTag.TAG_COMPOUND);
+        for (Tag tag : mobUuids) {
+            CompoundTag uuidNbt = (CompoundTag) tag;
+            activeMobUuids.add(uuidNbt.getUUID("uuid"));
         }
     }
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return createNbt(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return saveWithoutMetadata(registryLookup);
     }
 
     @Override
-    public Text getDisplayName() {
-        return Text.literal("Mob Spawner Configuration");
+    public Component getDisplayName() {
+        return Component.literal("Mob Spawner Configuration");
     }
 
     @Nullable
     @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
         return new MobSpawnerScreenHandler(syncId, playerInventory, this);
     }
 
+    // FIX: This method is now required by the ExtendedScreenHandlerFactory.
     @Override
-    public MobSpawnerData getScreenOpeningData(ServerPlayerEntity player) {
-        return new MobSpawnerData(this.pos);
+    public MobSpawnerData getScreenOpeningData(ServerPlayer player) {
+        return new MobSpawnerData(this.worldPosition);
     }
 }
 
