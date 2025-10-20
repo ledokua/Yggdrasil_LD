@@ -2,7 +2,7 @@ package net.ledok.block;
 
 import com.mojang.serialization.MapCodec;
 import net.ledok.block.entity.ExitPortalBlockEntity;
-import net.ledok.block.entity.ModBlockEntities;
+import net.ledok.registry.BlockEntitiesRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -57,6 +57,6 @@ public class ExitPortalBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.EXIT_PORTAL_BLOCK_ENTITY, ExitPortalBlockEntity::tick);
+        return createTickerHelper(type, BlockEntitiesRegistry.EXIT_PORTAL_BLOCK_ENTITY, ExitPortalBlockEntity::tick);
     }
 }

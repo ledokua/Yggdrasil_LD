@@ -1,6 +1,10 @@
-package net.ledok.block;
+package net.ledok.registry;
 
 import net.ledok.YggdrasilLdMod;
+import net.ledok.block.BossSpawnerBlock;
+import net.ledok.block.EnterPortalBlock;
+import net.ledok.block.ExitPortalBlock;
+import net.ledok.block.MobSpawnerBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -11,9 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-// --- Blocks register ---
-public class ModBlocks {
-
+public class BlockRegistry {
     public static final Block BOSS_SPAWNER_BLOCK = registerBlock("boss_spawner",
             new BossSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER)
                     .strength(-1.0f, 3600000.0f)));

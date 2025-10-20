@@ -3,8 +3,9 @@ package net.ledok.block.entity;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.YggdrasilLdMod;
-import net.ledok.block.ModBlocks;
 import net.ledok.compat.PuffishSkillsCompat;
+import net.ledok.registry.BlockEntitiesRegistry;
+import net.ledok.registry.BlockRegistry;
 import net.ledok.screen.BossSpawnerData;
 import net.ledok.screen.BossSpawnerScreenHandler;
 import net.minecraft.core.BlockPos;
@@ -42,7 +43,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-// FIX: Implement ExtendedScreenHandlerFactory instead of MenuProvider
 public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BossSpawnerData> {
 
     // --- Configuration Fields ---
@@ -68,7 +68,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     private int enterPortalRemovalTimer = -1;
 
     public BossSpawnerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.BOSS_SPAWNER_BLOCK_ENTITY, pos, state);
+        super(BlockEntitiesRegistry.BOSS_SPAWNER_BLOCK_ENTITY, pos, state);
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, BossSpawnerBlockEntity be) {
@@ -199,7 +199,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
             });
         }
         BlockPos portalPos = worldPosition.above();
-        world.setBlock(portalPos, ModBlocks.EXIT_PORTAL_BLOCK.defaultBlockState(), 3);
+        world.setBlock(portalPos, BlockRegistry.EXIT_PORTAL_BLOCK.defaultBlockState(), 3);
         if (world.getBlockEntity(portalPos) instanceof ExitPortalBlockEntity portal) {
             portal.setDetails(this.portalActiveTime, this.exitPortalCoords);
             YggdrasilLdMod.LOGGER.info("Spawned exit portal at {} for {} ticks.", portalPos, this.portalActiveTime);
@@ -251,14 +251,14 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         if (enterPortalSpawnCoords == null || enterPortalDestCoords == null || enterPortalSpawnCoords.equals(BlockPos.ZERO)) {
             return;
         }
-        world.setBlock(enterPortalSpawnCoords, ModBlocks.ENTER_PORTAL_BLOCK.defaultBlockState(), 3);
+        world.setBlock(enterPortalSpawnCoords, BlockRegistry.ENTER_PORTAL_BLOCK.defaultBlockState(), 3);
         if (world.getBlockEntity(enterPortalSpawnCoords) instanceof EnterPortalBlockEntity be) {
             be.setDestination(enterPortalDestCoords);
         }
     }
 
     private void removeEnterPortal(ServerLevel world) {
-        if (enterPortalSpawnCoords != null && world.getBlockState(enterPortalSpawnCoords).is(ModBlocks.ENTER_PORTAL_BLOCK)) {
+        if (enterPortalSpawnCoords != null && world.getBlockState(enterPortalSpawnCoords).is(BlockRegistry.ENTER_PORTAL_BLOCK)) {
             world.setBlock(enterPortalSpawnCoords, Blocks.AIR.defaultBlockState(), 3);
         }
     }

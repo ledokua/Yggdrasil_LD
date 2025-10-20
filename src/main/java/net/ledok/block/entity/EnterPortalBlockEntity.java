@@ -1,5 +1,6 @@
 package net.ledok.block.entity;
 
+import net.ledok.registry.BlockEntitiesRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -11,7 +12,7 @@ public class EnterPortalBlockEntity extends BlockEntity {
     private BlockPos destination;
 
     public EnterPortalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ENTER_PORTAL_BLOCK_ENTITY, pos, state);
+        super(BlockEntitiesRegistry.ENTER_PORTAL_BLOCK_ENTITY, pos, state);
     }
 
     public void setDestination(BlockPos destination) {

@@ -1,5 +1,6 @@
 package net.ledok.block.entity;
 
+import net.ledok.registry.BlockEntitiesRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +15,7 @@ public class ExitPortalBlockEntity extends BlockEntity {
     private BlockPos destination;
 
     public ExitPortalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.EXIT_PORTAL_BLOCK_ENTITY, pos, state);
+        super(BlockEntitiesRegistry.EXIT_PORTAL_BLOCK_ENTITY, pos, state);
     }
 
     public void setDetails(int lifetime, BlockPos destination) {

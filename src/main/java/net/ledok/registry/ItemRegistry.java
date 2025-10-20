@@ -1,10 +1,13 @@
-package net.ledok.Items;
+package net.ledok.registry;
 
-import net.minecraft.world.item.Item;
 import net.ledok.Init.ItemInit;
+import net.ledok.Items.DungeonLeaveItem;
+import net.ledok.Items.PercentageHealItem;
+import net.ledok.Items.RandomDripstoneItem;
+import net.ledok.Items.SkillResetItem;
+import net.minecraft.world.item.Item;
 
-public class Items {
-
+public class ItemRegistry {
     public static final Item ICON = ItemInit.register(
             new Item(new Item.Properties()),
             "icon"

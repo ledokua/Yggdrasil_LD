@@ -2,7 +2,7 @@ package net.ledok.block;
 
 import com.mojang.serialization.MapCodec;
 import net.ledok.block.entity.BossSpawnerBlockEntity;
-import net.ledok.block.entity.ModBlockEntities;
+import net.ledok.registry.BlockEntitiesRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -61,7 +61,7 @@ public class BossSpawnerBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.BOSS_SPAWNER_BLOCK_ENTITY, BossSpawnerBlockEntity::tick);
+        return createTickerHelper(type, BlockEntitiesRegistry.BOSS_SPAWNER_BLOCK_ENTITY, BossSpawnerBlockEntity::tick);
     }
 }
 

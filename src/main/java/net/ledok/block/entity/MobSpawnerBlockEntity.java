@@ -5,9 +5,9 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.YggdrasilLdMod;
 import net.ledok.compat.PuffishSkillsCompat;
+import net.ledok.registry.BlockEntitiesRegistry;
 import net.ledok.screen.MobSpawnerData;
 import net.ledok.screen.MobSpawnerScreenHandler;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -68,7 +68,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
 
 
     public MobSpawnerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.MOB_SPAWNER_BLOCK_ENTITY, pos, state);
+        super(BlockEntitiesRegistry.MOB_SPAWNER_BLOCK_ENTITY, pos, state);
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, MobSpawnerBlockEntity be) {
