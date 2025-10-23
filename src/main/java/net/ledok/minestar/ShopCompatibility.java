@@ -14,20 +14,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static net.ledok.YggdrasilLdMod.CONFIG;
 import static net.ledok.YggdrasilLdMod.LOGGER;
 import static ua.com.minestar.Minestar.minestar;
 
 public class ShopCompatibility {
-
-    private static final int SERVER_ID = CONFIG.server_id;
 
     /**
      * Notifies a player on join if they have pending products to claim.
      * @param player The player who just joined the server.
      */
     public static void notifyOnJoin(ServerPlayerEntity player) {
-        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUuid(), SERVER_ID)
+        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUuid())
                 .onSuccess(products -> {
                     if (!products.isEmpty()) {
                         Text message = Text.translatable("message.yggdrasil_ld.shop.unclaimed_items", products.size())
@@ -48,7 +45,7 @@ public class ShopCompatibility {
         player.sendMessage(Text.translatable("message.yggdrasil_ld.shop.checking").formatted(Formatting.GRAY));
         LOGGER.info("[Shop Sync] Checking for pending products for player {}.", player.getName().getString());
 
-        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUuid(), SERVER_ID)
+        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUuid())
                 .onSuccess(products -> {
                     if (products.isEmpty()) {
                         player.sendMessage(Text.translatable("message.yggdrasil_ld.shop.no_items").formatted(Formatting.YELLOW));
