@@ -73,7 +73,7 @@
           "function": "minecraft:set_components",
           "components": {
             "enchant_limiter:limit": {
-              "count": 5
+              "count": 6
             }
           }
         }
@@ -101,7 +101,7 @@
           "function": "minecraft:set_components",
           "components": {
             "enchant_limiter:limit": {
-              "count": 5
+              "count": 6
             }
           }
         }

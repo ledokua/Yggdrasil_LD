@@ -2,39 +2,49 @@
   "type": "minecraft:chest",
   "pools": [
     {
-      "rolls": 15,
+      "rolls": 7,
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "yggdrasil_ld:healing_potion_6",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "yggdrasil_ld:healing_potion_5",
-          "weight": 600,
+          "name": "yggdrasil_ld:healing_potion_4",
+          "weight": 400,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 10,
-                "max": 25
+                "min": 6,
+                "max": 18
               }
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "yggdrasil_ld:healing_potion_4",
-          "weight": 390,
+          "name": "yggdrasil_ld:healing_potion_3",
+          "weight": 300,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 10,
-                "max": 30
+                "min": 20,
+                "max": 35
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "yggdrasil_ld:healing_potion_2",
+          "weight": 300,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 25,
+                "max": 50
               }
             }
           ]
@@ -48,7 +58,19 @@
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_weapons",
           "expand": true,
-          "weight": 25,
+          "weight": 10
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_weapons",
+          "expand": true,
+          "weight": 55
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_weapons",
+          "expand": true,
+          "weight": 35,
           "functions": []
         }
       ],
@@ -70,7 +92,19 @@
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_armors",
           "expand": true,
-          "weight": 10,
+          "weight": 20
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_armors",
+          "expand": true,
+          "weight": 50
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_armors",
+          "expand": true,
+          "weight": 30,
           "functions": []
         }
       ],
@@ -86,25 +120,44 @@
       ]
     },
     {
-      "rolls": 8,
+      "rolls": 6,
       "entries": [
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_4_relics",
           "expand": true,
-          "weight": 5,
+          "weight": 30
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_relics",
+          "expand": true,
+          "weight": 50,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_2_relics",
+          "expand": true,
+          "weight": 20,
           "functions": []
         }
       ]
     },
     {
-      "rolls": 16,
+      "rolls": 8,
       "entries": [
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_4_accessories",
           "expand": true,
-          "weight": 5,
+          "weight": 50
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_accessories",
+          "expand": true,
+          "weight": 50,
           "functions": []
         }
       ]
