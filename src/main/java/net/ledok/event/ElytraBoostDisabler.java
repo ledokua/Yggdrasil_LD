@@ -6,6 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.ai.attributes.Attributes; // Import Attributes
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,13 +26,23 @@ public class ElytraBoostDisabler implements UseItemCallback {
 
                 // Check if the current dimension is in the configured blacklist.
                 if (YggdrasilLdMod.CONFIG.elytra_boost_disabled_dimensions.contains(currentDimension)) {
-                    // Send the player a message and cancel the item use event.
+                    // Check if the armor threshold feature is enabled
+                    if (YggdrasilLdMod.CONFIG.elytra_armor_threshold_enabled) {
+                        // Get the player's current armor value
+                        double armorValue = player.getAttributeValue(Attributes.ARMOR);
+                        // If armor is below the threshold, allow boosting
+                        if (armorValue < YggdrasilLdMod.CONFIG.elytra_armor_threshold) {
+                            return InteractionResultHolder.pass(itemStack); // Allow boosting
+                        }
+                    }
+
+                    // If armor check is disabled OR armor is >= threshold, disable boosting
                     player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.elytra_boost_disabled").withStyle(ChatFormatting.RED));
-                    return InteractionResultHolder.fail(itemStack);
+                    return InteractionResultHolder.fail(itemStack); // Disable boosting
                 }
             }
         }
-        // If conditions are not met, allow the item use to proceed normally.
+        // If conditions are not met (not flying, not firework, or not in blacklisted dimension), allow the item use to proceed normally.
         return InteractionResultHolder.pass(player.getItemInHand(hand));
     }
 }

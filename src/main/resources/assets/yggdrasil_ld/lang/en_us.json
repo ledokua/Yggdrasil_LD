@@ -106,7 +106,7 @@
   "dungeon.temple_dungeon_yggdrasil": "Temple dungeon",
   "dungeon.dark_dungeon_yggdrasil": "Dark dungeon",
 
-  "message.yggdrasil_ld.elytra_boost_disabled": "You can't use fireworks in this dimension!",
+  "message.yggdrasil_ld.elytra_boost_disabled": "You can't use fireworks in this dimension if your armor more than 19!",
   "message.yggdrasil_ld.healing_potion_used": "You feel rejuvenated!",
   "message.yggdrasil_ld.raid_start": "%1$s has started a raid against %2$s!",
 

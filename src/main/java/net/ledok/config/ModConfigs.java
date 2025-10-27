@@ -38,6 +38,8 @@ public class ModConfigs {
 
     // --- ELYTRA BOOST BLACKLISTED DIMENSIONS
     public List<String> elytra_boost_disabled_dimensions = new ArrayList<>(Arrays.asList("minecraft:overworld", "minecraft:the_nether"));
+    public boolean elytra_armor_threshold_enabled = true;
+    public int elytra_armor_threshold = 20;
 
     // --- REPUTATION AND PARTIAL INVENTORY SAVE
     public double keep_inventory_drop_percentage = 50.0;
@@ -62,7 +64,18 @@ public class ModConfigs {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 config = GSON.fromJson(reader, ModConfigs.class);
                 if (config == null) { config = new ModConfigs(); }
-            } catch (IOException e) {
+                if (config.elytra_boost_disabled_dimensions == null) {
+                    config.elytra_boost_disabled_dimensions = new ArrayList<>(Arrays.asList("minecraft:overworld", "minecraft:the_nether"));
+                }
+                try {
+                    boolean checkEnabled = config.elytra_armor_threshold_enabled;
+                    int checkThreshold = config.elytra_armor_threshold;
+                } catch (NullPointerException | NoSuchFieldError e) {
+                    config.elytra_armor_threshold_enabled = true;
+                    config.elytra_armor_threshold = 20;
+                }
+
+            }catch (IOException e) {
                 YggdrasilLdMod.LOGGER.error("Failed to load config, using defaults.", e);
                 config = new ModConfigs();
             }
