@@ -143,7 +143,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     }
 
     private void startBattle(ServerLevel world, BlockPos spawnPos, ServerPlayer triggeringPlayer) {
-        this.enterPortalRemovalTimer = 1200;
+        this.enterPortalRemovalTimer = 600;
 
         Optional<EntityType<?>> entityTypeOpt = EntityType.byString(this.mobId);
 
@@ -205,6 +205,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
             YggdrasilLdMod.LOGGER.info("Spawned exit portal at {} for {} ticks.", portalPos, this.portalActiveTime);
         }
         resetSpawner(world);
+        removeEnterPortal(world);
     }
 
     private void handleBattleLoss(ServerLevel world, String reason) {
