@@ -102,6 +102,11 @@
   "item.yggdrasil_ld.healing_potion_5": "Гігантське Зілля Лікування",
   "item.yggdrasil_ld.healing_potion_6": "Зілля Повного Відновлення",
 
+  "block.yggdrasil_ld.boss_spawner": "Викликач рейд босса",
+  "block.yggdrasil_ld.mob_spawner": "Викликач мобів",
+  "block.yggdrasil_ld.enter_portal": "Рейд портал входу",
+  "block.yggdrasil_ld.exit_portal": "Рейд портал виходу",
+
 
   "dungeon.temple_dungeon_yggdrasil": "Старовинний храм",
   "dungeon.dark_dungeon_yggdrasil": "Темне підземемелля",

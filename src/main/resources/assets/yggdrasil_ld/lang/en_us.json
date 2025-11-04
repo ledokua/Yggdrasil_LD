@@ -124,6 +124,11 @@
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Use Time: %1$s seconds",
   "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Cooldown: %1$s seconds",
 
+  "block.yggdrasil_ld.boss_spawner": "Raid boss spawner",
+  "block.yggdrasil_ld.mob_spawner": "Mob spawner",
+  "block.yggdrasil_ld.enter_portal": "Raid enter portal",
+  "block.yggdrasil_ld.exit_portal": "Raid exit portal",
+
   "message.yggdrasil_ld.shop.checking": "Checking for purchased items...",
   "message.yggdrasil_ld.shop.unclaimed_items": "You have %s unclaimed products! ",
   "message.yggdrasil_ld.shop.claim_button": "[Click here to claim]",

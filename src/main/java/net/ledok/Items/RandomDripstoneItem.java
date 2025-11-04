@@ -59,7 +59,6 @@ public class RandomDripstoneItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        tooltip.add(Component.literal(""));
         tooltip.add(Component.translatable("item.yggdrasil_ld.healing_potion.tooltip.dripstone")
                 .withStyle(ChatFormatting.GRAY));
         super.appendHoverText(stack, context, tooltip, type);

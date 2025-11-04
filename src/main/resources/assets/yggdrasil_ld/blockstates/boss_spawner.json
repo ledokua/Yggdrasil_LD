@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "yggdrasil_ld:block/boss_spawner" }
+  }
+}

@@ -6,10 +6,16 @@ import net.ledok.Items.PercentageHealItem;
 import net.ledok.Items.RandomDripstoneItem;
 import net.ledok.Items.SkillResetItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemRegistry {
     public static final Item ICON = ItemInit.register(
-            new Item(new Item.Properties()),
+            new Item(new Item.Properties()) {
+                @Override
+                public boolean isFoil(ItemStack stack) {
+                    return true; // This makes the item have the enchantment glint
+                }
+            },
             "icon"
     );
     public static final Item RESET_SCROLL = ItemInit.register(
