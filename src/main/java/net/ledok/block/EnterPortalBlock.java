@@ -3,15 +3,19 @@ package net.ledok.block;
 import com.mojang.serialization.MapCodec;
 import net.ledok.block.entity.EnterPortalBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction; // Import Direction
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer; // Import ServerPlayer
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext; // Import BlockPlaceContext
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*; // Import Block, Rotation, Mirror
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition; // Import StateDefinition
+import net.minecraft.world.level.block.state.properties.BlockStateProperties; // Import BlockStateProperties
+import net.minecraft.world.level.block.state.properties.DirectionProperty; // Import DirectionProperty
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap; // Import HashMap
@@ -22,17 +26,41 @@ public class EnterPortalBlock extends BaseEntityBlock {
 
     public static final MapCodec<EnterPortalBlock> CODEC = simpleCodec(EnterPortalBlock::new);
 
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
     private final Map<UUID, Long> playerCooldowns = new HashMap<>();
     private static final int COOLDOWN_TICKS = 100;
 
 
     public EnterPortalBlock(Properties settings) {
         super(settings);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.EAST));
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
+    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public @NotNull BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public @NotNull BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Nullable
@@ -42,7 +70,7 @@ public class EnterPortalBlock extends BaseEntityBlock {
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
