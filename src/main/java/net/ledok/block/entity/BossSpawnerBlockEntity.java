@@ -195,7 +195,14 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
 
             LootParams lootParams = builder.create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.GIFT);
             lootTable.getRandomItems(lootParams).forEach(stack -> {
-                world.addFreshEntity(new ItemEntity(world, worldPosition.getX() + 0.5, worldPosition.getY() + 2.5, worldPosition.getZ() + 0.5, stack));
+
+                double x = worldPosition.getX() + 0.5 + (world.random.nextDouble() * 8.0) - 4.0;
+                double y = worldPosition.getY() + 3.5;
+                double z = worldPosition.getZ() + 0.5 + (world.random.nextDouble() * 8.0) - 4.0;
+
+                ItemEntity itemEntity = new ItemEntity(world, x, y, z, stack);
+                itemEntity.setDeltaMovement(world.random.nextDouble() * 0.2 - 0.1, 0.4, world.random.nextDouble() * 0.2 - 0.1);
+                world.addFreshEntity(itemEntity);
             });
         }
         BlockPos portalPos = worldPosition.above(2);
