@@ -1,12 +1,10 @@
 package net.ledok.registry;
 
-import net.ledok.Init.ItemInit;
+import net.ledok.registry.ItemRegistry.ItemInit;
 import net.ledok.Items.FrostT6ArmorItem;
 import net.ledok.Items.PriestT6ArmorItem;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
-
-import java.util.function.Supplier;
 
 public class ArmorRegistry {
 
@@ -45,6 +43,8 @@ public class ArmorRegistry {
             new FrostT6ArmorItem(ArmorMaterialRegistry.FROST_T6, ArmorItem.Type.BOOTS, new Item.Properties().stacksTo(1)),
             "t6_frost_boots"
     );
+
+
 
     public static void initialize() {
     }

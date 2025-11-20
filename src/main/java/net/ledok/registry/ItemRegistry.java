@@ -1,10 +1,13 @@
 package net.ledok.registry;
 
-import net.ledok.Init.ItemInit;
 import net.ledok.Items.DungeonLeaveItem;
 import net.ledok.Items.PercentageHealItem;
 import net.ledok.Items.RandomDripstoneItem;
 import net.ledok.Items.SkillResetItem;
+import net.ledok.YggdrasilLdMod;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -55,6 +58,19 @@ public class ItemRegistry {
             new PercentageHealItem(new Item.Properties().stacksTo(1), 1f, 5, 12000),
             "healing_potion_6"
     );
+
+    public class ItemInit {
+        public static Item register(Item item, String id) {
+            // Create the ResourceLocation for the item using the modern method.
+            ResourceLocation itemID = ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, id);
+
+            // Register the item to the built-in registry for items.
+            Item registeredItem = Registry.register(BuiltInRegistries.ITEM, itemID, item);
+
+            // Return the registered item.
+            return registeredItem;
+        }
+    }
 
     public static void initialize() {
     }
