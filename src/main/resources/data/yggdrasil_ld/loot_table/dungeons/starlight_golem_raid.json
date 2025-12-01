@@ -80,19 +80,26 @@
       ]
     },
     {
-      "rolls": 4,
+      "rolls": 5,
       "entries": [
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_2_armors",
           "expand": true,
-          "weight": 75
+          "weight": 748
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_3_armors",
           "expand": true,
-          "weight": 25,
+          "weight": 250,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_5_armors",
+          "expand": true,
+          "weight": 2,
           "functions": []
         }
       ],

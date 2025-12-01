@@ -90,13 +90,15 @@
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_armors",
           "expand": true,
-          "weight": 50
+          "weight": 25,
+          "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_3_armors",
           "expand": true,
-          "weight": 50
+          "weight": 975,
+          "functions": []
         }
       ],
       "functions": [

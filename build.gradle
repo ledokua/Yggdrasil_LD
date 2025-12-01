@@ -89,7 +89,7 @@ dependencies {
     modImplementation("net.puffish:skillsmod:0.16.5+1.21:fabric")
 
     // Minestar
-    modImplementation include("minestar:minestar-fabric")
+    modCompileOnly include("minestar:minestar-fabric")
 
     //GeckoLib
     modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"

@@ -1,6 +1,5 @@
 package net.ledok.minestar;
 
-// MOJANG MAPPINGS: Update all imports for new Mojang mappings.
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
@@ -24,12 +23,10 @@ public class ShopCompatibility {
      * Notifies a player on join if they have pending products to claim.
      * @param player The player who just joined the server.
      */
-    // MOJANG MAPPINGS: Update method signature to use ServerPlayer.
     public static void notifyOnJoin(ServerPlayer player) {
         minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUUID())
                 .onSuccess(products -> {
                     if (!products.isEmpty()) {
-                        // MOJANG MAPPINGS: Text is now Component, Formatting is now ChatFormatting.
                         Component message = Component.translatable("message.yggdrasil_ld.shop.unclaimed_items", products.size())
                                 .withStyle(ChatFormatting.GOLD)
                                 .append(Component.translatable("message.yggdrasil_ld.shop.claim_button")
@@ -38,7 +35,6 @@ public class ShopCompatibility {
                                 )
                                 .append(Component.translatable("message.yggdrasil_ld.shop.claim_suffix").withStyle(ChatFormatting.GOLD));
 
-                        // MOJANG MAPPINGS: sendMessage has been replaced with sendSystemMessage for chat messages.
                         player.sendSystemMessage(message);
                     }
                 })
@@ -78,7 +74,6 @@ public class ShopCompatibility {
                 for (String commandTemplate : product.commands()) {
                     try {
                         String command = commandTemplate.replace("{player}", player.getName().getString());
-                        // MOJANG MAPPINGS: The API for executing commands has changed significantly.
                         CommandSourceStack source = server.createCommandSourceStack();
                         Commands commands = server.getCommands();
                         commands.performPrefixedCommand(source, command);

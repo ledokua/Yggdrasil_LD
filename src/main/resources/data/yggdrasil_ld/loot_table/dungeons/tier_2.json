@@ -118,9 +118,9 @@
       "entries": [
         {
           "type": "minecraft:tag",
-          "name": "rpg_series:loot_tier/tier_3_armors",
+          "name": "rpg_series:loot_tier/tier_5_armors",
           "expand": true,
-          "weight": 3,
+          "weight": 1,
           "functions": []
         },
         {

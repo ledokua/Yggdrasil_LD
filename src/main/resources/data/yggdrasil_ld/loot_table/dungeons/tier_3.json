@@ -48,49 +48,49 @@
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_2_armors",
           "expand": true,
-          "weight": 10,
+          "weight": 15,
           "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_2_relics",
           "expand": true,
-          "weight": 10,
+          "weight": 15,
           "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_2_weapons",
           "expand": true,
-          "weight": 10,
+          "weight": 15,
           "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_3_armors",
           "expand": true,
-          "weight": 20,
+          "weight": 30,
           "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_3_relics",
           "expand": true,
-          "weight": 20,
+          "weight": 30,
           "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_3_weapons",
           "expand": true,
-          "weight": 20,
+          "weight": 30,
           "functions": []
         },
         {
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_armors",
           "expand": true,
-          "weight": 3,
+          "weight": 1,
           "functions": []
         },
         {
