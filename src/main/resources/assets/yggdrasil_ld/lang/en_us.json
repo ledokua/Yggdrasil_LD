@@ -102,6 +102,8 @@
   "item.yggdrasil_ld.healing_potion_5": "Grand Healing Potion",
   "item.yggdrasil_ld.healing_potion_6": "Potion of Total Restoration",
 
+  "item.yggdrasil_ld.skill_xp_item.tooltip": "",
+
 
   "dungeon.temple_dungeon_yggdrasil": "Temple dungeon",
   "dungeon.dark_dungeon_yggdrasil": "Dark dungeon",
@@ -123,6 +125,7 @@
   "item.yggdrasil_ld.healing_potion.tooltip.heal": "Heals for: %1$s",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Use Time: %1$s seconds",
   "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Cooldown: %1$s seconds",
+  "item.yggdrasil_ld.skill_xp_item.tooltip": "On use gives %d experience points for skill tree",
 
   "block.yggdrasil_ld.boss_spawner": "Raid boss spawner",
   "block.yggdrasil_ld.mob_spawner": "Mob spawner",

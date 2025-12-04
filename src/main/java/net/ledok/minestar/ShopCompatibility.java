@@ -1,5 +1,6 @@
 package net.ledok.minestar;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
@@ -19,11 +20,14 @@ import static ua.com.minestar.Minestar.minestar;
 
 public class ShopCompatibility {
 
+    private static final boolean isMinestarLoaded = FabricLoader.getInstance().isModLoaded("minestar");
+
     /**
      * Notifies a player on join if they have pending products to claim.
      * @param player The player who just joined the server.
      */
     public static void notifyOnJoin(ServerPlayer player) {
+        if (!isMinestarLoaded) return;
         minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUUID())
                 .onSuccess(products -> {
                     if (!products.isEmpty()) {
@@ -42,6 +46,7 @@ public class ShopCompatibility {
     }
 
     public static void claimPurchases(ServerPlayer player) {
+        if (!isMinestarLoaded) return;
         player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.shop.checking").withStyle(ChatFormatting.GRAY));
         LOGGER.info("[Shop Sync] Checking for pending products for player {}.", player.getName().getString());
 
@@ -63,6 +68,7 @@ public class ShopCompatibility {
     }
 
     private static void processAndConfirmDelivery(ServerPlayer player, List<ShopProduct> products) {
+        if (!isMinestarLoaded) return;
         MinecraftServer server = player.getServer();
         if (server == null) return;
 

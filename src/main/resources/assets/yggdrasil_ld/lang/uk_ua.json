@@ -128,6 +128,7 @@
   "item.yggdrasil_ld.healing_potion.tooltip.heal": "Зцілює на: %1$s",
   "item.yggdrasil_ld.healing_potion.tooltip.use_time": "Час використання: %1$s секунд",
   "item.yggdrasil_ld.healing_potion.tooltip.cooldown": "Перезарядка: %1$s секунд",
+  "item.yggdrasil_ld.skill_xp_item.tooltip": "При використанні надає %d досвіду для дерева навичок",
 
   "message.yggdrasil_ld.shop.checking": "Перевірка придбаних предметів...",
   "message.yggdrasil_ld.shop.unclaimed_items": "У вас є %s незатребуваних продуктів! ",

@@ -1,9 +1,6 @@
 package net.ledok.registry;
 
-import net.ledok.Items.DungeonLeaveItem;
-import net.ledok.Items.PercentageHealItem;
-import net.ledok.Items.RandomDripstoneItem;
-import net.ledok.Items.SkillResetItem;
+import net.ledok.Items.*;
 import net.ledok.YggdrasilLdMod;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,6 +30,8 @@ public class ItemRegistry {
             new RandomDripstoneItem(new Item.Properties().stacksTo(1)),
             "dripstone_scroll"
     );
+
+    // HEALING POTIONS
     public static final Item HEALING_POTION_1 = ItemInit.register(
             new PercentageHealItem(new Item.Properties().stacksTo(8), 0.1f, 20, 120),
             "healing_potion_1"
@@ -59,9 +58,30 @@ public class ItemRegistry {
             "healing_potion_6"
     );
 
+    // XP ITEMS
+    public static final Item XP_ITEM_1 = ItemInit.register(
+            new SkillXpItem(new Item.Properties().stacksTo(64),100),
+            "xp_item_1"
+    );
+    public static final Item XP_ITEM_2 = ItemInit.register(
+            new SkillXpItem(new Item.Properties().stacksTo(64),200),
+            "xp_item_2"
+    );
+    public static final Item XP_ITEM_3 = ItemInit.register(
+            new SkillXpItem(new Item.Properties().stacksTo(64),300),
+            "xp_item_3"
+    );
+    public static final Item XP_ITEM_4 = ItemInit.register(
+            new SkillXpItem(new Item.Properties().stacksTo(64),400),
+            "xp_item_4"
+    );
+    public static final Item XP_ITEM_5 = ItemInit.register(
+            new SkillXpItem(new Item.Properties().stacksTo(64),500),
+            "xp_item_5"
+    );
+
     public class ItemInit {
         public static Item register(Item item, String id) {
-            // Create the ResourceLocation for the item using the modern method.
             ResourceLocation itemID = ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, id);
 
             // Register the item to the built-in registry for items.
