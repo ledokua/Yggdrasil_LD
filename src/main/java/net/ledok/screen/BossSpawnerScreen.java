@@ -2,34 +2,35 @@ package net.ledok.screen;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.ledok.networking.ModPackets;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+// MOJANG MAPPINGS: Update all imports to their new Mojang-mapped packages.
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
 
-public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
+public class BossSpawnerScreen extends AbstractContainerScreen<BossSpawnerScreenHandler> {
 
-    private TextFieldWidget mobIdField;
-    private TextFieldWidget respawnTimeField;
-    private TextFieldWidget portalActiveTimeField;
-    private TextFieldWidget lootTableIdField;
-    private TextFieldWidget exitPortalCoordsField;
-    private TextFieldWidget triggerRadiusField;
-    private TextFieldWidget battleRadiusField;
-    private TextFieldWidget regenerationField;
-    private TextFieldWidget enterPortalSpawnCoordsField;
-    private TextFieldWidget enterPortalDestCoordsField;
-    private TextFieldWidget minPlayersField;
-    private TextFieldWidget skillExperienceField;
+    private EditBox mobIdField;
+    private EditBox respawnTimeField;
+    private EditBox portalActiveTimeField;
+    private EditBox lootTableIdField;
+    private EditBox exitPortalCoordsField;
+    private EditBox triggerRadiusField;
+    private EditBox battleRadiusField;
+    private EditBox regenerationField;
+    private EditBox enterPortalSpawnCoordsField;
+    private EditBox enterPortalDestCoordsField;
+    private EditBox minPlayersField;
+    private EditBox skillExperienceField;
 
-
-    public BossSpawnerScreen(BossSpawnerScreenHandler handler, PlayerInventory inventory, Text title) {
+    // MOJANG MAPPINGS: PlayerInventory is now Inventory, Text is Component.
+    public BossSpawnerScreen(BossSpawnerScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        this.backgroundHeight = 260;
+        this.imageHeight = 260;
     }
 
     @Override
@@ -40,108 +41,105 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
         int fieldHeight = 20;
         int yOffset = 24;
 
-        // --- Column 1 ---
         int col1X = (this.width / 2) - fieldWidth - 10;
         int y = 20;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Mob ID"), this.textRenderer));
-        mobIdField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        // MOJANG MAPPINGS: Widgets have been updated.
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Mob ID"), (button) -> {}, this.font));
+        mobIdField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobIdField.setMaxLength(128);
-        this.addDrawableChild(mobIdField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(mobIdField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Loot Table ID"), this.textRenderer));
-        lootTableIdField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Loot Table ID"), (button) -> {}, this.font));
+        lootTableIdField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         lootTableIdField.setMaxLength(128);
-        this.addDrawableChild(lootTableIdField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(lootTableIdField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Spawn (X Y Z)"), this.textRenderer));
-        enterPortalSpawnCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Enter Portal Spawn (X Y Z)"), (button) -> {}, this.font));
+        enterPortalSpawnCoordsField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         enterPortalSpawnCoordsField.setMaxLength(32);
-        this.addDrawableChild(enterPortalSpawnCoordsField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(enterPortalSpawnCoordsField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Enter Portal Dest (X Y Z)"), this.textRenderer));
-        enterPortalDestCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Enter Portal Dest (X Y Z)"), (button) -> {}, this.font));
+        enterPortalDestCoordsField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         enterPortalDestCoordsField.setMaxLength(32);
-        this.addDrawableChild(enterPortalDestCoordsField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(enterPortalDestCoordsField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Exit Portal Dest (X Y Z)"), this.textRenderer));
-        exitPortalCoordsField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Exit Portal Dest (X Y Z)"), (button) -> {}, this.font));
+        exitPortalCoordsField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         exitPortalCoordsField.setMaxLength(32);
-        this.addDrawableChild(exitPortalCoordsField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(exitPortalCoordsField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col1X, y - 15, fieldWidth, fieldHeight, Text.literal("Skill XP on Win"), this.textRenderer));
-        skillExperienceField = new TextFieldWidget(this.textRenderer, col1X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Skill XP on Win"), (button) -> {}, this.font));
+        skillExperienceField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         skillExperienceField.setMaxLength(8);
-        this.addDrawableChild(skillExperienceField);
+        this.addRenderableWidget(skillExperienceField);
 
 
-        // --- Column 2 ---
         int col2X = (this.width / 2) + 5;
         y = 20;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Respawn Time (ticks)"), this.textRenderer));
-        respawnTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Respawn Time (ticks)"), (button) -> {}, this.font));
+        respawnTimeField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         respawnTimeField.setMaxLength(8);
-        this.addDrawableChild(respawnTimeField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(respawnTimeField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Portal Active Time (ticks)"), this.textRenderer));
-        portalActiveTimeField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Portal Active Time (ticks)"), (button) -> {}, this.font));
+        portalActiveTimeField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         portalActiveTimeField.setMaxLength(8);
-        this.addDrawableChild(portalActiveTimeField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(portalActiveTimeField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Trigger Radius"), this.textRenderer));
-        triggerRadiusField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Trigger Radius"), (button) -> {}, this.font));
+        triggerRadiusField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         triggerRadiusField.setMaxLength(4);
-        this.addDrawableChild(triggerRadiusField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(triggerRadiusField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Battle Radius"), this.textRenderer));
-        battleRadiusField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Battle Radius"), (button) -> {}, this.font));
+        battleRadiusField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         battleRadiusField.setMaxLength(4);
-        this.addDrawableChild(battleRadiusField);
-        y += yOffset * 1.5;
+        this.addRenderableWidget(battleRadiusField);
+        y += yOffset * 1.7;
 
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Regeneration / 5s"), this.textRenderer));
-        regenerationField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Regeneration / 5s"), (button) -> {}, this.font));
+        regenerationField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         regenerationField.setMaxLength(4);
-        this.addDrawableChild(regenerationField);
+        this.addRenderableWidget(regenerationField);
+        y += yOffset * 1.7;
 
-        y += yOffset * 1.5;
-        this.addDrawableChild(new TextWidget(col2X, y - 15, fieldWidth, fieldHeight, Text.literal("Min Players"), this.textRenderer));
-        minPlayersField = new TextFieldWidget(this.textRenderer, col2X, y, fieldWidth, fieldHeight, Text.literal(""));
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Min Players"), (button) -> {}, this.font));
+        minPlayersField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         minPlayersField.setMaxLength(3);
-        this.addDrawableChild(minPlayersField);
+        this.addRenderableWidget(minPlayersField);
 
-
-        // --- Save Button ---
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("Save"), button -> onSave())
-                .dimensions(this.width / 2 - 50, this.height - 50, 100, 20)
+        this.addRenderableWidget(Button.builder(Component.literal("Save"), button -> onSave())
+                .bounds(this.width / 2 - 50, this.height - 50, 100, 20)
                 .build());
 
         loadBlockEntityData();
     }
 
     private void loadBlockEntityData() {
-        if (handler.blockEntity != null) {
-            mobIdField.setText(handler.blockEntity.mobId);
-            respawnTimeField.setText(String.valueOf(handler.blockEntity.respawnTime));
-            portalActiveTimeField.setText(String.valueOf(handler.blockEntity.portalActiveTime));
-            lootTableIdField.setText(handler.blockEntity.lootTableId);
-            exitPortalCoordsField.setText(String.format("%d %d %d", handler.blockEntity.exitPortalCoords.getX(), handler.blockEntity.exitPortalCoords.getY(), handler.blockEntity.exitPortalCoords.getZ()));
-            triggerRadiusField.setText(String.valueOf(handler.blockEntity.triggerRadius));
-            battleRadiusField.setText(String.valueOf(handler.blockEntity.battleRadius));
-            regenerationField.setText(String.valueOf(handler.blockEntity.regeneration));
-            enterPortalSpawnCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalSpawnCoords.getX(), handler.blockEntity.enterPortalSpawnCoords.getY(), handler.blockEntity.enterPortalSpawnCoords.getZ()));
-            enterPortalDestCoordsField.setText(String.format("%d %d %d", handler.blockEntity.enterPortalDestCoords.getX(), handler.blockEntity.enterPortalDestCoords.getY(), handler.blockEntity.enterPortalDestCoords.getZ()));
-            minPlayersField.setText(String.valueOf(handler.blockEntity.minPlayers));
-            skillExperienceField.setText(String.valueOf(handler.blockEntity.skillExperiencePerWin));
+        if (menu.blockEntity != null) {
+            mobIdField.setValue(menu.blockEntity.mobId);
+            respawnTimeField.setValue(String.valueOf(menu.blockEntity.respawnTime));
+            portalActiveTimeField.setValue(String.valueOf(menu.blockEntity.portalActiveTime));
+            lootTableIdField.setValue(menu.blockEntity.lootTableId);
+            exitPortalCoordsField.setValue(String.format("%d %d %d", menu.blockEntity.exitPortalCoords.getX(), menu.blockEntity.exitPortalCoords.getY(), menu.blockEntity.exitPortalCoords.getZ()));
+            triggerRadiusField.setValue(String.valueOf(menu.blockEntity.triggerRadius));
+            battleRadiusField.setValue(String.valueOf(menu.blockEntity.battleRadius));
+            regenerationField.setValue(String.valueOf(menu.blockEntity.regeneration));
+            enterPortalSpawnCoordsField.setValue(String.format("%d %d %d", menu.blockEntity.enterPortalSpawnCoords.getX(), menu.blockEntity.enterPortalSpawnCoords.getY(), menu.blockEntity.enterPortalSpawnCoords.getZ()));
+            enterPortalDestCoordsField.setValue(String.format("%d %d %d", menu.blockEntity.enterPortalDestCoords.getX(), menu.blockEntity.enterPortalDestCoords.getY(), menu.blockEntity.enterPortalDestCoords.getZ()));
+            minPlayersField.setValue(String.valueOf(menu.blockEntity.minPlayers));
+            skillExperienceField.setValue(String.valueOf(menu.blockEntity.skillExperiencePerWin));
         }
     }
 
@@ -153,45 +151,44 @@ public class BossSpawnerScreen extends HandledScreen<BossSpawnerScreenHandler> {
             }
         } catch (NumberFormatException ignored) {
         }
-        return new BlockPos(0, 0, 0);
+        return BlockPos.ZERO;
     }
 
     private void onSave() {
         try {
             ClientPlayNetworking.send(new ModPackets.UpdateBossSpawnerPayload(
-                    handler.blockEntity.getPos(),
-                    mobIdField.getText(),
-                    Integer.parseInt(respawnTimeField.getText()),
-                    Integer.parseInt(portalActiveTimeField.getText()),
-                    lootTableIdField.getText(),
-                    parseCoords(exitPortalCoordsField.getText()),
-                    parseCoords(enterPortalSpawnCoordsField.getText()),
-                    parseCoords(enterPortalDestCoordsField.getText()),
-                    Integer.parseInt(triggerRadiusField.getText()),
-                    Integer.parseInt(battleRadiusField.getText()),
-                    Integer.parseInt(regenerationField.getText()),
-                    Integer.parseInt(minPlayersField.getText()),
-                    Integer.parseInt(skillExperienceField.getText())
+                    menu.blockEntity.getBlockPos(),
+                    mobIdField.getValue(),
+                    Integer.parseInt(respawnTimeField.getValue()),
+                    Integer.parseInt(portalActiveTimeField.getValue()),
+                    lootTableIdField.getValue(),
+                    parseCoords(exitPortalCoordsField.getValue()),
+                    parseCoords(enterPortalSpawnCoordsField.getValue()),
+                    parseCoords(enterPortalDestCoordsField.getValue()),
+                    Integer.parseInt(triggerRadiusField.getValue()),
+                    Integer.parseInt(battleRadiusField.getValue()),
+                    Integer.parseInt(regenerationField.getValue()),
+                    Integer.parseInt(minPlayersField.getValue()),
+                    Integer.parseInt(skillExperienceField.getValue())
             ));
-            this.close();
+            this.onClose();
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format in one of the fields.");
         }
     }
 
+    // MOJANG MAPPINGS: Rendering methods have been updated.
     @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
     }
 
     @Override
-    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(context, mouseX, mouseY);
+        this.renderTooltip(context, mouseX, mouseY);
     }
 }
-

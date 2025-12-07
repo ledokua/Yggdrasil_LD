@@ -1,32 +1,32 @@
 package net.ledok.reputation;
 
 import net.ledok.YggdrasilLdMod;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.PersistentState;
+// MOJANG MAPPINGS: Update imports for NBT, registry, world, and persistent state.
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ReputationState extends PersistentState {
+// MOJANG MAPPINGS: PersistentState is now SavedData.
+public class ReputationState extends SavedData {
 
     private final Map<UUID, Integer> playerReputations = new HashMap<>();
-    // Structure: Attacker UUID -> (Victim UUID -> Timestamp of Kill)
     private final Map<UUID, Map<UUID, Long>> recentKills = new HashMap<>();
 
+    // MOJANG MAPPINGS: writeNbt is now save, NbtCompound is CompoundTag, and RegistryWrapper.WrapperLookup is HolderLookup.Provider.
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        // Save reputations
-        NbtCompound reputationsNbt = new NbtCompound();
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        CompoundTag reputationsNbt = new CompoundTag();
         playerReputations.forEach((uuid, reputation) -> reputationsNbt.putInt(uuid.toString(), reputation));
         nbt.put("reputations", reputationsNbt);
 
-        // Save recent kills
-        NbtCompound recentKillsNbt = new NbtCompound();
+        CompoundTag recentKillsNbt = new CompoundTag();
         recentKills.forEach((attackerUuid, victimMap) -> {
-            NbtCompound victimNbt = new NbtCompound();
+            CompoundTag victimNbt = new CompoundTag();
             victimMap.forEach((victimUuid, timestamp) -> victimNbt.putLong(victimUuid.toString(), timestamp));
             recentKillsNbt.put(attackerUuid.toString(), victimNbt);
         });
@@ -35,22 +35,20 @@ public class ReputationState extends PersistentState {
         return nbt;
     }
 
-    public static ReputationState createFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+    public static ReputationState createFromNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
         ReputationState state = new ReputationState();
 
-        // Load reputations
-        NbtCompound reputationsNbt = tag.getCompound("reputations");
-        for (String key : reputationsNbt.getKeys()) {
+        CompoundTag reputationsNbt = tag.getCompound("reputations");
+        for (String key : reputationsNbt.getAllKeys()) {
             state.playerReputations.put(UUID.fromString(key), reputationsNbt.getInt(key));
         }
 
-        // Load recent kills
-        NbtCompound recentKillsNbt = tag.getCompound("recent_kills");
-        for (String attackerKey : recentKillsNbt.getKeys()) {
+        CompoundTag recentKillsNbt = tag.getCompound("recent_kills");
+        for (String attackerKey : recentKillsNbt.getAllKeys()) {
             UUID attackerUuid = UUID.fromString(attackerKey);
-            NbtCompound victimMapNbt = recentKillsNbt.getCompound(attackerKey);
+            CompoundTag victimMapNbt = recentKillsNbt.getCompound(attackerKey);
             Map<UUID, Long> victimMap = new HashMap<>();
-            for (String victimKey : victimMapNbt.getKeys()) {
+            for (String victimKey : victimMapNbt.getAllKeys()) {
                 victimMap.put(UUID.fromString(victimKey), victimMapNbt.getLong(victimKey));
             }
             state.recentKills.put(attackerUuid, victimMap);
@@ -59,17 +57,18 @@ public class ReputationState extends PersistentState {
         return state;
     }
 
-    public static final Type<ReputationState> Type = new Type<>(
+    // MOJANG MAPPINGS: The PersistentState.Type is now SavedData.Factory.
+    public static final SavedData.Factory<ReputationState> Type = new SavedData.Factory<>(
             ReputationState::new,
             ReputationState::createFromNbt,
-            null
+            null // DataFixTypes can be null for mods.
     );
 
-    public static ReputationState getServerState(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(Type, YggdrasilLdMod.MOD_ID + "_reputation");
+    // MOJANG MAPPINGS: ServerWorld is now ServerLevel, and getPersistentStateManager is now getDataStorage.
+    public static ReputationState getServerState(ServerLevel world) {
+        return world.getDataStorage().computeIfAbsent(Type, YggdrasilLdMod.MOD_ID + "_reputation");
     }
 
-    // --- Reputation Methods ---
     public int getReputation(UUID playerUuid) {
         return playerReputations.getOrDefault(playerUuid, 0);
     }
@@ -77,10 +76,9 @@ public class ReputationState extends PersistentState {
     public void setReputation(UUID playerUuid, int amount) {
         int cappedAmount = Math.max(-1000000, Math.min(1000000, amount));
         playerReputations.put(playerUuid, cappedAmount);
-        markDirty();
+        setDirty(); // MOJANG MAPPINGS: markDirty() is now setDirty().
     }
 
-    // --- Cooldown Methods ---
     public boolean wasRecentlyKilledBy(UUID attackerUuid, UUID victimUuid, long currentTime, int cooldownTicks) {
         if (!recentKills.containsKey(attackerUuid)) {
             return false;
@@ -95,10 +93,10 @@ public class ReputationState extends PersistentState {
 
     public void recordKill(UUID attackerUuid, UUID victimUuid, long timestamp) {
         recentKills.computeIfAbsent(attackerUuid, k -> new HashMap<>()).put(victimUuid, timestamp);
-        markDirty();
+        setDirty();
     }
 
     public Map<UUID, Integer> getAllReputations() {
-        return new HashMap<>(playerReputations); // Return a copy
+        return new HashMap<>(playerReputations);
     }
 }

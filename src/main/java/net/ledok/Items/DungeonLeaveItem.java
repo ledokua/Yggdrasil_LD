@@ -1,47 +1,35 @@
 package net.ledok.Items;
 
-import com.mojang.brigadier.ParseResults;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class DungeonLeaveItem extends Item {
 
-    public DungeonLeaveItem(Settings settings) {
+    public DungeonLeaveItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
-            MinecraftServer server = world.getServer();
-            if (server == null) {
-                return TypedActionResult.fail(user.getStackInHand(hand));
-            }
-
-            ServerCommandSource source = server.getCommandSource();
-
-            String playerName = user.getName().getString();
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        if (!world.isClientSide && world instanceof ServerLevel serverLevel) {
+            CommandSourceStack source = serverLevel.getServer().createCommandSourceStack();
+            String playerName = user.getGameProfile().getName();
             String command = String.format("execute as %s run dungeon leave", playerName);
 
-            // ---------------------
+            serverLevel.getServer().getCommands().performPrefixedCommand(source, command);
 
-            CommandManager commandManager = server.getCommandManager();
-            ParseResults<ServerCommandSource> parseResults = commandManager.getDispatcher().parse(command, source.withSilent());
-            commandManager.execute(parseResults, command);
-
-            if (!user.getAbilities().creativeMode) {
-                user.getStackInHand(hand).decrement(1);
+            if (!user.getAbilities().instabuild) {
+                user.getItemInHand(hand).shrink(1);
             }
 
-            return TypedActionResult.success(user.getStackInHand(hand));
+            return InteractionResultHolder.success(user.getItemInHand(hand));
         }
-        return TypedActionResult.pass(user.getStackInHand(hand));
+        return InteractionResultHolder.pass(user.getItemInHand(hand));
     }
 }

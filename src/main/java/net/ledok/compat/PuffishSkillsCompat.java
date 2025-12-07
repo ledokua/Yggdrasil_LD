@@ -1,9 +1,9 @@
 package net.ledok.compat;
 
 import net.ledok.YggdrasilLdMod;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.Experience;
 import net.puffish.skillsmod.api.SkillsAPI;
@@ -17,12 +17,12 @@ public class PuffishSkillsCompat {
      * @param player The player to check.
      * @return The player's total skill points, or 0 if the tree is not found.
      */
-    public static int getPlayerLevel(PlayerEntity player) {
-        if(!(player instanceof ServerPlayerEntity serverPlayer)) {
+    public static int getPlayerLevel(Player player) {
+        if(!(player instanceof ServerPlayer serverPlayer)) {
             return 0;
         }
         // Use the skill tree ID from the config file.
-        Optional<Category> skillTree = SkillsAPI.getCategory(Identifier.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
+        Optional<Category> skillTree = SkillsAPI.getCategory(ResourceLocation.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
         return skillTree.map(tree -> tree.getPointsTotal(serverPlayer)).orElse(0);
     }
 
@@ -31,9 +31,9 @@ public class PuffishSkillsCompat {
      * @param player The player to grant experience to.
      * @param amount The amount of experience to add.
      */
-    public static void addExperience(ServerPlayerEntity player, int amount) {
+    public static void addExperience(ServerPlayer player, int amount) {
         // Find the skill tree using the ID from your config file.
-        Optional<Category> skillTree = SkillsAPI.getCategory(Identifier.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
+        Optional<Category> skillTree = SkillsAPI.getCategory(ResourceLocation.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
 
         // If the category exists, get its experience handler and add the experience.
         skillTree.ifPresent(category -> {
@@ -42,4 +42,3 @@ public class PuffishSkillsCompat {
         });
     }
 }
-

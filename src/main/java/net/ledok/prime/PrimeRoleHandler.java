@@ -6,7 +6,8 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.InheritanceNode;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+
 
 import java.time.Instant;
 
@@ -37,16 +38,16 @@ public class PrimeRoleHandler {
         LOGGER.info("[Prime Sync] Feature has been initialized successfully.");
     }
 
-    private static void checkPrimeStatus(ServerPlayerEntity player) {
-        LOGGER.info("[Prime Sync] Checking prime status for player {} (UUID: {}).", player.getName().getString(), player.getUuid());
+    private static void checkPrimeStatus(ServerPlayer player) {
+        LOGGER.info("[Prime Sync] Checking prime status for player {} (UUID: {}).", player.getName().getString(), player.getUUID());
 
-        minestar.getUserByProfileUuid(player.getUuid())
+        minestar.getUserByProfileUuid(player.getUUID())
                 .onSuccess(minestarUser -> {
                     boolean apiHasPrime = minestarUser.getPrimeStatus()
                             .map(primeStatus -> primeStatus.expiresAt().isAfter(Instant.now()))
                             .orElse(false);
 
-                    User luckPermsUser = luckPermsApi.getUserManager().loadUser(player.getUuid()).join();
+                    User luckPermsUser = luckPermsApi.getUserManager().loadUser(player.getUUID()).join();
                     if (luckPermsUser == null) {
                         LOGGER.warn("[Prime Sync] Could not load LuckPerms user for {}.", player.getName().getString());
                         return;
@@ -76,4 +77,3 @@ public class PrimeRoleHandler {
                 });
     }
 }
-

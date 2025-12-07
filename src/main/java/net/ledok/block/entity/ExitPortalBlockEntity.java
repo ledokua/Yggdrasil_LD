@@ -1,12 +1,13 @@
 package net.ledok.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.ledok.registry.BlockEntitiesRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class ExitPortalBlockEntity extends BlockEntity {
 
@@ -14,22 +15,21 @@ public class ExitPortalBlockEntity extends BlockEntity {
     private BlockPos destination;
 
     public ExitPortalBlockEntity(BlockPos pos, BlockState state) {
-        // --- Correctly reference the registered block entity type ---
-        super(ModBlockEntities.EXIT_PORTAL_BLOCK_ENTITY, pos, state);
+        super(BlockEntitiesRegistry.EXIT_PORTAL_BLOCK_ENTITY, pos, state);
     }
 
     public void setDetails(int lifetime, BlockPos destination) {
         this.lifetime = lifetime;
         this.destination = destination;
-        this.markDirty();
+        this.setChanged();
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, ExitPortalBlockEntity be) {
-        if(world.isClient()) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, ExitPortalBlockEntity be) {
+        if(world.isClientSide()) return;
 
         be.lifetime--;
         if (be.lifetime <= 0) {
-            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         }
     }
 
@@ -38,8 +38,8 @@ public class ExitPortalBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         nbt.putInt("lifetime", lifetime);
         if(destination != null) {
             nbt.putInt("destX", destination.getX());
@@ -49,12 +49,11 @@ public class ExitPortalBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
         lifetime = nbt.getInt("lifetime");
         if(nbt.contains("destX")) {
             destination = new BlockPos(nbt.getInt("destX"), nbt.getInt("destY"), nbt.getInt("destZ"));
         }
     }
 }
-

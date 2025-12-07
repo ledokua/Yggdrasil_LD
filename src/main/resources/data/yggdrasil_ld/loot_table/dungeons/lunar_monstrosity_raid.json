@@ -57,7 +57,7 @@
           "function": "minecraft:set_components",
           "components": {
             "enchant_limiter:limit": {
-              "count": 5
+              "count": 6
             }
           }
         }
@@ -70,7 +70,14 @@
           "type": "minecraft:tag",
           "name": "rpg_series:loot_tier/tier_5_armors",
           "expand": true,
-          "weight": 10,
+          "weight": 50,
+          "functions": []
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "rpg_series:loot_tier/tier_3_armors",
+          "expand": true,
+          "weight": 950,
           "functions": []
         }
       ],
@@ -79,7 +86,7 @@
           "function": "minecraft:set_components",
           "components": {
             "enchant_limiter:limit": {
-              "count": 5
+              "count": 6
             }
           }
         }

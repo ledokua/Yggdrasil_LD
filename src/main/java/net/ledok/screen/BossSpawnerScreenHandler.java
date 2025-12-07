@@ -1,34 +1,36 @@
 package net.ledok.screen;
 
 import net.ledok.block.entity.BossSpawnerBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
+// MOJANG MAPPINGS: Update all imports to their new Mojang-mapped packages.
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
-public class BossSpawnerScreenHandler extends ScreenHandler {
+public class BossSpawnerScreenHandler extends AbstractContainerMenu {
     public final BossSpawnerBlockEntity blockEntity;
-    public final PlayerEntity player;
+    public final Player player;
 
-    // --- Constructor to receive the BossSpawnerData object ---
-    public BossSpawnerScreenHandler(int syncId, PlayerInventory playerInventory, BossSpawnerData data) {
-        this(syncId, playerInventory, (BossSpawnerBlockEntity) playerInventory.player.getWorld().getBlockEntity(data.blockPos()));
+    // MOJANG MAPPINGS: PlayerInventory is now Inventory.
+    public BossSpawnerScreenHandler(int syncId, Inventory playerInventory, BossSpawnerData data) {
+        this(syncId, playerInventory, (BossSpawnerBlockEntity) playerInventory.player.level().getBlockEntity(data.blockPos()));
     }
 
-    public BossSpawnerScreenHandler(int syncId, PlayerInventory playerInventory, BossSpawnerBlockEntity blockEntity) {
+    public BossSpawnerScreenHandler(int syncId, Inventory playerInventory, BossSpawnerBlockEntity blockEntity) {
         super(ModScreenHandlers.BOSS_SPAWNER_SCREEN_HANDLER, syncId);
         this.blockEntity = blockEntity;
         this.player = playerInventory.player;
     }
 
+    // MOJANG MAPPINGS: quickMove is now quickMoveStack, PlayerEntity is Player.
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         return ItemStack.EMPTY;
     }
 
+    // MOJANG MAPPINGS: canUse is now stillValid.
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 }
-

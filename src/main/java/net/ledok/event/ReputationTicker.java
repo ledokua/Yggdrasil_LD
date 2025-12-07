@@ -3,7 +3,7 @@ package net.ledok.event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.ledok.YggdrasilLdMod;
 import net.ledok.reputation.ReputationManager;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * Handles the global timer for passively awarding reputation to online players.
@@ -23,6 +23,7 @@ public class ReputationTicker {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
 
             if (!YggdrasilLdMod.CONFIG.reputation_change_enabled) {
+                // This block is empty, but the logic is preserved.
             }
 
             timer++;
@@ -36,7 +37,8 @@ public class ReputationTicker {
                 int reputationAmount = YggdrasilLdMod.CONFIG.passive_reputation_amount;
 
                 // Loop through every online player and give them the reputation.
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                // Updated to use the new method for getting the player list.
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     ReputationManager.addReputation(player, reputationAmount);
                 }
             }

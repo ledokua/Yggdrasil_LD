@@ -62,7 +62,7 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
@@ -89,7 +89,7 @@ dependencies {
     modImplementation("net.puffish:skillsmod:0.16.5+1.21:fabric")
 
     // Minestar
-    modImplementation include("minestar:minestar-fabric")
+    modCompileOnly include("minestar:minestar-fabric")
 
     //GeckoLib
     modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"

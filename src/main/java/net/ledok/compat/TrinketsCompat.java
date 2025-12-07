@@ -1,10 +1,12 @@
 package net.ledok.compat;
 
+import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.ledok.util.DroppableSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +23,18 @@ public class TrinketsCompat {
      * @param player The player to check.
      * @return A list of droppable slots for each equipped trinket.
      */
-    public static List<DroppableSlot> getTrinketSlots(PlayerEntity player) {
+    public static List<DroppableSlot> getTrinketSlots(Player player) {
         List<DroppableSlot> trinketSlots = new ArrayList<>();
         Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
 
         if (component.isPresent()) {
-            // Get all equipped trinkets (the predicate `stack -> true` matches all items)
-            component.get().getEquipped(stack -> true).forEach(pair -> {
-                ItemStack trinketStack = pair.getRight();
+            // Correct the type to what the compiler is finding: Tuple
+            List<Tuple<SlotReference, ItemStack>> allEquipped = component.get().getEquipped(stack -> true);
+            allEquipped.forEach(tuple -> { // Use a different variable name to avoid confusion
+                ItemStack trinketStack = tuple.getB(); // Tuple uses getA() and getB()
                 if (!trinketStack.isEmpty()) {
-                    Runnable clearSlotAction = () -> pair.getLeft().inventory().setStack(pair.getLeft().index(), ItemStack.EMPTY);
+                    SlotReference slotReference = tuple.getA();
+                    Runnable clearSlotAction = () -> slotReference.inventory().setItem(slotReference.index(), ItemStack.EMPTY);
                     trinketSlots.add(new DroppableSlot(trinketStack.copy(), clearSlotAction));
                 }
             });
@@ -38,3 +42,4 @@ public class TrinketsCompat {
         return trinketSlots;
     }
 }
+

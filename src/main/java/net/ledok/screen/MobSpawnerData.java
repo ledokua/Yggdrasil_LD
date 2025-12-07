@@ -1,12 +1,12 @@
 package net.ledok.screen;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public record MobSpawnerData(BlockPos blockPos) {
-    public static final PacketCodec<PacketByteBuf, MobSpawnerData> CODEC = PacketCodec.of(
-            (value, buf) -> buf.writeBlockPos(value.blockPos),
+    public static final StreamCodec<FriendlyByteBuf, MobSpawnerData> CODEC = StreamCodec.of(
+            (buf, value) -> buf.writeBlockPos(value.blockPos),
             (buf) -> new MobSpawnerData(buf.readBlockPos())
     );
 }

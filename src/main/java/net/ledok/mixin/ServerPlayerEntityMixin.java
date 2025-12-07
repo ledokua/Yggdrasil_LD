@@ -3,25 +3,25 @@ package net.ledok.mixin;
 import net.ledok.YggdrasilLdMod;
 import net.ledok.reputation.ReputationManager;
 import net.ledok.util.PvPContextManager;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ServerPlayerEntity.class)
+@Mixin(ServerPlayer.class)
 public class ServerPlayerEntityMixin {
 
-    @Inject(method = "onDeath", at = @At("HEAD"))
+    @Inject(method = "die", at = @At("HEAD"))
     private void yggdrasil_handleDeathReputation(DamageSource damageSource, CallbackInfo ci) {
 
         if (!YggdrasilLdMod.CONFIG.reputation_change_enabled) {
             return; // If disabled, skip all reputation logic in this method.
         }
 
-        ServerPlayerEntity victim = (ServerPlayerEntity) (Object) this;
+        ServerPlayer victim = (ServerPlayer) (Object) this;
 
         // --- GENERAL DEATH PENALTY LOGIC ---
         int currentRep = ReputationManager.getReputation(victim);
@@ -36,16 +36,18 @@ public class ServerPlayerEntityMixin {
         }
 
         // --- PVP REPUTATION LOGIC ---
-        if (victim.getAttacker() instanceof ServerPlayerEntity attacker && !attacker.equals(victim)) {
-            PvPContextManager.setAttacker(attacker.getUuid());
+        // In Mojang mappings, the attacker is retrieved from the damage source
+        if (damageSource.getEntity() instanceof ServerPlayer attacker && !attacker.equals(victim)) {
+            PvPContextManager.setAttacker(attacker.getUUID());
 
             // --- ANTI-FARMING COOLDOWN CHECK ---
-            if (ReputationManager.wasRecentlyKilledBy(attacker.getServer(), attacker.getUuid(), victim.getUuid())) {
-                attacker.sendMessage(Text.translatable("message.yggdrasil_ld.pvp_cooldown"), true);
+            if (ReputationManager.wasRecentlyKilledBy(attacker.server, attacker.getUUID(), victim.getUUID())) {
+                // sendMessage is now sendSystemMessage for action bar messages
+                attacker.sendSystemMessage(Component.translatable("message.yggdrasil_ld.pvp_cooldown"), true);
                 return; // Exit without applying any PvP reputation changes
             }
             // Start the cooldown
-            ReputationManager.recordKill(attacker.getServer(), attacker.getUuid(), victim.getUuid());
+            ReputationManager.recordKill(attacker.server, attacker.getUUID(), victim.getUUID());
 
 
             // --- REPUTATION CALCULATION LOGIC  ---
@@ -79,4 +81,3 @@ public class ServerPlayerEntityMixin {
         }
     }
 }
-

@@ -1,12 +1,13 @@
 package net.ledok.minestar;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.ChatFormatting;
 import ua.com.minestar.model.ShopProduct;
 
 import java.util.HashSet;
@@ -19,50 +20,55 @@ import static ua.com.minestar.Minestar.minestar;
 
 public class ShopCompatibility {
 
+    private static final boolean isMinestarLoaded = FabricLoader.getInstance().isModLoaded("minestar");
+
     /**
      * Notifies a player on join if they have pending products to claim.
      * @param player The player who just joined the server.
      */
-    public static void notifyOnJoin(ServerPlayerEntity player) {
-        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUuid())
+    public static void notifyOnJoin(ServerPlayer player) {
+        if (!isMinestarLoaded) return;
+        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUUID())
                 .onSuccess(products -> {
                     if (!products.isEmpty()) {
-                        Text message = Text.translatable("message.yggdrasil_ld.shop.unclaimed_items", products.size())
-                                .formatted(Formatting.GOLD)
-                                .append(Text.translatable("message.yggdrasil_ld.shop.claim_button")
-                                        .formatted(Formatting.AQUA, Formatting.UNDERLINE)
-                                        .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/shop-receive")))
+                        Component message = Component.translatable("message.yggdrasil_ld.shop.unclaimed_items", products.size())
+                                .withStyle(ChatFormatting.GOLD)
+                                .append(Component.translatable("message.yggdrasil_ld.shop.claim_button")
+                                        .withStyle(ChatFormatting.AQUA, ChatFormatting.UNDERLINE)
+                                        .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/shop-receive")))
                                 )
-                                .append(Text.translatable("message.yggdrasil_ld.shop.claim_suffix").formatted(Formatting.GOLD));
+                                .append(Component.translatable("message.yggdrasil_ld.shop.claim_suffix").withStyle(ChatFormatting.GOLD));
 
-                        player.sendMessage(message, false);
+                        player.sendSystemMessage(message);
                     }
                 })
                 .onFailure(cause -> LOGGER.error("[Shop Sync] Failed to check for pending products on join for {}.", player.getName().getString(), cause));
     }
 
-    public static void claimPurchases(ServerPlayerEntity player) {
-        player.sendMessage(Text.translatable("message.yggdrasil_ld.shop.checking").formatted(Formatting.GRAY));
+    public static void claimPurchases(ServerPlayer player) {
+        if (!isMinestarLoaded) return;
+        player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.shop.checking").withStyle(ChatFormatting.GRAY));
         LOGGER.info("[Shop Sync] Checking for pending products for player {}.", player.getName().getString());
 
-        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUuid())
+        minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUUID())
                 .onSuccess(products -> {
                     if (products.isEmpty()) {
-                        player.sendMessage(Text.translatable("message.yggdrasil_ld.shop.no_items").formatted(Formatting.YELLOW));
+                        player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.shop.no_items").withStyle(ChatFormatting.YELLOW));
                         LOGGER.info("[Shop Sync] No pending products found for {}.", player.getName().getString());
                         return;
                     }
-                    player.sendMessage(Text.translatable("message.yggdrasil_ld.shop.found_items", products.size()).formatted(Formatting.GREEN));
+                    player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.shop.found_items", products.size()).withStyle(ChatFormatting.GREEN));
                     LOGGER.info("[Shop Sync] Found {} pending products for {}.", products.size(), player.getName().getString());
                     processAndConfirmDelivery(player, products);
                 })
                 .onFailure(cause -> {
-                    player.sendMessage(Text.translatable("message.yggdrasil_ld.shop.error").formatted(Formatting.RED));
+                    player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.shop.error").withStyle(ChatFormatting.RED));
                     LOGGER.error("[Shop Sync] Failed to get pending products for {}.", player.getName().getString(), cause);
                 });
     }
 
-    private static void processAndConfirmDelivery(ServerPlayerEntity player, List<ShopProduct> products) {
+    private static void processAndConfirmDelivery(ServerPlayer player, List<ShopProduct> products) {
+        if (!isMinestarLoaded) return;
         MinecraftServer server = player.getServer();
         if (server == null) return;
 
@@ -70,23 +76,23 @@ public class ShopCompatibility {
 
         for (ShopProduct product : products) {
             boolean allCommandsSuccessful = true;
-            // Execute commands based on the purchased quantity
             for (int i = 0; i < product.quantity(); i++) {
                 for (String commandTemplate : product.commands()) {
                     try {
                         String command = commandTemplate.replace("{player}", player.getName().getString());
-                        ServerCommandSource source = server.getCommandSource();
-                        CommandManager commandManager = server.getCommandManager();
-                        commandManager.execute(commandManager.getDispatcher().parse(command, source), command);
+                        CommandSourceStack source = server.createCommandSourceStack();
+                        Commands commands = server.getCommands();
+                        commands.performPrefixedCommand(source, command);
+
                         LOGGER.info("[Shop Sync] Executed command for product ID {} (Item {} of {}): {}", product.id(), i + 1, product.quantity(), command);
                     } catch (Exception e) {
                         allCommandsSuccessful = false;
                         LOGGER.error("[Shop Sync] Failed to execute a command for product ID {}.", product.id(), e);
-                        break; // Stop processing commands for this product if one fails
+                        break;
                     }
                 }
                 if (!allCommandsSuccessful) {
-                    break; // Stop processing quantities for this product
+                    break;
                 }
             }
 
@@ -106,4 +112,3 @@ public class ShopCompatibility {
         }
     }
 }
-

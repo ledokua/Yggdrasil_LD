@@ -3,9 +3,10 @@ package net.ledok.compat;
 import com.mrcrayfish.backpacked.BackpackHelper;
 import com.mrcrayfish.backpacked.common.backpack.UnlockableSlots;
 import net.ledok.util.DroppableSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,11 @@ public class BackpackedCompat {
      * @param player The player to check.
      * @return A list containing all found backpack slots.
      */
-    public static List<DroppableSlot> getAllEquippedBackpacks(PlayerEntity player) {
+    public static List<DroppableSlot> getAllEquippedBackpacks(Player player) {
         List<DroppableSlot> slots = new ArrayList<>();
 
         // Get all possible backpack stacks and which slots are unlocked
-        DefaultedList<ItemStack> backpacks = BackpackHelper.getBackpacks(player);
+        NonNullList<ItemStack> backpacks = BackpackHelper.getBackpacks(player);
         UnlockableSlots unlockedSlots = BackpackHelper.getBackpackUnlockableSlots(player);
 
         // Find all unlocked slots that contain a backpack
@@ -36,7 +37,7 @@ public class BackpackedCompat {
                 if (!backpackStack.isEmpty()) {
                     final int slotIndex = i;
                     Runnable clearSlotAction = () -> {
-                        DefaultedList<ItemStack> currentBackpacks = BackpackHelper.getBackpacks(player);
+                        NonNullList<ItemStack> currentBackpacks = BackpackHelper.getBackpacks(player);
                         if (slotIndex < currentBackpacks.size()) {
                             currentBackpacks.set(slotIndex, ItemStack.EMPTY);
                         }

@@ -395,7 +395,7 @@
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_2.name": "Toxic Shock",
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_3.description": "Shadowstep grants you Cloak of Shadows effect, protecting your from {effect_amplifier} incoming attack for {effect_duration} sec.",
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_3.name": "Cloak of Shadows",
-  "spell.skill_tree_rpgs.rogue_spec_a_modifier_4.description": "Stealth no longer slows you down.",
+  "spell.skill_tree_rpgs.rogue_spec_a_modifier_4.description": "Reduces the cooldown of Stealth by {cooldown_duration_deduct} sec.",
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_4.name": "Stealth Speed",
   "spell.skill_tree_rpgs.rogue_spec_a_passive_1.description": "Melee attacks have {trigger_chance} chance, to apply poison effect lasting {effect_duration} sec, stacking up based on your attack damage.",
   "spell.skill_tree_rpgs.rogue_spec_a_passive_1.name": "Coated Blades",

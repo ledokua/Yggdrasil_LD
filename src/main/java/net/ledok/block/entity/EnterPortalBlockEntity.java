@@ -1,22 +1,23 @@
 package net.ledok.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
+import net.ledok.registry.BlockEntitiesRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class EnterPortalBlockEntity extends BlockEntity {
 
     private BlockPos destination;
 
     public EnterPortalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ENTER_PORTAL_BLOCK_ENTITY, pos, state);
+        super(BlockEntitiesRegistry.ENTER_PORTAL_BLOCK_ENTITY, pos, state);
     }
 
     public void setDestination(BlockPos destination) {
         this.destination = destination;
-        this.markDirty();
+        this.setChanged();
     }
 
     public BlockPos getDestination() {
@@ -24,19 +25,18 @@ public class EnterPortalBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         if(destination != null) {
             nbt.putLong("destination", destination.asLong());
         }
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
         if(nbt.contains("destination")) {
-            destination = BlockPos.fromLong(nbt.getLong("destination"));
+            destination = BlockPos.of(nbt.getLong("destination"));
         }
     }
 }
-

@@ -395,7 +395,7 @@
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_2.name": "Токсичний шок",
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_3.description": "'Тіньовий крок' надає ефект 'Плаща тіней', що захищає вас від {effect_amplifier} вхідної атаки протягом {effect_duration} с.",
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_3.name": "Плащ тіней",
-  "spell.skill_tree_rpgs.rogue_spec_a_modifier_4.description": "'Невидимість' більше не уповільнює вас.",
+  "spell.skill_tree_rpgs.rogue_spec_a_modifier_4.description": "Зменшує перезарядження 'Невидимісті' на {cooldown_duration_deduct} с.",
   "spell.skill_tree_rpgs.rogue_spec_a_modifier_4.name": "Швидкість прихованості",
   "spell.skill_tree_rpgs.rogue_spec_a_passive_1.description": "Атаки ближнього бою мають {trigger_chance} шанс накласти ефект отрути, що триває {effect_duration} с, підсумовується залежно від вашої шкоди від атаки.",
   "spell.skill_tree_rpgs.rogue_spec_a_passive_1.name": "Покриті леза",

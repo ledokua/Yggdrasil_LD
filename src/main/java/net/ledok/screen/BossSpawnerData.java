@@ -1,16 +1,12 @@
 package net.ledok.screen;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-/**
- * A simple record to hold the BlockPos of the Boss Spawner.
- * This is required for the modern ExtendedScreenHandlerFactory.
- */
 public record BossSpawnerData(BlockPos blockPos) {
-    public static final PacketCodec<PacketByteBuf, BossSpawnerData> CODEC = PacketCodec.of(
-            (value, buf) -> buf.writeBlockPos(value.blockPos),
+    public static final StreamCodec<FriendlyByteBuf, BossSpawnerData> CODEC = StreamCodec.of(
+            (buf, value) -> buf.writeBlockPos(value.blockPos),
             (buf) -> new BossSpawnerData(buf.readBlockPos())
     );
 }

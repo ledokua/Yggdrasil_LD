@@ -1,18 +1,15 @@
 package net.ledok.Items;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.world.World;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class PercentageHealItem extends Item {
@@ -21,7 +18,7 @@ public class PercentageHealItem extends Item {
     private final int useTimeTicks;
     private final int cooldownTicks;
 
-    public PercentageHealItem(Settings settings, float healPercentage, int useTimeTicks, int cooldownTicks) {
+    public PercentageHealItem(Properties settings, float healPercentage, int useTimeTicks, int cooldownTicks) {
         super(settings);
         this.healPercentage = Math.max(0.0f, Math.min(1.0f, healPercentage));
         this.useTimeTicks = useTimeTicks;
@@ -29,17 +26,17 @@ public class PercentageHealItem extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        if (user instanceof PlayerEntity player) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
+        if (user instanceof Player player) {
             if (player.getHealth() < player.getMaxHealth()) {
-                if (!world.isClient) {
+                if (!world.isClientSide) {
                     float healAmount = player.getMaxHealth() * this.healPercentage;
                     player.heal(healAmount);
-                    player.getItemCooldownManager().set(this, this.cooldownTicks);
-                    player.sendMessage(Text.translatable("message.yggdrasil_ld.healing_potion_used").formatted(Formatting.GREEN), true);
-                    player.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 1.0f, 1.0f);
-                    if (!player.getAbilities().creativeMode) {
-                        stack.decrement(1);
+                    player.getCooldowns().addCooldown(this, this.cooldownTicks);
+                    player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.healing_potion_used").withStyle(ChatFormatting.GREEN));
+                    player.playSound(SoundEvents.GENERIC_DRINK, 1.0f, 1.0f);
+                    if (!player.getAbilities().instabuild) {
+                        stack.shrink(1);
                     }
                 }
             }
@@ -48,51 +45,43 @@ public class PercentageHealItem extends Item {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return this.useTimeTicks;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.DRINK;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
         if (user.getHealth() >= user.getMaxHealth()) {
-            return TypedActionResult.fail(itemStack);
+            return InteractionResultHolder.fail(itemStack);
         }
-        user.setCurrentHand(hand);
-        return TypedActionResult.consume(itemStack);
+        user.startUsingItem(hand);
+        return InteractionResultHolder.consume(itemStack);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.literal(""));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        tooltip.add(Component.literal(""));
 
         // Prepare the placeholder values
         String healAmount = (int)(this.healPercentage * 100) + "%";
         String useTime = String.format("%.1f", this.useTimeTicks / 20.0f);
         String cooldown = String.format("%.1f", this.cooldownTicks / 20.0f);
 
-        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.heal", healAmount)
-                .formatted(Formatting.BLUE));
+        tooltip.add(Component.translatable("item.yggdrasil_ld.healing_potion.tooltip.heal", healAmount)
+                .withStyle(ChatFormatting.BLUE));
 
-        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.use_time", useTime)
-                .formatted(Formatting.GRAY));
+        tooltip.add(Component.translatable("item.yggdrasil_ld.healing_potion.tooltip.use_time", useTime)
+                .withStyle(ChatFormatting.GRAY));
 
-        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip.cooldown", cooldown)
-                .formatted(Formatting.GRAY));
+        tooltip.add(Component.translatable("item.yggdrasil_ld.healing_potion.tooltip.cooldown", cooldown)
+                .withStyle(ChatFormatting.GRAY));
 
-/*
-        // One line tooltip
-        tooltip.add(Text.translatable("item.yggdrasil_ld.healing_potion.tooltip", healAmount, useTime, cooldown)
-                .formatted(Formatting.BLUE));
-
-*/
-
-        super.appendTooltip(stack, context, tooltip, type);
+        super.appendHoverText(stack, context, tooltip, type);
     }
 }
-

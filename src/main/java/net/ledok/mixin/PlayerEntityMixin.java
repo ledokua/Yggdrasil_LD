@@ -7,11 +7,12 @@ import net.ledok.compat.TrinketsCompat; // Import the new compatibility class
 import net.ledok.reputation.ReputationManager;
 import net.ledok.util.DroppableSlot;
 import net.ledok.util.PvPContextManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.GameRules;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,20 +24,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public abstract class PlayerEntityMixin {
 
-    @Shadow public abstract PlayerInventory getInventory();
+    @Shadow public abstract Inventory getInventory();
 
-    @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "dropEquipment", at = @At("HEAD"), cancellable = true)
     private void yggdrasil_partialKeepInventory(CallbackInfo ci) {
 
         if (!YggdrasilLdMod.CONFIG.partial_inventory_save_enabled) {
             return;
         }
 
-        PlayerEntity victim = (PlayerEntity) (Object) this;
-        if (!victim.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+        Player victim = (Player) (Object) this;
+        // level() is the new getWorld(), getGameRules() is now part of the level
+        if (!victim.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
             return;
         }
 
@@ -44,7 +46,8 @@ public abstract class PlayerEntityMixin {
         try {
             boolean isPredatoryKill = false;
             if (attackerUuid != null && YggdrasilLdMod.CONFIG.predatory_kill_enabled) {
-                ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
+                // FIX: The 'server' field is no longer directly on the Player entity. Use getServer() instead.
+                ServerPlayer attacker = victim.getServer().getPlayerList().getPlayer(attackerUuid);
                 if (attacker != null) {
                     int attackerRep = ReputationManager.getReputation(attacker);
                     int victimRep = ReputationManager.getReputation(victim);
@@ -67,8 +70,9 @@ public abstract class PlayerEntityMixin {
         }
     }
 
-    private void handlePredatoryKillDrops(PlayerEntity victim, UUID attackerUuid) {
-        ServerPlayerEntity attacker = victim.getServer().getPlayerManager().getPlayer(attackerUuid);
+    private void handlePredatoryKillDrops(Player victim, UUID attackerUuid) {
+        // FIX: The 'server' field is no longer directly on the Player entity. Use getServer() instead.
+        ServerPlayer attacker = victim.getServer().getPlayerList().getPlayer(attackerUuid);
         if (attacker == null) return;
 
         int attackerRep = ReputationManager.getReputation(attacker);
@@ -93,7 +97,7 @@ public abstract class PlayerEntityMixin {
         dropItemsFromSlots(victim, finalSlotsToDrop);
     }
 
-    private void handleStandardDeathDrops(PlayerEntity victim) {
+    private void handleStandardDeathDrops(Player victim) {
         List<DroppableSlot> finalSlotsToDrop = new ArrayList<>();
         int reputation = ReputationManager.getReputation(victim);
 
@@ -124,10 +128,10 @@ public abstract class PlayerEntityMixin {
         dropItemsFromSlots(victim, finalSlotsToDrop);
     }
 
-    private void calculateAndAddBackpackDrops(List<DroppableSlot> finalSlotsToDrop, PlayerEntity victim, int additionalPredatoryDrops) {
+    private void calculateAndAddBackpackDrops(List<DroppableSlot> finalSlotsToDrop, Player victim, int additionalPredatoryDrops) {
         int victimRep = ReputationManager.getReputation(victim);
         int backpacksToDrop = 0;
-        net.minecraft.util.math.random.Random random = victim.getWorld().getRandom();
+        RandomSource random = victim.level().random;
 
         if (victimRep >= 1000) {
             backpacksToDrop = 0;
@@ -154,35 +158,36 @@ public abstract class PlayerEntityMixin {
         }
     }
 
-    private List<DroppableSlot> getEquipmentSlots(PlayerEntity player) {
+    private List<DroppableSlot> getEquipmentSlots(Player player) {
         List<DroppableSlot> slots = new ArrayList<>();
-        PlayerInventory inventory = player.getInventory();
+        Inventory inventory = player.getInventory();
         // Armor
         for (int i = 0; i < inventory.armor.size(); i++) {
             final int slotIndex = i;
             addSlotIfNotEmpty(slots, inventory.armor.get(slotIndex), () -> inventory.armor.set(slotIndex, ItemStack.EMPTY));
         }
-        // Hotbar
+        // Hotbar (slots 0-8 of the main inventory)
         for (int i = 0; i <= 8; i++) {
             final int slotIndex = i;
-            addSlotIfNotEmpty(slots, inventory.main.get(slotIndex), () -> inventory.main.set(slotIndex, ItemStack.EMPTY));
+            addSlotIfNotEmpty(slots, inventory.items.get(slotIndex), () -> inventory.items.set(slotIndex, ItemStack.EMPTY));
         }
         // Offhand
-        addSlotIfNotEmpty(slots, inventory.offHand.get(0), () -> inventory.offHand.set(0, ItemStack.EMPTY));
+        addSlotIfNotEmpty(slots, inventory.offhand.get(0), () -> inventory.offhand.set(0, ItemStack.EMPTY));
         return slots;
     }
 
-    private List<DroppableSlot> getMainInventorySlots(PlayerEntity player) {
+    private List<DroppableSlot> getMainInventorySlots(Player player) {
         List<DroppableSlot> slots = new ArrayList<>();
-        PlayerInventory inventory = player.getInventory();
+        Inventory inventory = player.getInventory();
+        // Main inventory (slots 9-35)
         for (int i = 9; i <= 35; i++) {
             final int slotIndex = i;
-            addSlotIfNotEmpty(slots, inventory.main.get(slotIndex), () -> inventory.main.set(slotIndex, ItemStack.EMPTY));
+            addSlotIfNotEmpty(slots, inventory.items.get(slotIndex), () -> inventory.items.set(slotIndex, ItemStack.EMPTY));
         }
         return slots;
     }
 
-    private List<DroppableSlot> getAllEquippedBackpacks(PlayerEntity player) {
+    private List<DroppableSlot> getAllEquippedBackpacks(Player player) {
         if (FabricLoader.getInstance().isModLoaded("backpacked")) {
             return BackpackedCompat.getAllEquippedBackpacks(player);
         }
@@ -190,7 +195,7 @@ public abstract class PlayerEntityMixin {
     }
 
     // --- HELPER FOR TRINKETS ---
-    private List<DroppableSlot> getTrinketSlots(PlayerEntity player) {
+    private List<DroppableSlot> getTrinketSlots(Player player) {
         if (FabricLoader.getInstance().isModLoaded("trinkets")) {
             return TrinketsCompat.getTrinketSlots(player);
         }
@@ -214,10 +219,14 @@ public abstract class PlayerEntityMixin {
         }
     }
 
-    private void dropItemsFromSlots(PlayerEntity player, List<DroppableSlot> slots) {
+    private void dropItemsFromSlots(Player player, List<DroppableSlot> slots) {
         for (DroppableSlot slot : slots) {
-            player.dropStack(slot.stack());
+            // dropStack is now drop(stack, dropAround, trace)
+            player.drop(slot.stack(), true, false);
+            // FIX: The accessor for a record component is a method call.
+            // This now correctly calls the action to clear the item from its original slot.
             slot.clearSlotAction().run();
         }
     }
 }
+

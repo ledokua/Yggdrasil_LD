@@ -2,37 +2,47 @@ package net.ledok.event;
 
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.ledok.YggdrasilLdMod;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.ai.attributes.Attributes; // Import Attributes
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 
 public class ElytraBoostDisabler implements UseItemCallback {
     @Override
-    public TypedActionResult<ItemStack> interact(PlayerEntity player, World world, Hand hand) {
-        // ONLY SERVER LOGIC!!!!
-        if (!world.isClient) {
-            ItemStack itemStack = player.getStackInHand(hand);
+    public InteractionResultHolder<ItemStack> interact(Player player, Level level, InteractionHand hand) {
+        // Logic should only run on the server side.
+        if (!level.isClientSide()) {
+            ItemStack itemStack = player.getItemInHand(hand);
 
-            // CONDITIONS:
-            // Using elytra
-            // Has firework in hand
-            if (player.isFallFlying() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
-                // Check dimension ID
-                String currentDimension = world.getRegistryKey().getValue().toString();
+            // Check if the player is flying with an elytra and using a firework.
+            if (player.isFallFlying() && itemStack.is(Items.FIREWORK_ROCKET)) {
+                // Get the string representation of the current dimension's ID.
+                String currentDimension = level.dimension().location().toString();
 
-                // Is blacklisted?
+                // Check if the current dimension is in the configured blacklist.
                 if (YggdrasilLdMod.CONFIG.elytra_boost_disabled_dimensions.contains(currentDimension)) {
-                    // Send player message if no boos allowed and cancel event
-                    player.sendMessage(Text.translatable("message.yggdrasil_ld.elytra_boost_disabled").formatted(Formatting.RED), true);
-                    return TypedActionResult.fail(itemStack);
+                    // Check if the armor threshold feature is enabled
+                    if (YggdrasilLdMod.CONFIG.elytra_armor_threshold_enabled) {
+                        // Get the player's current armor value
+                        double armorValue = player.getAttributeValue(Attributes.ARMOR);
+                        // If armor is below the threshold, allow boosting
+                        if (armorValue < YggdrasilLdMod.CONFIG.elytra_armor_threshold) {
+                            return InteractionResultHolder.pass(itemStack); // Allow boosting
+                        }
+                    }
+
+                    // If armor check is disabled OR armor is >= threshold, disable boosting
+                    player.sendSystemMessage(Component.translatable("message.yggdrasil_ld.elytra_boost_disabled").withStyle(ChatFormatting.RED));
+                    return InteractionResultHolder.fail(itemStack); // Disable boosting
                 }
             }
         }
-        return TypedActionResult.pass(player.getStackInHand(hand));
+        // If conditions are not met (not flying, not firework, or not in blacklisted dimension), allow the item use to proceed normally.
+        return InteractionResultHolder.pass(player.getItemInHand(hand));
     }
 }

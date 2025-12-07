@@ -1,32 +1,36 @@
 package net.ledok.screen;
 
 import net.ledok.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
+// MOJANG MAPPINGS: Update all imports to their new Mojang-mapped packages.
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
-public class MobSpawnerScreenHandler extends ScreenHandler {
+public class MobSpawnerScreenHandler extends AbstractContainerMenu {
     public final MobSpawnerBlockEntity blockEntity;
-    public final PlayerEntity player;
+    public final Player player;
 
-    public MobSpawnerScreenHandler(int syncId, PlayerInventory playerInventory, MobSpawnerData data) {
-        this(syncId, playerInventory, (MobSpawnerBlockEntity) playerInventory.player.getWorld().getBlockEntity(data.blockPos()));
+    // MOJANG MAPPINGS: PlayerInventory is now Inventory.
+    public MobSpawnerScreenHandler(int syncId, Inventory playerInventory, MobSpawnerData data) {
+        this(syncId, playerInventory, (MobSpawnerBlockEntity) playerInventory.player.level().getBlockEntity(data.blockPos()));
     }
 
-    public MobSpawnerScreenHandler(int syncId, PlayerInventory playerInventory, MobSpawnerBlockEntity blockEntity) {
+    public MobSpawnerScreenHandler(int syncId, Inventory playerInventory, MobSpawnerBlockEntity blockEntity) {
         super(ModScreenHandlers.MOB_SPAWNER_SCREEN_HANDLER, syncId);
         this.blockEntity = blockEntity;
         this.player = playerInventory.player;
     }
 
+    // MOJANG MAPPINGS: quickMove is now quickMoveStack, PlayerEntity is Player.
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         return ItemStack.EMPTY;
     }
 
+    // MOJANG MAPPINGS: canUse is now stillValid.
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 }
