@@ -141,5 +141,6 @@
   "message.yggdrasil_ld.shop.claim_suffix": " or use /shop-receive.",
   "message.yggdrasil_ld.shop.no_items": "No new items to claim.",
   "message.yggdrasil_ld.shop.found_items": "Found %s items to claim! Delivering...",
-  "message.yggdrasil_ld.shop.error": "Error checking for items. Please try again later."
+  "message.yggdrasil_ld.shop.error": "Error checking for items. Please try again later.",
+  "block.yggdrasil_ld.phase_block": "Phase Block"
 }

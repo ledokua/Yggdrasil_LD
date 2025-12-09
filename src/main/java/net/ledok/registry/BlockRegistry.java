@@ -5,6 +5,7 @@ import net.ledok.block.BossSpawnerBlock;
 import net.ledok.block.EnterPortalBlock;
 import net.ledok.block.ExitPortalBlock;
 import net.ledok.block.MobSpawnerBlock;
+import net.ledok.block.PhaseBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -29,6 +30,9 @@ public class BlockRegistry {
     public static final Block MOB_SPAWNER_BLOCK = registerBlock("mob_spawner",
             new MobSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER)
                     .strength(-1.0f, 3600000.0f)));
+
+    public static final Block PHASE_BLOCK = registerBlock("phase_block",
+            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)));
 
 
     private static Block registerBlock(String name, Block block) {

@@ -11,6 +11,7 @@ import net.ledok.command.ShopCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
 import net.ledok.event.ReputationTicker;
+import net.ledok.manager.PhaseBlockManager;
 import net.ledok.minestar.ShopCompatibility;
 import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
@@ -27,6 +28,7 @@ public class YggdrasilLdMod implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static ModConfigs CONFIG;
+    public static final PhaseBlockManager PHASE_BLOCK_MANAGER = new PhaseBlockManager();
 
     @Override
     public void onInitialize() {
@@ -53,6 +55,7 @@ public class YggdrasilLdMod implements ModInitializer {
         ReputationTicker.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            PHASE_BLOCK_MANAGER.start();
             if (server.isDedicatedServer()) {
                 PrimeRoleHandler.register();
             }

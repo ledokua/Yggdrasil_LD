@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "solid=true": {
+      "model": "yggdrasil_ld:block/phase_block_solid"
+    },
+    "solid=false": {
+      "model": "yggdrasil_ld:block/phase_block_unsolid"
+    }
+  }
+}

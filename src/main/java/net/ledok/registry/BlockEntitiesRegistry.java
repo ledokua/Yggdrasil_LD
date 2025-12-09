@@ -5,6 +5,7 @@ import net.ledok.block.entity.BossSpawnerBlockEntity;
 import net.ledok.block.entity.EnterPortalBlockEntity;
 import net.ledok.block.entity.ExitPortalBlockEntity;
 import net.ledok.block.entity.MobSpawnerBlockEntity;
+import net.ledok.block.entity.PhaseBlockEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -31,6 +32,11 @@ public class BlockEntitiesRegistry {
             Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
                     ResourceLocation.parse(YggdrasilLdMod.MOD_ID + ":mob_spawner_be"),
                     BlockEntityType.Builder.of(MobSpawnerBlockEntity::new, BlockRegistry.MOB_SPAWNER_BLOCK).build(null));
+
+    public static final BlockEntityType<PhaseBlockEntity> PHASE_BLOCK_ENTITY =
+            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    ResourceLocation.parse(YggdrasilLdMod.MOD_ID + ":phase_block_be"),
+                    BlockEntityType.Builder.of(PhaseBlockEntity::new, BlockRegistry.PHASE_BLOCK).build(null));
 
 
     public static void initialize() {
