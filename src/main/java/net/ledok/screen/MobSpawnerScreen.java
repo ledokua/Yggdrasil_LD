@@ -2,7 +2,6 @@ package net.ledok.screen;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.ledok.networking.ModPackets;
-// MOJANG MAPPINGS: Update all imports to their new Mojang-mapped packages.
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.Button;
@@ -23,11 +22,11 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
     private EditBox mobSpreadField;
     private EditBox mobHealthField;
     private EditBox mobAttackDamageField;
+    private EditBox groupIdField;
 
-    // MOJANG MAPPINGS: PlayerInventory is now Inventory, Text is Component.
     public MobSpawnerScreen(MobSpawnerScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        this.imageHeight = 240;
+        this.imageHeight = 260; // Increased height to accommodate the new field
     }
 
     @Override
@@ -69,6 +68,12 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
         mobHealthField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobHealthField.setMaxLength(8);
         this.addRenderableWidget(mobHealthField);
+        y += yOffset * 1.7;
+
+        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Group ID"), (button) -> {}, this.font));
+        groupIdField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
+        groupIdField.setMaxLength(128);
+        this.addRenderableWidget(groupIdField);
 
         int col2X = (this.width / 2) + 5;
         y = 20;
@@ -116,7 +121,6 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
     }
 
     private void loadBlockEntityData() {
-        // MOJANG MAPPINGS: handler is now menu.
         if (menu.blockEntity != null) {
             mobIdField.setValue(menu.blockEntity.mobId);
             respawnTimeField.setValue(String.valueOf(menu.blockEntity.respawnTime));
@@ -129,12 +133,12 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
             mobSpreadField.setValue(String.valueOf(menu.blockEntity.mobSpread));
             mobHealthField.setValue(String.valueOf(menu.blockEntity.mobHealth));
             mobAttackDamageField.setValue(String.valueOf(menu.blockEntity.mobAttackDamage));
+            groupIdField.setValue(menu.blockEntity.groupId);
         }
     }
 
     private void onSave() {
         try {
-            // MOJANG MAPPINGS: getPos is now getBlockPos.
             ClientPlayNetworking.send(new ModPackets.UpdateMobSpawnerPayload(
                     menu.blockEntity.getBlockPos(),
                     mobIdField.getValue(),
@@ -147,16 +151,15 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
                     Integer.parseInt(mobCountField.getValue()),
                     Integer.parseInt(mobSpreadField.getValue()),
                     Double.parseDouble(mobHealthField.getValue()),
-                    Double.parseDouble(mobAttackDamageField.getValue())
+                    Double.parseDouble(mobAttackDamageField.getValue()),
+                    groupIdField.getValue()
             ));
-            // MOJANG MAPPINGS: close is now onClose.
             this.onClose();
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format in one of the fields.");
         }
     }
 
-    // MOJANG MAPPINGS: Rendering methods have been updated.
     @Override
     protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
     }

@@ -10,14 +10,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PhaseBlockManager {
-    private static final int TOGGLE_INTERVAL = 20 * 5; // 5 seconds
-    private int tickCounter = 0;
     private final Map<String, List<BlockPos>> groupPositions = new ConcurrentHashMap<>();
     private final Map<String, Boolean> groupSolidState = new ConcurrentHashMap<>();
     private final Map<String, ResourceKey<Level>> groupWorld = new ConcurrentHashMap<>();
@@ -55,23 +52,25 @@ public class PhaseBlockManager {
         }
     }
 
+    public void setGroupSolid(String groupId, boolean solid) {
+        if (groupId == null || groupId.isEmpty()) return;
+        groupSolidState.put(groupId, solid);
+    }
+
     public void start() {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            tickCounter++;
-            if (tickCounter >= TOGGLE_INTERVAL) {
-                tickCounter = 0;
-                for (String groupId : groupPositions.keySet()) {
-                    if(!groupPositions.containsKey(groupId)) continue;
+            for (String groupId : groupPositions.keySet()) {
+                if(!groupPositions.containsKey(groupId)) continue;
 
-                    boolean newState = !groupSolidState.get(groupId);
-                    groupSolidState.put(groupId, newState);
-                    ServerLevel world = server.getLevel(groupWorld.get(groupId));
-                    if (world != null) {
-                        for (BlockPos pos : new ArrayList<>(groupPositions.get(groupId))) {
-                            BlockState currentState = world.getBlockState(pos);
-                            if (currentState.getBlock() instanceof PhaseBlock) {
-                                world.setBlock(pos, currentState.setValue(PhaseBlock.SOLID, newState), 3);
-                            }
+                Boolean solid = groupSolidState.get(groupId);
+                if (solid == null) continue;
+
+                ServerLevel world = server.getLevel(groupWorld.get(groupId));
+                if (world != null) {
+                    for (BlockPos pos : new ArrayList<>(groupPositions.get(groupId))) {
+                        BlockState currentState = world.getBlockState(pos);
+                        if (currentState.getBlock() instanceof PhaseBlock && currentState.getValue(PhaseBlock.SOLID) != solid) {
+                            world.setBlock(pos, currentState.setValue(PhaseBlock.SOLID, solid), 3);
                         }
                     }
                 }

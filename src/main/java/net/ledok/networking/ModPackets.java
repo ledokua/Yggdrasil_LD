@@ -83,7 +83,7 @@ public class ModPackets {
     public record UpdateMobSpawnerPayload(
             BlockPos pos, String mobId, int respawnTime, String lootTable,
             int triggerRadius, int battleRadius, int regeneration, int skillExperience,
-            int mobCount, int mobSpread, double mobHealth, double mobAttackDamage
+            int mobCount, int mobSpread, double mobHealth, double mobAttackDamage, String groupId
     ) implements CustomPacketPayload {
         public static final Type<UpdateMobSpawnerPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "update_mob_spawner"));
 
@@ -95,7 +95,7 @@ public class ModPackets {
             this(
                     buf.readBlockPos(), buf.readUtf(), buf.readVarInt(), buf.readUtf(),
                     buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-                    buf.readVarInt(), buf.readVarInt(), buf.readDouble(), buf.readDouble()
+                    buf.readVarInt(), buf.readVarInt(), buf.readDouble(), buf.readDouble(), buf.readUtf()
             );
         }
 
@@ -112,6 +112,7 @@ public class ModPackets {
             buf.writeVarInt(mobSpread);
             buf.writeDouble(mobHealth);
             buf.writeDouble(mobAttackDamage);
+            buf.writeUtf(groupId);
         }
 
         @Override
@@ -165,6 +166,7 @@ public class ModPackets {
                     blockEntity.mobSpread = payload.mobSpread();
                     blockEntity.mobHealth = payload.mobHealth();
                     blockEntity.mobAttackDamage = payload.mobAttackDamage();
+                    blockEntity.groupId = payload.groupId();
                     blockEntity.setChanged();
                     world.sendBlockUpdated(payload.pos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
                 }

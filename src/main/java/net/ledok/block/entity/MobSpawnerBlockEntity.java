@@ -58,6 +58,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
     public int mobSpread = 5;
     public double mobHealth = 20.0;
     public double mobAttackDamage = 3.0;
+    public String groupId = "";
 
     // --- State Machine Fields ---
     private boolean isBattleActive = false;
@@ -84,6 +85,9 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
     private void handleIdleState(ServerLevel world, BlockPos pos) {
         if (respawnCooldown > 0) {
             respawnCooldown--;
+            if (respawnCooldown == 0) {
+                YggdrasilLdMod.PHASE_BLOCK_MANAGER.setGroupSolid(this.groupId, true);
+            }
             return;
         }
 
@@ -166,6 +170,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
 
     private void handleBattleWin(ServerLevel world) {
         YggdrasilLdMod.LOGGER.info("Mob Spawner won at {}", worldPosition);
+        YggdrasilLdMod.PHASE_BLOCK_MANAGER.setGroupSolid(this.groupId, false);
 
         if (lootTableId != null && !lootTableId.isEmpty()) {
             ResourceLocation lootTableIdentifier = ResourceLocation.tryParse(lootTableId);
@@ -257,6 +262,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         nbt.putDouble("MobAttackDamage", mobAttackDamage);
         nbt.putBoolean("IsBattleActive", isBattleActive);
         nbt.putInt("RespawnCooldown", respawnCooldown);
+        nbt.putString("GroupId", groupId);
 
         ListTag mobUuids = new ListTag();
         for (UUID uuid : activeMobUuids) {
@@ -283,6 +289,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         mobAttackDamage = nbt.contains("MobAttackDamage") ? nbt.getDouble("MobAttackDamage") : 3.0;
         isBattleActive = nbt.getBoolean("IsBattleActive");
         respawnCooldown = nbt.getInt("RespawnCooldown");
+        groupId = nbt.getString("GroupId");
 
         activeMobUuids.clear();
         ListTag mobUuids = nbt.getList("ActiveMobs", CompoundTag.TAG_COMPOUND);
@@ -320,4 +327,3 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         return new MobSpawnerData(this.worldPosition);
     }
 }
-
