@@ -1,13 +1,16 @@
 package net.ledok.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.ledok.networking.ModPackets;
+import net.ledok.registry.BlockRegistry;
 import net.ledok.screen.BossSpawnerScreen;
 import net.ledok.screen.MobSpawnerScreen;
 import net.ledok.screen.ModScreenHandlers;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.RenderType;
 
 public class YggdrasilLdClient implements ClientModInitializer {
     @Override
@@ -28,5 +31,7 @@ public class YggdrasilLdClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             client.execute(ClientReputationData::clear);
         });
+
+        BlockRenderLayerMap.INSTANCE.putBlock(BlockRegistry.PHASE_BLOCK, RenderType.translucent());
     }
 }

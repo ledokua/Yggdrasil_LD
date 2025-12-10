@@ -32,7 +32,7 @@ public class BlockRegistry {
                     .strength(-1.0f, 3600000.0f)));
 
     public static final Block PHASE_BLOCK = registerBlock("phase_block",
-            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)));
+            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion()));
 
 
     private static Block registerBlock(String name, Block block) {
