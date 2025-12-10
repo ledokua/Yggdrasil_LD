@@ -9,6 +9,7 @@ import net.ledok.registry.BlockEntitiesRegistry;
 import net.ledok.screen.MobSpawnerData;
 import net.ledok.screen.MobSpawnerScreenHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +27,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -41,10 +43,28 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
-// FIX: Implement ExtendedScreenHandlerFactory instead of MenuProvider
 public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<MobSpawnerData> {
+
+    public record AttributeData(String id, double value) {
+        public CompoundTag toNbt() {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("Id", id);
+            tag.putDouble("Value", value);
+            return tag;
+        }
+
+        public static AttributeData fromNbt(CompoundTag tag) {
+            return new AttributeData(tag.getString("Id"), tag.getDouble("Value"));
+        }
+    }
 
     // --- Configuration Fields ---
     public String mobId = "minecraft:zombie";
@@ -56,9 +76,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
     public int skillExperiencePerWin = 0;
     public int mobCount = 1;
     public int mobSpread = 5;
-    public double mobHealth = 20.0;
-    public double mobAttackDamage = 3.0;
     public String groupId = "";
+    public final List<AttributeData> attributes = new ArrayList<>();
 
     // --- State Machine Fields ---
     private boolean isBattleActive = false;
@@ -70,6 +89,11 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
 
     public MobSpawnerBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntitiesRegistry.MOB_SPAWNER_BLOCK_ENTITY, pos, state);
+        // Default attributes
+        if (attributes.isEmpty()) {
+            attributes.add(new AttributeData("minecraft:generic.max_health", 20.0));
+            attributes.add(new AttributeData("minecraft:generic.attack_damage", 3.0));
+        }
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, MobSpawnerBlockEntity be) {
@@ -150,11 +174,21 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         for (int i = 0; i < mobCount; i++) {
             Entity mob = entityTypeOpt.get().create(world);
             if (mob instanceof LivingEntity livingMob) {
-                Objects.requireNonNull(livingMob.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(this.mobHealth);
-                livingMob.heal((float) this.mobHealth);
-                if (livingMob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
-                    Objects.requireNonNull(livingMob.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(this.mobAttackDamage);
+                for (AttributeData attr : attributes) {
+                    ResourceLocation attrLocation = ResourceLocation.tryParse(attr.id());
+                    if (attrLocation != null) {
+                        var attributeRegistry = world.registryAccess().registryOrThrow(Registries.ATTRIBUTE);
+                        ResourceKey<Attribute> key = ResourceKey.create(Registries.ATTRIBUTE, attrLocation);
+                        attributeRegistry.getHolder(key).ifPresent(holder -> {
+                            AttributeInstance instance = livingMob.getAttribute(holder);
+                            if (instance != null) {
+                                instance.setBaseValue(attr.value());
+                            }
+                        });
+                    }
                 }
+                // Heal to max health after setting attributes
+                livingMob.heal(livingMob.getMaxHealth());
 
                 double x = spawnCenter.getX() + 0.5 + (world.random.nextDouble() - 0.5) * mobSpread * 2;
                 double y = spawnCenter.getY() + 1;
@@ -258,11 +292,9 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         nbt.putInt("SkillExperiencePerWin", skillExperiencePerWin);
         nbt.putInt("MobCount", mobCount);
         nbt.putInt("MobSpread", mobSpread);
-        nbt.putDouble("MobHealth", mobHealth);
-        nbt.putDouble("MobAttackDamage", mobAttackDamage);
+        nbt.putString("GroupId", groupId);
         nbt.putBoolean("IsBattleActive", isBattleActive);
         nbt.putInt("RespawnCooldown", respawnCooldown);
-        nbt.putString("GroupId", groupId);
 
         ListTag mobUuids = new ListTag();
         for (UUID uuid : activeMobUuids) {
@@ -271,6 +303,12 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
             mobUuids.add(uuidNbt);
         }
         nbt.put("ActiveMobs", mobUuids);
+
+        ListTag attributeList = new ListTag();
+        for (AttributeData attr : attributes) {
+            attributeList.add(attr.toNbt());
+        }
+        nbt.put("Attributes", attributeList);
     }
 
     @Override
@@ -285,8 +323,6 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         skillExperiencePerWin = nbt.getInt("SkillExperiencePerWin");
         mobCount = nbt.contains("MobCount") ? nbt.getInt("MobCount") : 1;
         mobSpread = nbt.contains("MobSpread") ? nbt.getInt("MobSpread") : 5;
-        mobHealth = nbt.contains("MobHealth") ? nbt.getDouble("MobHealth") : 20.0;
-        mobAttackDamage = nbt.contains("MobAttackDamage") ? nbt.getDouble("MobAttackDamage") : 3.0;
         isBattleActive = nbt.getBoolean("IsBattleActive");
         respawnCooldown = nbt.getInt("RespawnCooldown");
         groupId = nbt.getString("GroupId");
@@ -296,6 +332,16 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         for (Tag tag : mobUuids) {
             CompoundTag uuidNbt = (CompoundTag) tag;
             activeMobUuids.add(uuidNbt.getUUID("uuid"));
+        }
+
+        attributes.clear();
+        ListTag attributeList = nbt.getList("Attributes", CompoundTag.TAG_COMPOUND);
+        for (Tag tag : attributeList) {
+            attributes.add(AttributeData.fromNbt((CompoundTag) tag));
+        }
+        if (attributes.isEmpty()) {
+             attributes.add(new AttributeData("minecraft:generic.max_health", 20.0));
+            attributes.add(new AttributeData("minecraft:generic.attack_damage", 3.0));
         }
     }
 
@@ -321,7 +367,6 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
         return new MobSpawnerScreenHandler(syncId, playerInventory, this);
     }
 
-    // FIX: This method is now required by the ExtendedScreenHandlerFactory.
     @Override
     public MobSpawnerData getScreenOpeningData(ServerPlayer player) {
         return new MobSpawnerData(this.worldPosition);

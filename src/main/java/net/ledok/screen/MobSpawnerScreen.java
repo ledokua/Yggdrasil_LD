@@ -20,13 +20,11 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
     private EditBox skillExperienceField;
     private EditBox mobCountField;
     private EditBox mobSpreadField;
-    private EditBox mobHealthField;
-    private EditBox mobAttackDamageField;
     private EditBox groupIdField;
 
     public MobSpawnerScreen(MobSpawnerScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        this.imageHeight = 260; // Increased height to accommodate the new field
+        this.imageHeight = 260;
     }
 
     @Override
@@ -62,12 +60,6 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
         mobSpreadField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobSpreadField.setMaxLength(4);
         this.addRenderableWidget(mobSpreadField);
-        y += yOffset * 1.7;
-
-        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Custom Mob Health"), (button) -> {}, this.font));
-        mobHealthField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
-        mobHealthField.setMaxLength(8);
-        this.addRenderableWidget(mobHealthField);
         y += yOffset * 1.7;
 
         addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Group ID"), (button) -> {}, this.font));
@@ -106,12 +98,10 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
         skillExperienceField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
         skillExperienceField.setMaxLength(8);
         this.addRenderableWidget(skillExperienceField);
-        y += yOffset * 1.7;
 
-        addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col2X, y - 15, fieldWidth, fieldHeight, Component.literal("Custom Attack Damage"), (button) -> {}, this.font));
-        mobAttackDamageField = new EditBox(this.font, col2X, y, fieldWidth, fieldHeight, Component.literal(""));
-        mobAttackDamageField.setMaxLength(8);
-        this.addRenderableWidget(mobAttackDamageField);
+        this.addRenderableWidget(Button.builder(Component.literal("Attributes"), button -> {
+            this.minecraft.setScreen(new MobAttributesScreen(new MobAttributesScreenHandler(menu.containerId, minecraft.player.getInventory(), new MobAttributesData(menu.blockEntity.getBlockPos())), minecraft.player.getInventory(), Component.literal("Mob Attributes")));
+        }).bounds(this.width / 2 - 150, this.height - 70, 100, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Save"), button -> onSave())
                 .bounds(this.width / 2 - 50, this.height - 50, 100, 20)
@@ -131,8 +121,6 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
             skillExperienceField.setValue(String.valueOf(menu.blockEntity.skillExperiencePerWin));
             mobCountField.setValue(String.valueOf(menu.blockEntity.mobCount));
             mobSpreadField.setValue(String.valueOf(menu.blockEntity.mobSpread));
-            mobHealthField.setValue(String.valueOf(menu.blockEntity.mobHealth));
-            mobAttackDamageField.setValue(String.valueOf(menu.blockEntity.mobAttackDamage));
             groupIdField.setValue(menu.blockEntity.groupId);
         }
     }
@@ -150,8 +138,6 @@ public class MobSpawnerScreen extends AbstractContainerScreen<MobSpawnerScreenHa
                     Integer.parseInt(skillExperienceField.getValue()),
                     Integer.parseInt(mobCountField.getValue()),
                     Integer.parseInt(mobSpreadField.getValue()),
-                    Double.parseDouble(mobHealthField.getValue()),
-                    Double.parseDouble(mobAttackDamageField.getValue()),
                     groupIdField.getValue()
             ));
             this.onClose();

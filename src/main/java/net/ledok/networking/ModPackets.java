@@ -12,6 +12,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ModPackets {
@@ -19,8 +21,6 @@ public class ModPackets {
     public record ReputationSyncPayload(UUID playerUuid, int reputation) implements CustomPacketPayload {
         public static final Type<ReputationSyncPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "reputation_sync"));
 
-        // FIX: The method reference for the writer was causing a type inference error.
-        // Using a lambda explicitly defines the parameter order (buffer, then payload).
         public static final StreamCodec<FriendlyByteBuf, ReputationSyncPayload> STREAM_CODEC = StreamCodec.of(
                 (buf, payload) -> payload.write(buf), ReputationSyncPayload::new);
 
@@ -46,7 +46,6 @@ public class ModPackets {
     ) implements CustomPacketPayload {
         public static final Type<UpdateBossSpawnerPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "update_boss_spawner"));
 
-        // FIX: Used a lambda for the writer to resolve the type inference error.
         public static final StreamCodec<FriendlyByteBuf, UpdateBossSpawnerPayload> STREAM_CODEC = StreamCodec.of(
                 (buf, payload) -> payload.write(buf), UpdateBossSpawnerPayload::new);
 
@@ -83,11 +82,10 @@ public class ModPackets {
     public record UpdateMobSpawnerPayload(
             BlockPos pos, String mobId, int respawnTime, String lootTable,
             int triggerRadius, int battleRadius, int regeneration, int skillExperience,
-            int mobCount, int mobSpread, double mobHealth, double mobAttackDamage, String groupId
+            int mobCount, int mobSpread, String groupId
     ) implements CustomPacketPayload {
         public static final Type<UpdateMobSpawnerPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "update_mob_spawner"));
 
-        // FIX: Used a lambda for the writer to resolve the type inference error.
         public static final StreamCodec<FriendlyByteBuf, UpdateMobSpawnerPayload> STREAM_CODEC = StreamCodec.of(
                 (buf, payload) -> payload.write(buf), UpdateMobSpawnerPayload::new);
 
@@ -95,7 +93,7 @@ public class ModPackets {
             this(
                     buf.readBlockPos(), buf.readUtf(), buf.readVarInt(), buf.readUtf(),
                     buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-                    buf.readVarInt(), buf.readVarInt(), buf.readDouble(), buf.readDouble(), buf.readUtf()
+                    buf.readVarInt(), buf.readVarInt(), buf.readUtf()
             );
         }
 
@@ -110,9 +108,36 @@ public class ModPackets {
             buf.writeVarInt(skillExperience);
             buf.writeVarInt(mobCount);
             buf.writeVarInt(mobSpread);
-            buf.writeDouble(mobHealth);
-            buf.writeDouble(mobAttackDamage);
             buf.writeUtf(groupId);
+        }
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record UpdateMobSpawnerAttributesPayload(
+            BlockPos pos, List<MobSpawnerBlockEntity.AttributeData> attributes
+    ) implements CustomPacketPayload {
+        public static final Type<UpdateMobSpawnerAttributesPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "update_mob_spawner_attributes"));
+
+        public static final StreamCodec<FriendlyByteBuf, UpdateMobSpawnerAttributesPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> payload.write(buf), UpdateMobSpawnerAttributesPayload::new);
+
+        public UpdateMobSpawnerAttributesPayload(FriendlyByteBuf buf) {
+            this(
+                    buf.readBlockPos(),
+                    buf.readList(b -> new MobSpawnerBlockEntity.AttributeData(b.readUtf(), b.readDouble()))
+            );
+        }
+
+        public void write(FriendlyByteBuf buf) {
+            buf.writeBlockPos(pos);
+            buf.writeCollection(attributes, (b, attr) -> {
+                b.writeUtf(attr.id());
+                b.writeDouble(attr.value());
+            });
         }
 
         @Override
@@ -128,6 +153,7 @@ public class ModPackets {
     public static void registerC2SPackets() {
         PayloadTypeRegistry.playC2S().register(UpdateBossSpawnerPayload.TYPE, UpdateBossSpawnerPayload.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateMobSpawnerPayload.TYPE, UpdateMobSpawnerPayload.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(UpdateMobSpawnerAttributesPayload.TYPE, UpdateMobSpawnerAttributesPayload.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateBossSpawnerPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
@@ -164,9 +190,19 @@ public class ModPackets {
                     blockEntity.skillExperiencePerWin = payload.skillExperience();
                     blockEntity.mobCount = payload.mobCount();
                     blockEntity.mobSpread = payload.mobSpread();
-                    blockEntity.mobHealth = payload.mobHealth();
-                    blockEntity.mobAttackDamage = payload.mobAttackDamage();
                     blockEntity.groupId = payload.groupId();
+                    blockEntity.setChanged();
+                    world.sendBlockUpdated(payload.pos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
+                }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(UpdateMobSpawnerAttributesPayload.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                Level world = context.player().level();
+                if (world.getBlockEntity(payload.pos()) instanceof MobSpawnerBlockEntity blockEntity) {
+                    blockEntity.attributes.clear();
+                    blockEntity.attributes.addAll(payload.attributes());
                     blockEntity.setChanged();
                     world.sendBlockUpdated(payload.pos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
                 }
@@ -174,4 +210,3 @@ public class ModPackets {
         });
     }
 }
-
