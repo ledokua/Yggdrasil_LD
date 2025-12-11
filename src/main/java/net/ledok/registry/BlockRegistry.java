@@ -18,21 +18,19 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockRegistry {
     public static final Block BOSS_SPAWNER_BLOCK = registerBlock("boss_spawner",
-            new BossSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER)
-                    .strength(-1.0f, 3600000.0f)));
+            new BossSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER).strength(-1.0f, 3600000.0f)));
 
     public static final Block EXIT_PORTAL_BLOCK = registerBlock("exit_portal",
-            new ExitPortalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_PORTAL).sound(SoundType.GLASS).noCollission()));
+            new ExitPortalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).sound(SoundType.GLASS).noCollission().strength(-1.0f, 3600000.0f)));
 
     public static final Block ENTER_PORTAL_BLOCK = registerBlock("enter_portal",
-            new EnterPortalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_PORTAL).sound(SoundType.GLASS).noCollission()));
+            new EnterPortalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).sound(SoundType.GLASS).noCollission().strength(-1.0f, 3600000.0f)));
 
     public static final Block MOB_SPAWNER_BLOCK = registerBlock("mob_spawner",
-            new MobSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER)
-                    .strength(-1.0f, 3600000.0f)));
+            new MobSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER).strength(-1.0f, 3600000.0f)));
 
     public static final Block PHASE_BLOCK = registerBlock("phase_block",
-            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion()));
+            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion().strength(-1.0f, 3600000.0f)));
 
 
     private static Block registerBlock(String name, Block block) {

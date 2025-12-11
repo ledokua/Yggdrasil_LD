@@ -2,12 +2,10 @@ package net.ledok.screen;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.ledok.networking.ModPackets;
-// MOJANG MAPPINGS: Update all imports to their new Mojang-mapped packages.
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
@@ -27,10 +25,9 @@ public class BossSpawnerScreen extends AbstractContainerScreen<BossSpawnerScreen
     private EditBox minPlayersField;
     private EditBox skillExperienceField;
 
-    // MOJANG MAPPINGS: PlayerInventory is now Inventory, Text is Component.
     public BossSpawnerScreen(BossSpawnerScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        this.imageHeight = 260;
+        this.imageHeight = 280; // Increased height for the new button
     }
 
     @Override
@@ -44,7 +41,6 @@ public class BossSpawnerScreen extends AbstractContainerScreen<BossSpawnerScreen
         int col1X = (this.width / 2) - fieldWidth - 10;
         int y = 20;
 
-        // MOJANG MAPPINGS: Widgets have been updated.
         addRenderableWidget(new net.minecraft.client.gui.components.PlainTextButton(col1X, y - 15, fieldWidth, fieldHeight, Component.literal("Mob ID"), (button) -> {}, this.font));
         mobIdField = new EditBox(this.font, col1X, y, fieldWidth, fieldHeight, Component.literal(""));
         mobIdField.setMaxLength(128);
@@ -119,6 +115,10 @@ public class BossSpawnerScreen extends AbstractContainerScreen<BossSpawnerScreen
         minPlayersField.setMaxLength(3);
         this.addRenderableWidget(minPlayersField);
 
+        this.addRenderableWidget(Button.builder(Component.literal("Attributes"), button -> {
+            this.minecraft.setScreen(new MobAttributesScreen(new MobAttributesScreenHandler(menu.containerId, minecraft.player.getInventory(), new MobAttributesData(menu.blockEntity.getBlockPos())), minecraft.player.getInventory(), Component.literal("Boss Attributes")));
+        }).bounds(this.width / 2 - 150, this.height - 70, 100, 20).build());
+
         this.addRenderableWidget(Button.builder(Component.literal("Save"), button -> onSave())
                 .bounds(this.width / 2 - 50, this.height - 50, 100, 20)
                 .build());
@@ -177,7 +177,6 @@ public class BossSpawnerScreen extends AbstractContainerScreen<BossSpawnerScreen
         }
     }
 
-    // MOJANG MAPPINGS: Rendering methods have been updated.
     @Override
     protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
     }

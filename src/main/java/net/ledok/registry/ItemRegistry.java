@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+@SuppressWarnings("unused")
 public class ItemRegistry {
     public static final Item ICON = ItemInit.register(
             new Item(new Item.Properties()) {
@@ -63,6 +64,7 @@ public class ItemRegistry {
             new SkillXpItem(new Item.Properties().stacksTo(64),100),
             "xp_item_1"
     );
+    @SuppressWarnings("unused")
     public static final Item XP_ITEM_2 = ItemInit.register(
             new SkillXpItem(new Item.Properties().stacksTo(64),200),
             "xp_item_2"

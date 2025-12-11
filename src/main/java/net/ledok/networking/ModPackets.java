@@ -5,14 +5,16 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.ledok.YggdrasilLdMod;
 import net.ledok.block.entity.BossSpawnerBlockEntity;
 import net.ledok.block.entity.MobSpawnerBlockEntity;
+import net.ledok.util.AttributeData;
+import net.ledok.util.AttributeProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,18 +119,18 @@ public class ModPackets {
         }
     }
 
-    public record UpdateMobSpawnerAttributesPayload(
-            BlockPos pos, List<MobSpawnerBlockEntity.AttributeData> attributes
+    public record UpdateAttributesPayload(
+            BlockPos pos, List<AttributeData> attributes
     ) implements CustomPacketPayload {
-        public static final Type<UpdateMobSpawnerAttributesPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "update_mob_spawner_attributes"));
+        public static final Type<UpdateAttributesPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "update_attributes"));
 
-        public static final StreamCodec<FriendlyByteBuf, UpdateMobSpawnerAttributesPayload> STREAM_CODEC = StreamCodec.of(
-                (buf, payload) -> payload.write(buf), UpdateMobSpawnerAttributesPayload::new);
+        public static final StreamCodec<FriendlyByteBuf, UpdateAttributesPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> payload.write(buf), UpdateAttributesPayload::new);
 
-        public UpdateMobSpawnerAttributesPayload(FriendlyByteBuf buf) {
+        public UpdateAttributesPayload(FriendlyByteBuf buf) {
             this(
                     buf.readBlockPos(),
-                    buf.readList(b -> new MobSpawnerBlockEntity.AttributeData(b.readUtf(), b.readDouble()))
+                    buf.readList(b -> new AttributeData(b.readUtf(), b.readDouble()))
             );
         }
 
@@ -153,7 +155,7 @@ public class ModPackets {
     public static void registerC2SPackets() {
         PayloadTypeRegistry.playC2S().register(UpdateBossSpawnerPayload.TYPE, UpdateBossSpawnerPayload.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateMobSpawnerPayload.TYPE, UpdateMobSpawnerPayload.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(UpdateMobSpawnerAttributesPayload.TYPE, UpdateMobSpawnerAttributesPayload.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(UpdateAttributesPayload.TYPE, UpdateAttributesPayload.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateBossSpawnerPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
@@ -197,14 +199,14 @@ public class ModPackets {
             });
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(UpdateMobSpawnerAttributesPayload.TYPE, (payload, context) -> {
+        ServerPlayNetworking.registerGlobalReceiver(UpdateAttributesPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 Level world = context.player().level();
-                if (world.getBlockEntity(payload.pos()) instanceof MobSpawnerBlockEntity blockEntity) {
-                    blockEntity.attributes.clear();
-                    blockEntity.attributes.addAll(payload.attributes());
-                    blockEntity.setChanged();
-                    world.sendBlockUpdated(payload.pos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
+                BlockEntity be = world.getBlockEntity(payload.pos());
+                if (be instanceof AttributeProvider provider) {
+                    provider.setAttributes(payload.attributes());
+                    be.setChanged();
+                    world.sendBlockUpdated(payload.pos(), be.getBlockState(), be.getBlockState(), 3);
                 }
             });
         });

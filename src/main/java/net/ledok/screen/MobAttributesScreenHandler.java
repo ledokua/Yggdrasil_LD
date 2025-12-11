@@ -1,22 +1,30 @@
 package net.ledok.screen;
 
-import net.ledok.block.entity.MobSpawnerBlockEntity;
+import net.ledok.util.AttributeData;
+import net.ledok.util.AttributeProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MobAttributesScreenHandler extends AbstractContainerMenu {
-    public final MobSpawnerBlockEntity blockEntity;
-    public final List<MobSpawnerBlockEntity.AttributeData> attributes;
+    public final AttributeProvider attributeProvider;
+    public final BlockEntity blockEntity;
+    public final List<AttributeData> attributes;
 
     public MobAttributesScreenHandler(int syncId, Inventory inventory, MobAttributesData data) {
         super(ModScreenHandlers.MOB_ATTRIBUTES_SCREEN_HANDLER, syncId);
-        this.blockEntity = (MobSpawnerBlockEntity) inventory.player.level().getBlockEntity(data.pos());
-        this.attributes = new ArrayList<>(blockEntity.attributes);
+        this.blockEntity = inventory.player.level().getBlockEntity(data.pos());
+        if (this.blockEntity instanceof AttributeProvider) {
+            this.attributeProvider = (AttributeProvider) this.blockEntity;
+            this.attributes = new ArrayList<>(this.attributeProvider.getAttributes());
+        } else {
+            throw new IllegalStateException("Block entity at " + data.pos() + " does not implement AttributeProvider");
+        }
     }
 
     @Override

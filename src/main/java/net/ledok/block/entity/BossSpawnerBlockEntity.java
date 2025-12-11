@@ -8,10 +8,14 @@ import net.ledok.registry.BlockEntitiesRegistry;
 import net.ledok.registry.BlockRegistry;
 import net.ledok.screen.BossSpawnerData;
 import net.ledok.screen.BossSpawnerScreenHandler;
+import net.ledok.util.AttributeData;
+import net.ledok.util.AttributeProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -23,6 +27,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,12 +44,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BossSpawnerData> {
+public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BossSpawnerData>, AttributeProvider {
 
     // --- Configuration Fields ---
     public String mobId = "minecraft:zombie";
@@ -58,6 +65,7 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
     public int regeneration = 0;
     public int minPlayers = 2;
     public int skillExperiencePerWin = 100;
+    private final List<AttributeData> attributes = new ArrayList<>();
 
     // --- State Machine Fields ---
     private boolean isBattleActive = false;
@@ -69,6 +77,22 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
 
     public BossSpawnerBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntitiesRegistry.BOSS_SPAWNER_BLOCK_ENTITY, pos, state);
+        if (attributes.isEmpty()) {
+            attributes.add(new AttributeData("minecraft:generic.max_health", 300.0));
+            attributes.add(new AttributeData("minecraft:generic.attack_damage", 15.0));
+        }
+    }
+
+    @Override
+    public List<AttributeData> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(List<AttributeData> attributes) {
+        this.attributes.clear();
+        this.attributes.addAll(attributes);
+        setChanged();
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, BossSpawnerBlockEntity be) {
@@ -159,6 +183,22 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
             return;
         }
         Entity boss = entityTypeOpt.get().create(world);
+        if (boss instanceof LivingEntity livingBoss) {
+            for (AttributeData attr : attributes) {
+                ResourceLocation attrLocation = ResourceLocation.tryParse(attr.id());
+                if (attrLocation != null) {
+                    var attributeRegistry = world.registryAccess().registryOrThrow(Registries.ATTRIBUTE);
+                    ResourceKey<Attribute> key = ResourceKey.create(Registries.ATTRIBUTE, attrLocation);
+                    attributeRegistry.getHolder(key).ifPresent(holder -> {
+                        AttributeInstance instance = livingBoss.getAttribute(holder);
+                        if (instance != null) {
+                            instance.setBaseValue(attr.value());
+                        }
+                    });
+                }
+            }
+            livingBoss.heal(livingBoss.getMaxHealth());
+        }
         if (boss == null) {
             YggdrasilLdMod.LOGGER.error("Failed to create entity from ID: {}", this.mobId);
             return;
@@ -290,6 +330,12 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         nbt.putInt("RespawnCooldown", respawnCooldown);
         if (activeBossUuid != null) nbt.putUUID("ActiveBossUuid", activeBossUuid);
         if (bossDimension != null) nbt.putString("BossDimension", bossDimension.location().toString());
+
+        ListTag attributeList = new ListTag();
+        for (AttributeData attr : attributes) {
+            attributeList.add(attr.toNbt());
+        }
+        nbt.put("Attributes", attributeList);
     }
 
     @Override
@@ -315,6 +361,16 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         if (nbt.contains("BossDimension")) {
             bossDimension = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("BossDimension")));
         }
+
+        attributes.clear();
+        ListTag attributeList = nbt.getList("Attributes", CompoundTag.TAG_COMPOUND);
+        for (Tag tag : attributeList) {
+            attributes.add(AttributeData.fromNbt((CompoundTag) tag));
+        }
+        if (attributes.isEmpty()) {
+            attributes.add(new AttributeData("minecraft:generic.max_health", 300.0));
+            attributes.add(new AttributeData("minecraft:generic.attack_damage", 15.0));
+        }
     }
 
     @Nullable
@@ -339,11 +395,8 @@ public class BossSpawnerBlockEntity extends BlockEntity implements ExtendedScree
         return new BossSpawnerScreenHandler(syncId, playerInventory, this);
     }
 
-    // FIX: This method is now required by the ExtendedScreenHandlerFactory.
-    // It provides the extra data (the block position) to the ScreenHandler.
     @Override
     public BossSpawnerData getScreenOpeningData(ServerPlayer player) {
         return new BossSpawnerData(this.worldPosition);
     }
 }
-

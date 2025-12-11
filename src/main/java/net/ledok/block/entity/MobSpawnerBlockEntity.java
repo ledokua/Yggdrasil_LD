@@ -8,6 +8,8 @@ import net.ledok.compat.PuffishSkillsCompat;
 import net.ledok.registry.BlockEntitiesRegistry;
 import net.ledok.screen.MobSpawnerData;
 import net.ledok.screen.MobSpawnerScreenHandler;
+import net.ledok.util.AttributeData;
+import net.ledok.util.AttributeProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -51,20 +53,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<MobSpawnerData> {
-
-    public record AttributeData(String id, double value) {
-        public CompoundTag toNbt() {
-            CompoundTag tag = new CompoundTag();
-            tag.putString("Id", id);
-            tag.putDouble("Value", value);
-            return tag;
-        }
-
-        public static AttributeData fromNbt(CompoundTag tag) {
-            return new AttributeData(tag.getString("Id"), tag.getDouble("Value"));
-        }
-    }
+public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<MobSpawnerData>, AttributeProvider {
 
     // --- Configuration Fields ---
     public String mobId = "minecraft:zombie";
@@ -77,7 +66,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
     public int mobCount = 1;
     public int mobSpread = 5;
     public String groupId = "";
-    public final List<AttributeData> attributes = new ArrayList<>();
+    private final List<AttributeData> attributes = new ArrayList<>();
 
     // --- State Machine Fields ---
     private boolean isBattleActive = false;
@@ -94,6 +83,18 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
             attributes.add(new AttributeData("minecraft:generic.max_health", 20.0));
             attributes.add(new AttributeData("minecraft:generic.attack_damage", 3.0));
         }
+    }
+
+    @Override
+    public List<AttributeData> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(List<AttributeData> attributes) {
+        this.attributes.clear();
+        this.attributes.addAll(attributes);
+        setChanged();
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, MobSpawnerBlockEntity be) {

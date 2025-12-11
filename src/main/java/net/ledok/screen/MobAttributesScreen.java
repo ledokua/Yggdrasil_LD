@@ -2,8 +2,8 @@ package net.ledok.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.ledok.block.entity.MobSpawnerBlockEntity;
 import net.ledok.networking.ModPackets;
+import net.ledok.util.AttributeData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.Button;
@@ -34,13 +34,13 @@ public class MobAttributesScreen extends AbstractContainerScreen<MobAttributesSc
         attributeFields.clear();
 
         int y = 20;
-        for (MobSpawnerBlockEntity.AttributeData attribute : menu.attributes) {
+        for (AttributeData attribute : menu.attributes) {
             addAttributeFields(y, attribute);
             y += 24;
         }
 
         addRenderableWidget(Button.builder(Component.literal("Add"), button -> {
-            menu.attributes.add(new MobSpawnerBlockEntity.AttributeData("minecraft:generic.max_health", 20.0));
+            menu.attributes.add(new AttributeData("minecraft:generic.max_health", 20.0));
             rebuildWidgets();
         }).bounds(this.width / 2 - 100, this.height - 50, 80, 20).build());
 
@@ -49,7 +49,7 @@ public class MobAttributesScreen extends AbstractContainerScreen<MobAttributesSc
                 .build());
     }
 
-    private void addAttributeFields(int y, MobSpawnerBlockEntity.AttributeData attribute) {
+    private void addAttributeFields(int y, AttributeData attribute) {
         int x = this.width / 2 - 155;
         EditBox idField = new EditBox(this.font, x, y, 200, 20, Component.literal("Attribute ID"));
         idField.setMaxLength(128);
@@ -72,18 +72,18 @@ public class MobAttributesScreen extends AbstractContainerScreen<MobAttributesSc
     }
 
     private void onSave() {
-        List<MobSpawnerBlockEntity.AttributeData> updatedAttributes = new ArrayList<>();
+        List<AttributeData> updatedAttributes = new ArrayList<>();
         for (AttributeField field : attributeFields) {
             try {
                 String id = field.idField.getValue();
                 double value = Double.parseDouble(field.valueField.getValue());
-                updatedAttributes.add(new MobSpawnerBlockEntity.AttributeData(id, value));
+                updatedAttributes.add(new AttributeData(id, value));
             } catch (NumberFormatException e) {
                 // Handle error
             }
         }
 
-        ClientPlayNetworking.send(new ModPackets.UpdateMobSpawnerAttributesPayload(
+        ClientPlayNetworking.send(new ModPackets.UpdateAttributesPayload(
                 menu.blockEntity.getBlockPos(),
                 updatedAttributes
         ));
@@ -104,5 +104,5 @@ public class MobAttributesScreen extends AbstractContainerScreen<MobAttributesSc
         this.renderTooltip(context, mouseX, mouseY);
     }
 
-    private record AttributeField(EditBox idField, EditBox valueField, MobSpawnerBlockEntity.AttributeData originalAttribute) {}
+    private record AttributeField(EditBox idField, EditBox valueField, AttributeData originalAttribute) {}
 }

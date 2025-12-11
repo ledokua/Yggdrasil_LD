@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 public class ArmorMaterialRegistry {
 
-    public static final Holder<ArmorMaterial> PRIEST_T6 = register("priest_t6", Util.make(new EnumMap(ArmorItem.Type.class), enumMap -> {
+    public static final Holder<ArmorMaterial> PRIEST_T6 = register("priest_t6", Util.make(new EnumMap<>(ArmorItem.Type.class), enumMap -> {
         enumMap.put(ArmorItem.Type.BOOTS, 3);
         enumMap.put(ArmorItem.Type.LEGGINGS, 6);
         enumMap.put(ArmorItem.Type.CHESTPLATE, 8);
@@ -26,7 +26,7 @@ public class ArmorMaterialRegistry {
         enumMap.put(ArmorItem.Type.BODY, 11);
     }), 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, 0.12F, () -> Ingredient.of(Items.NETHERITE_INGOT));
 
-    public static final Holder<ArmorMaterial> FROST_T6 = register("frost_t6", Util.make(new EnumMap(ArmorItem.Type.class), enumMap -> {
+    public static final Holder<ArmorMaterial> FROST_T6 = register("frost_t6", Util.make(new EnumMap<>(ArmorItem.Type.class), enumMap -> {
         enumMap.put(ArmorItem.Type.BOOTS, 3);
         enumMap.put(ArmorItem.Type.LEGGINGS, 6);
         enumMap.put(ArmorItem.Type.CHESTPLATE, 8);
@@ -51,10 +51,8 @@ public class ArmorMaterialRegistry {
             Supplier<Ingredient> supplier,
             List<ArmorMaterial.Layer> list
     ) {
-        EnumMap<ArmorItem.Type, Integer> enumMap2 = new EnumMap(ArmorItem.Type.class);
-
         return Registry.registerForHolder(
-                BuiltInRegistries.ARMOR_MATERIAL, ResourceLocation.withDefaultNamespace(string), new ArmorMaterial(enumMap2, i, holder, supplier, list, f, g)
+                BuiltInRegistries.ARMOR_MATERIAL, ResourceLocation.withDefaultNamespace(string), new ArmorMaterial(enumMap, i, holder, supplier, list, f, g)
         );
     }
 
