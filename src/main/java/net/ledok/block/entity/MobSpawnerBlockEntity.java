@@ -43,6 +43,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -188,8 +190,17 @@ public class MobSpawnerBlockEntity extends BlockEntity implements ExtendedScreen
                         });
                     }
                 }
-                // Heal to max health after setting attributes
                 livingMob.heal(livingMob.getMaxHealth());
+
+                if (!this.groupId.isEmpty()) {
+                    Scoreboard scoreboard = world.getScoreboard();
+                    PlayerTeam team = scoreboard.getPlayerTeam(this.groupId);
+                    if (team == null) {
+                        team = scoreboard.addPlayerTeam(this.groupId);
+                        team.setAllowFriendlyFire(false);
+                    }
+                    scoreboard.addPlayerToTeam(livingMob.getScoreboardName(), team);
+                }
 
                 double x = spawnCenter.getX() + 0.5 + (world.random.nextDouble() - 0.5) * mobSpread * 2;
                 double y = spawnCenter.getY() + 1;
