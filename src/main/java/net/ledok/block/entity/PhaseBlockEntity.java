@@ -11,16 +11,16 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class PhaseBlockEntity extends BlockEntity {
     private String groupId = "";
+    private boolean firstTick = true;
 
     public PhaseBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntitiesRegistry.PHASE_BLOCK_ENTITY, pos, state);
     }
 
-    @Override
-    public void setLevel(Level level) {
-        super.setLevel(level);
-        if (!level.isClientSide()) {
-            YggdrasilLdMod.PHASE_BLOCK_MANAGER.register(this);
+    public static void tick(Level world, BlockPos pos, BlockState state, PhaseBlockEntity be) {
+        if (be.firstTick && !world.isClientSide()) {
+            YggdrasilLdMod.PHASE_BLOCK_MANAGER.register(be);
+            be.firstTick = false;
         }
     }
 
@@ -49,7 +49,13 @@ public class PhaseBlockEntity extends BlockEntity {
     }
 
     public void setGroupId(String groupId) {
+        if (this.level != null && !this.level.isClientSide()) {
+            YggdrasilLdMod.PHASE_BLOCK_MANAGER.unregister(this);
+        }
         this.groupId = groupId;
+        if (this.level != null && !this.level.isClientSide()) {
+            YggdrasilLdMod.PHASE_BLOCK_MANAGER.register(this);
+        }
         setChanged();
     }
 }

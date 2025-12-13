@@ -30,7 +30,7 @@ public class BlockRegistry {
             new MobSpawnerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPAWNER).strength(-1.0f, 3600000.0f)));
 
     public static final Block PHASE_BLOCK = registerBlock("phase_block",
-            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion().strength(-1.0f, 3600000.0f)));
+            new PhaseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).noOcclusion().strength(-1.0f, 3600000.0f)));
 
 
     private static Block registerBlock(String name, Block block) {
