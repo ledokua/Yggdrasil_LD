@@ -141,5 +141,6 @@
   "message.yggdrasil_ld.shop.claim_suffix": " або використайте /shop-receive.",
   "message.yggdrasil_ld.shop.no_items": "Немає нових предметів для отримання.",
   "message.yggdrasil_ld.shop.found_items": "Знайдено %s предметів для отримання! Доставляємо...",
-  "message.yggdrasil_ld.shop.error": "Помилка перевірки предметів. Будь ласка, спробуйте пізніше."
+  "message.yggdrasil_ld.shop.error": "Помилка перевірки предметів. Будь ласка, спробуйте пізніше.",
+  "block.yggdrasil_ld.phase_block": "Бар'єр"
 }
