@@ -1,6 +1,5 @@
 package net.ledok.block.entity;
 
-import com.mojang.brigadier.ParseResults;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.ledok.YggdrasilLdMod;
@@ -11,7 +10,6 @@ import net.ledok.screen.MobSpawnerScreenHandler;
 import net.ledok.util.AttributeData;
 import net.ledok.util.AttributeProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
