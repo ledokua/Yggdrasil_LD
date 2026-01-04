@@ -121,7 +121,6 @@
   "command.yggdrasil_ld.leaderboard.empty": "No players found for this leaderboard.",
   "command.yggdrasil_ld.tozero.success": "Moved %s's reputation %d%% closer to zero. New reputation: %d",
   "command.yggdrasil_ld.tozero.already_zero": "%s's reputation is already 0.",
-
   "item.yggdrasil_ld.healing_potion.tooltip.reset_scroll": "Resets your skill tree (You don't loose points)",
   "item.yggdrasil_ld.healing_potion.tooltip.dripstone": "Creates pointed dripstone above random player",
   "item.yggdrasil_ld.healing_potion.tooltip": "Heals for: %1$s\nUse Time: %2$s seconds\nCooldown: %3$s seconds",
