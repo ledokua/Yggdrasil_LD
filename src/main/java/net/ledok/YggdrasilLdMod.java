@@ -11,13 +11,11 @@ import net.ledok.command.ShopCommand;
 import net.ledok.config.ModConfigs;
 import net.ledok.event.ElytraBoostDisabler;
 import net.ledok.event.ReputationTicker;
-import net.ledok.manager.PhaseBlockManager;
 import net.ledok.minestar.ShopCompatibility;
 import net.ledok.networking.ModPackets;
 import net.ledok.prime.PrimeRoleHandler;
 import net.ledok.registry.*;
 import net.ledok.reputation.ReputationManager;
-import net.ledok.screen.ModScreenHandlers;
 import net.ledok.util.BossDataComponent;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
@@ -28,7 +26,6 @@ public class YggdrasilLdMod implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static ModConfigs CONFIG;
-    public static final PhaseBlockManager PHASE_BLOCK_MANAGER = new PhaseBlockManager();
 
     @Override
     public void onInitialize() {
@@ -37,9 +34,7 @@ public class YggdrasilLdMod implements ModInitializer {
         ArmorMaterialRegistry.initialize();
         ItemRegistry.initialize();
         ArmorRegistry.initialize();
-        BlockRegistry.initialize();
-        BlockEntitiesRegistry.initialize();
-        ModScreenHandlers.initialize();
+        CreativeTabRegistry.initialize();
         ModPackets.registerC2SPackets();
         ModPackets.registerS2CPackets();
         BossDataComponent.initialize();
@@ -55,7 +50,6 @@ public class YggdrasilLdMod implements ModInitializer {
         ReputationTicker.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            PHASE_BLOCK_MANAGER.start();
             if (server.isDedicatedServer()) {
                 PrimeRoleHandler.register();
             }

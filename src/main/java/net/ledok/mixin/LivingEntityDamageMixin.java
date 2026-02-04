@@ -1,6 +1,5 @@
 package net.ledok.mixin;
 
-import net.ledok.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,12 +20,6 @@ public abstract class LivingEntityDamageMixin {
         LivingEntity target = (LivingEntity) (Object) this;
         // In Mojang mappings, isClient() is now isClientSide()
         if (!level().isClientSide() && source.getEntity() != null) {
-            // Find nearby mob arenas using a modern streaming method
-            BlockPos.withinManhattanStream(target.blockPosition(), 128, 128, 128).forEach(pos -> {
-                if (level().getBlockEntity(pos) instanceof MobSpawnerBlockEntity spawner) {
-                    spawner.onMobDamaged(source, amount);
-                }
-            });
         }
     }
 }

@@ -19,7 +19,8 @@
       "net.ledok.YggdrasilLdMod"
     ],
     "client": [
-      "net.ledok.client.YggdrasilLdClient"
+      "net.ledok.client.YggdrasilLdClient",
+      "net.ledok.YggdrasilLdClientMod"
     ]
   },
   "mixins": [

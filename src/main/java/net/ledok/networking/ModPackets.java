@@ -3,8 +3,6 @@ package net.ledok.networking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.ledok.YggdrasilLdMod;
-import net.ledok.block.entity.BossSpawnerBlockEntity;
-import net.ledok.block.entity.MobSpawnerBlockEntity;
 import net.ledok.util.AttributeData;
 import net.ledok.util.AttributeProvider;
 import net.minecraft.core.BlockPos;
@@ -157,47 +155,6 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(UpdateMobSpawnerPayload.TYPE, UpdateMobSpawnerPayload.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateAttributesPayload.TYPE, UpdateAttributesPayload.STREAM_CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(UpdateBossSpawnerPayload.TYPE, (payload, context) -> {
-            context.server().execute(() -> {
-                Level world = context.player().level();
-                if (world.getBlockEntity(payload.pos()) instanceof BossSpawnerBlockEntity blockEntity) {
-                    blockEntity.mobId = payload.mobId();
-                    blockEntity.respawnTime = payload.respawnTime();
-                    blockEntity.portalActiveTime = payload.portalTime();
-                    blockEntity.lootTableId = payload.lootTable();
-                    blockEntity.exitPortalCoords = payload.exitCoords();
-                    blockEntity.enterPortalSpawnCoords = payload.enterSpawnCoords();
-                    blockEntity.enterPortalDestCoords = payload.enterDestCoords();
-                    blockEntity.triggerRadius = payload.triggerRadius();
-                    blockEntity.battleRadius = payload.battleRadius();
-                    blockEntity.regeneration = payload.regeneration();
-                    blockEntity.minPlayers = payload.minPlayers();
-                    blockEntity.skillExperiencePerWin = payload.skillExperiencePerWin();
-                    blockEntity.setChanged();
-                    world.sendBlockUpdated(payload.pos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
-                }
-            });
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UpdateMobSpawnerPayload.TYPE, (payload, context) -> {
-            context.server().execute(() -> {
-                Level world = context.player().level();
-                if (world.getBlockEntity(payload.pos()) instanceof MobSpawnerBlockEntity blockEntity) {
-                    blockEntity.mobId = payload.mobId();
-                    blockEntity.respawnTime = payload.respawnTime();
-                    blockEntity.lootTableId = payload.lootTable();
-                    blockEntity.triggerRadius = payload.triggerRadius();
-                    blockEntity.battleRadius = payload.battleRadius();
-                    blockEntity.regeneration = payload.regeneration();
-                    blockEntity.skillExperiencePerWin = payload.skillExperience();
-                    blockEntity.mobCount = payload.mobCount();
-                    blockEntity.mobSpread = payload.mobSpread();
-                    blockEntity.groupId = payload.groupId();
-                    blockEntity.setChanged();
-                    world.sendBlockUpdated(payload.pos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
-                }
-            });
-        });
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateAttributesPayload.TYPE, (payload, context) -> {
             context.server().execute(() -> {

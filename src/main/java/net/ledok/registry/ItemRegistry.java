@@ -32,31 +32,84 @@ public class ItemRegistry {
             "dripstone_scroll"
     );
 
-    // HEALING POTIONS
-    public static final Item HEALING_POTION_1 = ItemInit.register(
-            new PercentageHealItem(new Item.Properties().stacksTo(8), 0.1f, 20, 120),
-            "healing_potion_1"
+    public static final Item ANCIENT_ICE_SHARD = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "ancient_ice_shard"
     );
-    public static final Item HEALING_POTION_2 = ItemInit.register(
-            new PercentageHealItem(new Item.Properties().stacksTo(16), 0.25f, 40, 900),
-            "healing_potion_2"
+
+    public static final Item NETHERITE_BOTTLE = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "netherite_bottle"
     );
-    public static final Item HEALING_POTION_3 = ItemInit.register(
-            new PercentageHealItem(new Item.Properties().stacksTo(16), 0.35f, 35, 1200),
-            "healing_potion_3"
+
+    public static final Item BAT_WING = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "bat_wing"
     );
-    public static final Item HEALING_POTION_4 = ItemInit.register(
-            new PercentageHealItem(new Item.Properties().stacksTo(16), 0.5f, 30, 1600),
-            "healing_potion_4"
+
+    public static final Item BLOOD_IN_A_BOTTLE = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "blood_in_a_bottle"
     );
-    public static final Item HEALING_POTION_5 = ItemInit.register(
-            new PercentageHealItem(new Item.Properties().stacksTo(16), 0.75f, 25, 3400),
-            "healing_potion_5"
+
+    public static final Item BINDING_CHAIN = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "binding_chain"
     );
-    public static final Item HEALING_POTION_6 = ItemInit.register(
-            // healPercentage: 100%, useTimeTicks: 0.25s, cooldownTicks: 10m
-            new PercentageHealItem(new Item.Properties().stacksTo(1), 1f, 5, 12000),
-            "healing_potion_6"
+
+    public static final Item CURSED_SKULL = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "cursed_skull"
+    );
+
+    public static final Item ENT_ROOT = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "ent_root"
+    );
+
+    public static final Item SACRED_LEAF = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "sacred_leaf"
+    );
+
+    public static final Item REDSTONE_CRYSTAL = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "redstone_crystal"
+    );
+
+    public static final Item WITHERED_VINE = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "withered_vine"
+    );
+
+    public static final Item PILE_OF_ASH = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "pile_of_ash"
+    );
+
+    public static final Item PURE_GOLD_INGOT = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "pure_gold_ingot"
+    );
+
+    public static final Item HOLY_WATER_FLASK = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "holy_water_flask"
+    );
+
+    public static final Item NETHERITE_BOWL = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "netherite_bowl"
+    );
+
+    public static final Item RARE_CARROT = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "rare_carrot"
+    );
+
+    public static final Item RARE_MEAT = ItemInit.register(
+            new SimpleItem(new Item.Properties()),
+            "rare_meat"
     );
 
     // XP ITEMS
