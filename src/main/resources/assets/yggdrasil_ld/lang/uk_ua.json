@@ -117,8 +117,8 @@
   "item.yggdrasil_ld.xp_item_4": "Зілля досвіду 4",
   "item.yggdrasil_ld.xp_item_5": "Зілля досвіду 5",
 
-  "itemGroup.yggdrasil_ld.items": "Предмети Yggdrasil",
-  "itemGroup.yggdrasil_ld.lootboxes": "Скрині Yggdrasil",
+  "itemGroup.yggdrasil_ld.main": "Предмети Yggdrasil",
+  "tooltip.yggdrasil_ld.loot_box.contains": "При використанні ви отримаєте предмети з:",
 
   "block.yggdrasil_ld.boss_spawner": "Викликач рейд босса",
   "block.yggdrasil_ld.mob_spawner": "Викликач мобів",

@@ -117,8 +117,7 @@
   "item.yggdrasil_ld.xp_item_4": "Potion of experience 4",
   "item.yggdrasil_ld.xp_item_5": "Potion of experience 5",
 
-  "itemGroup.yggdrasil_ld.items": "Yggdrasil Items",
-  "itemGroup.yggdrasil_ld.lootboxes": "Yggdrasil Lootboxes",
+  "itemGroup.yggdrasil_ld.main": "Yggdrasil Items",
   "tooltip.yggdrasil_ld.loot_box.contains": "Contains loot from:",
 
   "dungeon.temple_dungeon_yggdrasil": "Temple dungeon",
