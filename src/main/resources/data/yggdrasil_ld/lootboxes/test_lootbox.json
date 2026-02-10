@@ -1,0 +1,7 @@
+{
+  "id": "test_lootbox",
+  "name": "Test Lootbox",
+  "loot_table_id": "minecraft:chests/ancient_city",
+  "color": "#FFD700",
+  "glow": false
+}

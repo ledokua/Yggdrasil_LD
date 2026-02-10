@@ -10,10 +10,11 @@ import net.minecraft.world.item.ItemStack;
 
 public class CreativeTabRegistry {
 
-    public static final CreativeModeTab YGGDRASIL_ITEMS_TAB = CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-            .title(Component.translatable("itemGroup.yggdrasil_ld.items"))
+    public static final CreativeModeTab YGGDRASIL_TAB = CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
+            .title(Component.translatable("itemGroup.yggdrasil_ld.main"))
             .icon(() -> new ItemStack(ItemRegistry.ICON))
             .displayItems((displayParameters, output) -> {
+                // Regular Items
                 output.accept(new ItemStack(ItemRegistry.ANCIENT_ICE_SHARD));
                 output.accept(new ItemStack(ItemRegistry.NETHERITE_BOTTLE));
                 output.accept(new ItemStack(ItemRegistry.BAT_WING));
@@ -38,9 +39,12 @@ public class CreativeTabRegistry {
                 output.accept(new ItemStack(ItemRegistry.XP_ITEM_3));
                 output.accept(new ItemStack(ItemRegistry.XP_ITEM_4));
                 output.accept(new ItemStack(ItemRegistry.XP_ITEM_5));
+                
+                // Loot Boxes
+                output.acceptAll(LootBoxRegistry.getAllLootBoxes());
             }).build();
 
     public static void initialize() {
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "items"), YGGDRASIL_ITEMS_TAB);
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "main"), YGGDRASIL_TAB);
     }
 }

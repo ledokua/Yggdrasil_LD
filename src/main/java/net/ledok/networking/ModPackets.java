@@ -3,6 +3,7 @@ package net.ledok.networking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.ledok.YggdrasilLdMod;
+import net.ledok.registry.LootBoxDefinition;
 import net.ledok.util.AttributeData;
 import net.ledok.util.AttributeProvider;
 import net.minecraft.core.BlockPos;
@@ -31,6 +32,38 @@ public class ModPackets {
         public void write(FriendlyByteBuf buf) {
             buf.writeUUID(playerUuid);
             buf.writeInt(reputation);
+        }
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record SyncLootBoxesPayload(List<LootBoxDefinition> definitions) implements CustomPacketPayload {
+        public static final Type<SyncLootBoxesPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(YggdrasilLdMod.MOD_ID, "sync_loot_boxes"));
+
+        public static final StreamCodec<FriendlyByteBuf, SyncLootBoxesPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> payload.write(buf), SyncLootBoxesPayload::new);
+
+        public SyncLootBoxesPayload(FriendlyByteBuf buf) {
+            this(buf.readList(b -> new LootBoxDefinition(
+                    b.readUtf(),
+                    b.readUtf(),
+                    b.readUtf(),
+                    b.readInt(),
+                    b.readBoolean()
+            )));
+        }
+
+        public void write(FriendlyByteBuf buf) {
+            buf.writeCollection(definitions, (b, def) -> {
+                b.writeUtf(def.id());
+                b.writeUtf(def.name());
+                b.writeUtf(def.lootTableId());
+                b.writeInt(def.color());
+                b.writeBoolean(def.glow());
+            });
         }
 
         @Override
@@ -148,6 +181,7 @@ public class ModPackets {
 
     public static void registerS2CPackets() {
         PayloadTypeRegistry.playS2C().register(ReputationSyncPayload.TYPE, ReputationSyncPayload.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SyncLootBoxesPayload.TYPE, SyncLootBoxesPayload.STREAM_CODEC);
     }
 
     public static void registerC2SPackets() {

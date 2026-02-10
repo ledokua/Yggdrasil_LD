@@ -31,9 +31,15 @@ public class YggdrasilLdMod implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Yggdrasil LD has been initialized!");
         CONFIG = ModConfigs.load();
+        
+        // Initialize Data Components FIRST
+        ModDataComponents.initialize();
+        
         ArmorMaterialRegistry.initialize();
         ItemRegistry.initialize();
         ArmorRegistry.initialize();
+        LootBoxRegistry.initialize();
+        LootBoxRegistry.initializeServer(); // Load definitions from data packs
         CreativeTabRegistry.initialize();
         ModPackets.registerC2SPackets();
         ModPackets.registerS2CPackets();
@@ -61,8 +67,19 @@ public class YggdrasilLdMod implements ModInitializer {
                 for (ServerPlayer onlinePlayer : server.getPlayerList().getPlayers()) {
                     ReputationManager.syncReputationWithAll(server, onlinePlayer);
                 }
+                // Sync loot boxes to the new player
+                LootBoxRegistry.syncToClient(handler.getPlayer());
             });
             ShopCompatibility.notifyOnJoin(handler.getPlayer());
+        });
+        
+        // Re-sync on reload
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+            if (success) {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                    LootBoxRegistry.syncToClient(player);
+                }
+            }
         });
     }
 }

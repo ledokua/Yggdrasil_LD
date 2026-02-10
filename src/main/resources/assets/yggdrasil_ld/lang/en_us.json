@@ -119,6 +119,7 @@
 
   "itemGroup.yggdrasil_ld.items": "Yggdrasil Items",
   "itemGroup.yggdrasil_ld.lootboxes": "Yggdrasil Lootboxes",
+  "tooltip.yggdrasil_ld.loot_box.contains": "Contains loot from:",
 
   "dungeon.temple_dungeon_yggdrasil": "Temple dungeon",
   "dungeon.dark_dungeon_yggdrasil": "Dark dungeon",

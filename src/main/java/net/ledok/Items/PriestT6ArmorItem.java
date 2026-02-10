@@ -24,7 +24,6 @@ public final class PriestT6ArmorItem extends ArmorItem implements GeoItem {
         super(armorMaterial, type, properties);
     }
 
-    // Create our armor model/renderer for Fabric and return it
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
