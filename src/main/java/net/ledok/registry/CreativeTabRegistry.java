@@ -15,6 +15,15 @@ public class CreativeTabRegistry {
             .icon(() -> new ItemStack(ItemRegistry.ICON))
             .displayItems((displayParameters, output) -> {
                 // Regular Items
+                output.accept(new ItemStack(ItemRegistry.RESET_SCROLL));
+                output.accept(new ItemStack(ItemRegistry.ESCAPE_SCROLL));
+                output.accept(new ItemStack(ItemRegistry.DRIPSTONE_SCROLL));
+                output.accept(new ItemStack(ItemRegistry.XP_ITEM_1));
+                output.accept(new ItemStack(ItemRegistry.XP_ITEM_2));
+                output.accept(new ItemStack(ItemRegistry.XP_ITEM_3));
+                output.accept(new ItemStack(ItemRegistry.XP_ITEM_4));
+                output.accept(new ItemStack(ItemRegistry.XP_ITEM_5));
+
                 output.accept(new ItemStack(ItemRegistry.ANCIENT_ICE_SHARD));
                 output.accept(new ItemStack(ItemRegistry.NETHERITE_BOTTLE));
                 output.accept(new ItemStack(ItemRegistry.BAT_WING));
@@ -31,14 +40,26 @@ public class CreativeTabRegistry {
                 output.accept(new ItemStack(ItemRegistry.NETHERITE_BOWL));
                 output.accept(new ItemStack(ItemRegistry.RARE_CARROT));
                 output.accept(new ItemStack(ItemRegistry.RARE_MEAT));
-                output.accept(new ItemStack(ItemRegistry.RESET_SCROLL));
-                output.accept(new ItemStack(ItemRegistry.ESCAPE_SCROLL));
-                output.accept(new ItemStack(ItemRegistry.DRIPSTONE_SCROLL));
-                output.accept(new ItemStack(ItemRegistry.XP_ITEM_1));
-                output.accept(new ItemStack(ItemRegistry.XP_ITEM_2));
-                output.accept(new ItemStack(ItemRegistry.XP_ITEM_3));
-                output.accept(new ItemStack(ItemRegistry.XP_ITEM_4));
-                output.accept(new ItemStack(ItemRegistry.XP_ITEM_5));
+
+                output.accept(new ItemStack(ItemRegistry.STONE_REINFORCED_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.STONE_REINFORCED_HAMMER));
+                output.accept(new ItemStack(ItemRegistry.STONE_IMPACT_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.STONE_HEAD_IRON));
+                output.accept(new ItemStack(ItemRegistry.REINFORCED_HAMMER_HANDLE));
+                output.accept(new ItemStack(ItemRegistry.NETHERITE_REINFORCED_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.NETHERITE_IMPACT_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.IRON_REINFORCED_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.IRON_IMPACT_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.IMPACT_HAMMER_HANDLE));
+                output.accept(new ItemStack(ItemRegistry.HAMMER_HANDLE));
+                output.accept(new ItemStack(ItemRegistry.HAMMER_HEAD_NETHERITE));
+                output.accept(new ItemStack(ItemRegistry.HAMMER_HEAD_IRON));
+                output.accept(new ItemStack(ItemRegistry.HAMMER_HEAD_DIAMOND));
+                output.accept(new ItemStack(ItemRegistry.GOLD_REINFORCED_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.GOLD_IMPACT_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.GOLD_HEAD_NETHERITE));
+                output.accept(new ItemStack(ItemRegistry.DIAMOND_REINFORCED_HAMMER_HEAD));
+                output.accept(new ItemStack(ItemRegistry.DIAMOND_IMPACT_HAMMER_HEAD));
                 
                 // Loot Boxes
                 output.acceptAll(LootBoxRegistry.getAllLootBoxes());

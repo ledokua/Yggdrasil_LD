@@ -19,98 +19,46 @@ public class ItemRegistry {
             },
             "icon"
     );
-    public static final Item RESET_SCROLL = ItemInit.register(
-            new SkillResetItem(new Item.Properties().stacksTo(16)),
-            "reset_scroll"
-    );
-    public static final Item ESCAPE_SCROLL = ItemInit.register(
-            new DungeonLeaveItem(new Item.Properties().stacksTo(1)),
-            "escape_scroll"
-    );
-    public static final Item DRIPSTONE_SCROLL = ItemInit.register(
-            new RandomDripstoneItem(new Item.Properties().stacksTo(1)),
-            "dripstone_scroll"
-    );
+    public static final Item RESET_SCROLL = ItemInit.register(new SkillResetItem(new Item.Properties().stacksTo(16)), "reset_scroll");
+    public static final Item ESCAPE_SCROLL = ItemInit.register(new DungeonLeaveItem(new Item.Properties().stacksTo(1)), "escape_scroll");
+    public static final Item DRIPSTONE_SCROLL = ItemInit.register(new RandomDripstoneItem(new Item.Properties().stacksTo(1)), "dripstone_scroll");
 
-    public static final Item ANCIENT_ICE_SHARD = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "ancient_ice_shard"
-    );
+    public static final Item ANCIENT_ICE_SHARD = ItemInit.register(new SimpleItem(new Item.Properties()), "ancient_ice_shard");
+    public static final Item NETHERITE_BOTTLE = ItemInit.register(new SimpleItem(new Item.Properties()), "netherite_bottle");
+    public static final Item BAT_WING = ItemInit.register(new SimpleItem(new Item.Properties()), "bat_wing");
+    public static final Item BLOOD_IN_A_BOTTLE = ItemInit.register(new SimpleItem(new Item.Properties()), "blood_in_a_bottle");
+    public static final Item BINDING_CHAIN = ItemInit.register(new SimpleItem(new Item.Properties()), "binding_chain");
+    public static final Item CURSED_SKULL = ItemInit.register(new SimpleItem(new Item.Properties()), "cursed_skull");
+    public static final Item ENT_ROOT = ItemInit.register(new SimpleItem(new Item.Properties()), "ent_root");
+    public static final Item SACRED_LEAF = ItemInit.register(new SimpleItem(new Item.Properties()), "sacred_leaf");
+    public static final Item REDSTONE_CRYSTAL = ItemInit.register(new SimpleItem(new Item.Properties()), "redstone_crystal");
+    public static final Item WITHERED_VINE = ItemInit.register(new SimpleItem(new Item.Properties()), "withered_vine");
+    public static final Item PILE_OF_ASH = ItemInit.register(new SimpleItem(new Item.Properties()), "pile_of_ash");
+    public static final Item PURE_GOLD_INGOT = ItemInit.register(new SimpleItem(new Item.Properties()), "pure_gold_ingot");
+    public static final Item HOLY_WATER_FLASK = ItemInit.register(new SimpleItem(new Item.Properties()), "holy_water_flask");
+    public static final Item NETHERITE_BOWL = ItemInit.register(new SimpleItem(new Item.Properties()), "netherite_bowl");
+    public static final Item RARE_CARROT = ItemInit.register(new SimpleItem(new Item.Properties()), "rare_carrot");
+    public static final Item RARE_MEAT = ItemInit.register(new SimpleItem(new Item.Properties()), "rare_meat");
 
-    public static final Item NETHERITE_BOTTLE = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "netherite_bottle"
-    );
-
-    public static final Item BAT_WING = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "bat_wing"
-    );
-
-    public static final Item BLOOD_IN_A_BOTTLE = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "blood_in_a_bottle"
-    );
-
-    public static final Item BINDING_CHAIN = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "binding_chain"
-    );
-
-    public static final Item CURSED_SKULL = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "cursed_skull"
-    );
-
-    public static final Item ENT_ROOT = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "ent_root"
-    );
-
-    public static final Item SACRED_LEAF = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "sacred_leaf"
-    );
-
-    public static final Item REDSTONE_CRYSTAL = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "redstone_crystal"
-    );
-
-    public static final Item WITHERED_VINE = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "withered_vine"
-    );
-
-    public static final Item PILE_OF_ASH = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "pile_of_ash"
-    );
-
-    public static final Item PURE_GOLD_INGOT = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "pure_gold_ingot"
-    );
-
-    public static final Item HOLY_WATER_FLASK = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "holy_water_flask"
-    );
-
-    public static final Item NETHERITE_BOWL = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "netherite_bowl"
-    );
-
-    public static final Item RARE_CARROT = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "rare_carrot"
-    );
-
-    public static final Item RARE_MEAT = ItemInit.register(
-            new SimpleItem(new Item.Properties()),
-            "rare_meat"
-    );
+    public static final Item STONE_REINFORCED_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "stone_reinforced_hammer_head");
+    public static final Item STONE_REINFORCED_HAMMER = ItemInit.register(new SimpleItem(new Item.Properties()), "stone_reinforced_hammer");
+    public static final Item STONE_IMPACT_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "stone_impact_hammer_head");
+    public static final Item STONE_HEAD_IRON = ItemInit.register(new SimpleItem(new Item.Properties()), "stone_head_iron");
+    public static final Item REINFORCED_HAMMER_HANDLE = ItemInit.register(new SimpleItem(new Item.Properties()), "reinforced_hammer_handle");
+    public static final Item NETHERITE_REINFORCED_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "netherite_reinforced_hammer_head");
+    public static final Item NETHERITE_IMPACT_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "netherite_impact_hammer_head");
+    public static final Item IRON_REINFORCED_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "iron_reinforced_hammer_head");
+    public static final Item IRON_IMPACT_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "iron_impact_hammer_head");
+    public static final Item IMPACT_HAMMER_HANDLE = ItemInit.register(new SimpleItem(new Item.Properties()), "impact_hammer_handle");
+    public static final Item HAMMER_HANDLE = ItemInit.register(new SimpleItem(new Item.Properties()), "hammer_handle");
+    public static final Item HAMMER_HEAD_NETHERITE = ItemInit.register(new SimpleItem(new Item.Properties()), "hammer_head_netherite");
+    public static final Item HAMMER_HEAD_IRON = ItemInit.register(new SimpleItem(new Item.Properties()), "hammer_head_iron");
+    public static final Item HAMMER_HEAD_DIAMOND = ItemInit.register(new SimpleItem(new Item.Properties()), "hammer_head_diamond");
+    public static final Item GOLD_REINFORCED_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "gold_reinforced_hammer_head");
+    public static final Item GOLD_IMPACT_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "gold_impact_hammer_head");
+    public static final Item GOLD_HEAD_NETHERITE = ItemInit.register(new SimpleItem(new Item.Properties()), "gold_head_netherite");
+    public static final Item DIAMOND_REINFORCED_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "diamond_reinforced_hammer_head");
+    public static final Item DIAMOND_IMPACT_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "diamond_impact_hammer_head");
 
     // XP ITEMS
     public static final Item XP_ITEM_1 = ItemInit.register(
