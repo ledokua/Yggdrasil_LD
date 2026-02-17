@@ -60,7 +60,8 @@ public class CreativeTabRegistry {
                 output.accept(new ItemStack(ItemRegistry.GOLD_HEAD_NETHERITE));
                 output.accept(new ItemStack(ItemRegistry.DIAMOND_REINFORCED_HAMMER_HEAD));
                 output.accept(new ItemStack(ItemRegistry.DIAMOND_IMPACT_HAMMER_HEAD));
-                
+
+                output.accept(new ItemStack(ItemRegistry.LIQUID_MANA_BUCKET));
                 // Loot Boxes
                 output.acceptAll(LootBoxRegistry.getAllLootBoxes());
             }).build();

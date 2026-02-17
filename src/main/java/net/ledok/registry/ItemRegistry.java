@@ -5,8 +5,10 @@ import net.ledok.YggdrasilLdMod;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 @SuppressWarnings("unused")
 public class ItemRegistry {
@@ -39,6 +41,7 @@ public class ItemRegistry {
     public static final Item NETHERITE_BOWL = ItemInit.register(new SimpleItem(new Item.Properties()), "netherite_bowl");
     public static final Item RARE_CARROT = ItemInit.register(new SimpleItem(new Item.Properties()), "rare_carrot");
     public static final Item RARE_MEAT = ItemInit.register(new SimpleItem(new Item.Properties()), "rare_meat");
+    public static final Item LIQUID_MANA_BUCKET = ItemInit.register(new BucketItem(FluidRegistry.STILL_LIQUID_MANA, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)), "liquid_mana_bucket");
 
     public static final Item STONE_REINFORCED_HAMMER_HEAD = ItemInit.register(new SimpleItem(new Item.Properties()), "stone_reinforced_hammer_head");
     public static final Item STONE_REINFORCED_HAMMER = ItemInit.register(new SimpleItem(new Item.Properties()), "stone_reinforced_hammer");

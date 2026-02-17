@@ -38,6 +38,8 @@ public class YggdrasilLdMod implements ModInitializer {
         ArmorMaterialRegistry.initialize();
         ItemRegistry.initialize();
         ArmorRegistry.initialize();
+        FluidRegistry.initialize();
+        BlockRegistry.initialize();
         LootBoxRegistry.initialize();
         LootBoxRegistry.initializeServer(); // Load definitions from data packs
         CreativeTabRegistry.initialize();

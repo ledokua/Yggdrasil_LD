@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "yggdrasil_ld:liquid_mana",
+    "yggdrasil_ld:flowing_liquid_mana"
+  ]
+}
