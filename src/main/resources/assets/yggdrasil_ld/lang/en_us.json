@@ -576,6 +576,8 @@
   "attribute.yggdrasil_ld.spell_engine_evasion_chance_mulb_1.description": "§7+2% Evasion Chance",
   "attribute.yggdrasil_ld.spell_engine_evasion_chance_mulb_2.description": "§7+5% Evasion Chance",
   "attribute.yggdrasil_ld.spell_engine_evasion_chance_mulb_3.description": "§7+8% Evasion Chance",
+
+
   "attribute.yggdrasil_ld.spell_power_critical_chance_add_1.description": "§7+1% Spell Critical Chance",
   "attribute.yggdrasil_ld.spell_power_critical_chance_add_2.description": "§7+2% Spell Critical Chance",
   "attribute.yggdrasil_ld.spell_power_critical_chance_add_3.description": "§7+5% Spell Critical Chance",
@@ -588,6 +590,8 @@
   "attribute.yggdrasil_ld.spell_power_haste_mulb_1.description": "§7+2% Spell Haste",
   "attribute.yggdrasil_ld.spell_power_haste_mulb_2.description": "§7+6% Spell Haste",
   "attribute.yggdrasil_ld.spell_power_haste_mulb_3.description": "§7+12% Spell Haste",
+
+
   "attribute.yggdrasil_ld.spell_power_generic_add_1.description": "§7+1 Spell Power",
   "attribute.yggdrasil_ld.spell_power_generic_mulb_1.description": "§7+1% Spell Power",
   "attribute.yggdrasil_ld.spell_power_generic_mulb_2.description": "§7+5% Spell Power",
@@ -662,6 +666,7 @@
   "attribute.yggdrasil_ld.t1_warrior.description": "§7+7% Total Attack Damage, +7% Total Armor, +40% Total Health",
   "attribute.yggdrasil_ld.t1_rogue.title": "§7Rogue",
   "attribute.yggdrasil_ld.t1_rogue.description": "§7+8% Attack Speed, +3% Critical Strike Chance, +10% Sneaking Speed, +30% Total Health",
+
   "attribute.yggdrasil_ld.t2_fire_wizard.title": "§cFire Wizard II",
   "attribute.yggdrasil_ld.t2_fire_wizard.description": "§7+6 Fire Power, +7% Spell Critical Damage, +20% Fire Power, +20% Total Health",
   "attribute.yggdrasil_ld.t2_frost_wizard.title": "§bFrost Wizard II",
@@ -686,28 +691,29 @@
   "attribute.yggdrasil_ld.t2_warrior.description": "§7+9% Total Attack Damage, +9% Total Armor, +40% Total Health",
   "attribute.yggdrasil_ld.t2_rogue.title": "§7Rogue II",
   "attribute.yggdrasil_ld.t2_rogue.description": "§7+10% Attack Speed, +4% Critical Strike Chance, +12% Sneaking Speed, +30% Total Health",
+
   "attribute.yggdrasil_ld.t3_fire_wizard.title": "§6Fire Wizard III",
-  "attribute.yggdrasil_ld.t3_fire_wizard.description": "§7Advanced Fire Wizard mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_fire_wizard.description": "§7+7 Fire Power, +9% Crit Damage, +22% Fire Power, +20% Max Health",
   "attribute.yggdrasil_ld.t3_frost_wizard.title": "§6Frost Wizard III",
-  "attribute.yggdrasil_ld.t3_frost_wizard.description": "§7Advanced Frost Wizard mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_frost_wizard.description": "§7+7 Frost Power, +20% Max Health, +22% Frost Power, +20% Max Health",
   "attribute.yggdrasil_ld.t3_arcane_wizard.title": "§6Arcane Wizard III",
-  "attribute.yggdrasil_ld.t3_arcane_wizard.description": "§7Advanced Arcane Wizard mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_arcane_wizard.description": "§7+7 Arcane Power, +9% Spell Haste, +22% Arcane Power, +20% Max Health",
   "attribute.yggdrasil_ld.t3_air_wizard.title": "§6Air Wizard III",
-  "attribute.yggdrasil_ld.t3_air_wizard.description": "§7Advanced Air Wizard mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_air_wizard.description": "§7+7 Air Power, +22% Air Power, +20% Max Health",
   "attribute.yggdrasil_ld.t3_water_wizard.title": "§6Water Wizard III",
-  "attribute.yggdrasil_ld.t3_water_wizard.description": "§7Advanced Water Wizard mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_water_wizard.description": "§7+7 Water Power, +8% Healing Power, +22% Water Power, +20% Max Health",
   "attribute.yggdrasil_ld.t3_earth_wizard.title": "§6Earth Wizard III",
-  "attribute.yggdrasil_ld.t3_earth_wizard.description": "§7Advanced Earth Wizard mastery, +30% Total Health",
+  "attribute.yggdrasil_ld.t3_earth_wizard.description": "§7+7 Earth Power, +10% Armor, +22% Earth Power, +30% Max Health",
   "attribute.yggdrasil_ld.t3_archer.title": "§6Archer III",
-  "attribute.yggdrasil_ld.t3_archer.description": "§7Advanced Archer mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_archer.description": "§7+14% Ranged Damage, +4% Crit Chance, +20% Max Health",
   "attribute.yggdrasil_ld.t3_priest.title": "§6Priest III",
-  "attribute.yggdrasil_ld.t3_priest.description": "§7Advanced Priest mastery, +20% Total Health",
+  "attribute.yggdrasil_ld.t3_priest.description": "§7+6 Healing Power, +12% Healing, +22% Spell Power, +20% Max Health",
   "attribute.yggdrasil_ld.t3_paladin.title": "§6Paladin III",
-  "attribute.yggdrasil_ld.t3_paladin.description": "§7Advanced Paladin mastery, +40% Total Health",
+  "attribute.yggdrasil_ld.t3_paladin.description": "§7+12% Armor, +10% Healing Power, +40% Max Health",
   "attribute.yggdrasil_ld.t3_berserker.title": "§6Berserker III",
-  "attribute.yggdrasil_ld.t3_berserker.description": "§7Advanced Berserker mastery, +30% Total Health",
+  "attribute.yggdrasil_ld.t3_berserker.description": "§7+14% Attack Damage, +9% Attack Speed, +30% Max Health",
   "attribute.yggdrasil_ld.t3_warrior.title": "§6Warrior III",
-  "attribute.yggdrasil_ld.t3_warrior.description": "§7Advanced Warrior mastery, +40% Total Health",
+  "attribute.yggdrasil_ld.t3_warrior.description": "§7+11% Attack Damage, +11% Armor, +40% Max Health",
   "attribute.yggdrasil_ld.t3_rogue.title": "§6Rogue III",
-  "attribute.yggdrasil_ld.t3_rogue.description": "§7Advanced Rogue mastery, +30% Total Health"
+  "attribute.yggdrasil_ld.t3_rogue.description": "§7+12% Attack Speed, +5% Crit Chance, +14% Sneaking Speed, +30% Max Health"
 }
