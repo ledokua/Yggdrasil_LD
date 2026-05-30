@@ -1,5 +1,6 @@
 package net.ledok.Items;
 
+import net.ledok.compat.PuffishSkillsCompat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -10,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -26,9 +26,10 @@ public class SkillResetItem extends Item {
         if (!world.isClientSide && world instanceof ServerLevel serverLevel) {
             CommandSourceStack source = serverLevel.getServer().createCommandSourceStack();
             String playerName = user.getGameProfile().getName();
-            String command = String.format("puffish_skills skills reset %s puffish_skills:minestar", playerName);
-
-            serverLevel.getServer().getCommands().performPrefixedCommand(source, command);
+            PuffishSkillsCompat.getConfiguredSkillTreeIds().forEach(treeId -> {
+                String command = String.format("puffish_skills skills reset %s %s", playerName, treeId);
+                serverLevel.getServer().getCommands().performPrefixedCommand(source, command);
+            });
 
             if (!user.getAbilities().instabuild) {
                 user.getItemInHand(hand).shrink(1);

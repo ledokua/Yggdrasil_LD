@@ -8,22 +8,44 @@ import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.Experience;
 import net.puffish.skillsmod.api.SkillsAPI;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class PuffishSkillsCompat {
 
+    public static List<String> getConfiguredSkillTreeIds() {
+        return YggdrasilLdMod.CONFIG.getPuffishSkillsTreeIds();
+    }
+
+    public static Optional<String> getPrimarySkillTreeId() {
+        return getConfiguredSkillTreeIds().stream().findFirst();
+    }
+
+    public static String getXpSkillTreeId() {
+        return YggdrasilLdMod.CONFIG.getPuffishSkillsXpTreeId();
+    }
+
+    public static Stream<Category> getConfiguredSkillTrees() {
+        return getConfiguredSkillTreeIds().stream()
+                .map(ResourceLocation::tryParse)
+                .filter(resourceLocation -> resourceLocation != null)
+                .map(SkillsAPI::getCategory)
+                .flatMap(Optional::stream);
+    }
+
     /**
-     * Gets a player's total skill points from the configured skill tree.
+     * Gets a player's total skill points from the configured skill trees.
      * @param player The player to check.
-     * @return The player's total skill points, or 0 if the tree is not found.
+     * @return The player's total skill points, or 0 if no trees are found.
      */
     public static int getPlayerLevel(Player player) {
         if(!(player instanceof ServerPlayer serverPlayer)) {
             return 0;
         }
-        // Use the skill tree ID from the config file.
-        Optional<Category> skillTree = SkillsAPI.getCategory(ResourceLocation.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
-        return skillTree.map(tree -> tree.getPointsTotal(serverPlayer)).orElse(0);
+        return getConfiguredSkillTrees()
+                .mapToInt(tree -> tree.getPointsTotal(serverPlayer))
+                .sum();
     }
 
     /**
@@ -32,11 +54,10 @@ public class PuffishSkillsCompat {
      * @param amount The amount of experience to add.
      */
     public static void addExperience(ServerPlayer player, int amount) {
-        // Find the skill tree using the ID from your config file.
-        Optional<Category> skillTree = SkillsAPI.getCategory(ResourceLocation.tryParse(YggdrasilLdMod.CONFIG.puffish_skills_tree_id));
-
-        // If the category exists, get its experience handler and add the experience.
-        skillTree.ifPresent(category -> {
+        Optional.of(getXpSkillTreeId())
+                .map(ResourceLocation::tryParse)
+                .flatMap(SkillsAPI::getCategory)
+                .ifPresent(category -> {
             Optional<Experience> experienceHandler = category.getExperience();
             experienceHandler.ifPresent(exp -> exp.addTotal(player, amount));
         });

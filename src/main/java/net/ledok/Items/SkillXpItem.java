@@ -1,5 +1,6 @@
 package net.ledok.Items;
 
+import net.ledok.compat.PuffishSkillsCompat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -28,7 +29,8 @@ public class SkillXpItem extends Item {
         if (!world.isClientSide && world instanceof ServerLevel serverLevel) {
             CommandSourceStack source = serverLevel.getServer().createCommandSourceStack();
             String playerName = user.getGameProfile().getName();
-            String command = String.format("puffish_skills experience add %s puffish_skills:minestar %d", playerName, this.xpAmount);
+            String treeId = PuffishSkillsCompat.getXpSkillTreeId();
+            String command = String.format("puffish_skills experience add %s %s %d", playerName, treeId, this.xpAmount);
 
             serverLevel.getServer().getCommands().performPrefixedCommand(source, command);
 
