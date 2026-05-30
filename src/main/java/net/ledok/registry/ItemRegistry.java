@@ -65,44 +65,44 @@ public class ItemRegistry {
 
     // XP ITEMS
     public static final Item XP_ITEM_1 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),100),
+            new SkillXpItem(new Item.Properties().stacksTo(64),10),
             "xp_item_1"
     );
     @SuppressWarnings("unused")
     public static final Item XP_ITEM_2 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),200),
+            new SkillXpItem(new Item.Properties().stacksTo(64),15),
             "xp_item_2"
     );
     public static final Item XP_ITEM_3 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),300),
+            new SkillXpItem(new Item.Properties().stacksTo(64),20),
             "xp_item_3"
     );
     public static final Item XP_ITEM_4 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),400),
+            new SkillXpItem(new Item.Properties().stacksTo(64),25),
             "xp_item_4"
     );
     public static final Item XP_ITEM_5 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),500),
+            new SkillXpItem(new Item.Properties().stacksTo(64),30),
             "xp_item_5"
     );
     public static final Item XP_ITEM_6 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),700),
+            new SkillXpItem(new Item.Properties().stacksTo(64),35),
             "xp_item_6"
     );
     public static final Item XP_ITEM_7 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),900),
+            new SkillXpItem(new Item.Properties().stacksTo(64),40),
             "xp_item_7"
     );
     public static final Item XP_ITEM_8 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),1200),
+            new SkillXpItem(new Item.Properties().stacksTo(64),50),
             "xp_item_8"
     );
     public static final Item XP_ITEM_9 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),2000),
+            new SkillXpItem(new Item.Properties().stacksTo(64),100),
             "xp_item_9"
     );
     public static final Item XP_ITEM_10 = ItemInit.register(
-            new SkillXpItem(new Item.Properties().stacksTo(64),10000),
+            new SkillXpItem(new Item.Properties().stacksTo(64),300),
             "xp_item_10"
     );
 
